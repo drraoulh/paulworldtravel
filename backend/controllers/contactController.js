@@ -1,4 +1,14 @@
 const Contact = require('../models/Contact');
+const nodemailer = require('nodemailer');
+
+// Create a transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your email service
+  auth: {
+    user: process.env.EMAIL_USER, // Use environment variables for security
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 // Get all contact submissions
 exports.getContacts = async (req, res) => {
@@ -46,6 +56,22 @@ exports.getContact = async (req, res) => {
 exports.createContact = async (req, res) => {
   try {
     const contact = await Contact.create(req.body);
+    
+    // Send email notification
+    const mailOptions = {
+      from: req.body.email,
+      to: 'paulworld2016@yahoo.com',
+      subject: `New Contact Form Submission: ${req.body.subject}`,
+      text: `Name: ${req.body.name}\nEmail: ${req.body.email}\n\nMessage:\n${req.body.message}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
+    });
     
     res.status(201).json({
       success: true,

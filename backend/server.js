@@ -5,7 +5,7 @@ const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: './config/config.env' });
 
 // Initialize Express app
 const app = express();

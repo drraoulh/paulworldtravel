@@ -175,7 +175,7 @@ exports.calculatePriceEstimate = async (req, res) => {
     }
     
     // Start with base calculation
-    let totalPrice = priceRate.basePrice * quantity;
+    let totalPrice = 100 * quantity; // Set to 100 CFA per YUAN
     
     // Apply additional factors if provided
     if (factors && factors.length > 0) {
@@ -212,11 +212,11 @@ exports.calculatePriceEstimate = async (req, res) => {
       data: {
         serviceCategory: priceRate.serviceCategory,
         rateName: priceRate.name,
-        basePrice: priceRate.basePrice,
+        basePrice: 100, // Ensure base price is set to 100 CFA
         quantity,
         totalPrice,
-        currency: priceRate.currency,
-        unit: priceRate.unit
+        currency: 'XAF', // Ensure currency is CFA
+        unit: 'YUAN' // Set unit to YUAN
       }
     });
   } catch (error) {
