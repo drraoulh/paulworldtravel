@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
@@ -30,5 +31,30 @@
     "next-export-optimize-images": "^4.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
+=======
+  "name": "paulworld_travel",
+  "version": "1.0.0",
+  "description": "Application web pour Paul World Travel, une entreprise spécialisée dans les services de cargo, change de devises, et plus",
+  "main": "start.js",
+  "scripts": {
+    "start": "node start.js",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "seed": "cd backend && node config/seedData.js",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": [
+    "travel",
+    "cargo",
+    "business",
+    "visa",
+    "china",
+    "africa"
+  ],
+  "author": "Paul World Travel",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0"
+>>>>>>> origin/main
   }
 }
