@@ -1,0 +1,8 @@
+Placeholder Images for Paul World Travel Website
+
+1. cameroon-office.jpg - Image du bureau principal au Cameroun
+2. drapeaucameroun.jpg - Image du drapeau du Cameroun
+3. vvoyageaff.jpg - Image liée aux voyages ou à l'équipe
+4. drapeauchine.jpg - Image du drapeau de la Chine
+
+Note: Ces placeholders doivent être remplacés par de vraies images dans le dossier 'public'.
