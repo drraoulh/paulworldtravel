@@ -1,0 +1,23 @@
+{
+  "footer": {
+    "slogan": "Votre partenaire de transport de confiance",
+    "services": "Services",
+    "our_services": "Nos Services",
+    "contact_us": "Nous Contacter",
+    "your_email": "Votre email",
+    "subscribe": "S'inscrire",
+    "newsletter": "Newsletter",
+    "newsletter_text": "Restez informé de nos dernières actualités",
+    "privacy_policy": "Politique de confidentialité",
+    "terms_of_service": "Conditions d'utilisation",
+    "cookies": "Cookies",
+    "all_rights_reserved": "Tous droits réservés"
+  },
+  "services": {
+    "cargo_shipping": "Transport de marchandises",
+    "air_freight": "Transport aérien",
+    "ocean_freight": "Transport maritime",
+    "customs_clearance": "Dédouanement",
+    "logistics_solutions": "Solutions logistiques"
+  }
+}

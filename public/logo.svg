@@ -1,0 +1,10 @@
+<svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- PW3T text -->
+  <path d="M20 20H40V30H30V40H20V20Z" fill="#1d4ed8"/>
+  <path d="M50 20H60V30L70 20H80L65 35L80 50H70L60 40V50H50V20Z" fill="#1d4ed8"/>
+  <path d="M90 20H110L120 35L110 50H90V20ZM100 30V40H105L100 30Z" fill="#1d4ed8"/>
+  <path d="M130 20H150V30H140V35H150V45H140V50H130V20Z" fill="#1d4ed8"/>
+  
+  <!-- Paul World Travel text -->
+  <text x="20" y="70" font-family="Arial" font-size="12" fill="#475569">PAUL WORLD TRAVEL</text>
+</svg>

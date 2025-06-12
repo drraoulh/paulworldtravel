@@ -1,0 +1,23 @@
+{
+  "footer": {
+    "slogan": "Your trusted shipping partner",
+    "services": "Services",
+    "our_services": "Our Services",
+    "contact_us": "Contact Us",
+    "your_email": "Your email",
+    "subscribe": "Subscribe",
+    "newsletter": "Newsletter",
+    "newsletter_text": "Stay informed with our latest news",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "cookies": "Cookies",
+    "all_rights_reserved": "All rights reserved"
+  },
+  "services": {
+    "cargo_shipping": "Cargo Shipping",
+    "air_freight": "Air Freight",
+    "ocean_freight": "Ocean Freight",
+    "customs_clearance": "Customs Clearance",
+    "logistics_solutions": "Logistics Solutions"
+  }
+}
