@@ -24,7 +24,7 @@ const copy = {
     servicesList: [
       { id: 'cargo', title: 'Cargo maritime et aérien', desc: 'Expédition de marchandises entre la Chine, l’Afrique et l’Amérique du Nord, par bateau ou par avion.' },
       { id: 'currency', title: 'Change de devises', desc: 'Conversion entre Yuan, FCFA et Dollars à des taux compétitifs.' },
-      { id: 'purchasing', title: 'Achats et sourcing en Chine', desc: 'Recherche de fournisseurs, négociation des prix et contrôle qualité avant expédition.' },
+      { id: 'consulting', title: 'Achats et sourcing en Chine', desc: 'Recherche de fournisseurs, négociation des prix et contrôle qualité avant expédition.' },
       { id: 'business', title: 'Création d’entreprise', desc: 'Conseil et accompagnement pour créer et développer votre activité.' },
       { id: 'visa', title: 'Visas et immigration', desc: 'Assistance pour vos visas, démarches d’immigration et formalités administratives.' },
       { id: 'it', title: 'Solutions informatiques', desc: 'Sites web, outils et accompagnement numérique pour votre entreprise.' },
@@ -59,7 +59,7 @@ const copy = {
     servicesList: [
       { id: 'cargo', title: 'Sea and air cargo', desc: 'Shipping goods between China, Africa and North America, by sea or by air.' },
       { id: 'currency', title: 'Currency exchange', desc: 'Conversion between Yuan, FCFA and Dollars at competitive rates.' },
-      { id: 'purchasing', title: 'Purchasing and sourcing in China', desc: 'Supplier search, price negotiation and quality control before shipment.' },
+      { id: 'consulting', title: 'Purchasing and sourcing in China', desc: 'Supplier search, price negotiation and quality control before shipment.' },
       { id: 'business', title: 'Business creation', desc: 'Advice and support to set up and grow your business.' },
       { id: 'visa', title: 'Visas and immigration', desc: 'Help with visas, immigration procedures and paperwork.' },
       { id: 'it', title: 'IT solutions', desc: 'Websites, tools and digital support for your company.' },
@@ -207,7 +207,7 @@ export default function Home() {
               ))}
             </dl>
             <div className="mt-8">
-              <Button href="/services/#china" variant="link">
+              <Button href="/services/#consulting" variant="link">
                 {t('home.china.discover_all')}
                 <FiArrowRight className="h-4 w-4" aria-hidden />
               </Button>
