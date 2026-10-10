@@ -192,7 +192,7 @@ export default function Services() {
       title: s('cargo_title'),
       lead: c.cargo.lead,
       tags: [c.routes],
-      image: { src: '/cargobateauavions.jpg', alt: s('cargo_title') },
+      image: { src: '/images/cargo.svg', alt: s('cargo_title') },
       groups: [
         { title: s('sea_transport'), items: [{ title: s('sea_transport_desc') }, ...c.cargo.sea.map((title) => ({ title }))] },
         {
@@ -217,7 +217,7 @@ export default function Services() {
       id: 'consulting',
       title: s('consulting_title'),
       lead: s('consulting_desc'),
-      image: { src: '/marcherchine.jpg', alt: s('consulting_title') },
+      image: { src: '/images/consulting.svg', alt: s('consulting_title') },
       groups: [
         { title: c.consulting.purchasing, items: ['personalized_service', 'competitive_rates', 'reliability'].map(pair) },
         { title: c.consulting.travel, items: ['business_travel', 'tourism', 'translation', 'training'].map((k) => ({ title: s(k === 'business_travel' ? k : `${k}_title`), desc: s(`${k}_desc`) })) },
@@ -228,7 +228,7 @@ export default function Services() {
       title: s('visa_title'),
       lead: s('visa_desc'),
       stats: c.visa.stats,
-      image: { src: '/serviceimmigration.jpg', alt: s('visa_title') },
+      image: { src: '/images/visa.svg', alt: s('visa_title') },
       groups: [
         { title: s('student_visa'), items: [{ title: s('student_visa_desc') }, ...c.visa.student.map((title) => ({ title }))] },
         { title: s('permanent_residence'), items: [{ title: s('permanent_residence_desc') }, ...c.visa.pr.map((title) => ({ title }))] },
@@ -239,7 +239,7 @@ export default function Services() {
       id: 'business',
       title: c.business.title,
       lead: c.business.lead,
-      image: { src: '/business-creation.jpg', alt: c.business.title },
+      image: { src: '/images/business.svg', alt: c.business.title },
       groups: [
         { title: c.business.creation, items: c.business.creationItems },
         { title: c.business.accounting, items: c.business.accountingItems },
@@ -249,7 +249,7 @@ export default function Services() {
       id: 'it',
       title: c.it.title,
       lead: c.it.lead,
-      image: { src: '/it-solutions.jpg', alt: c.it.title },
+      image: { src: '/images/it.svg', alt: c.it.title },
       groups: [
         { title: c.it.sage, items: c.it.sageItems },
         { title: c.it.web, items: c.it.webItems },

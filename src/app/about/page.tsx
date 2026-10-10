@@ -107,7 +107,7 @@ export default function About() {
           </div>
           <div className="relative aspect-[4/3] w-full lg:aspect-auto lg:min-h-[28rem]">
             <Image
-              src="/vvoyageaff.jpg"
+              src="/images/about.svg"
               alt={c.imageAlt}
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"

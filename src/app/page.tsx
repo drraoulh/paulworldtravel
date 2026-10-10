@@ -87,7 +87,7 @@ export default function Home() {
     {
       badge: c.hq,
       name: t('locations.cameroon_office'),
-      image: '/cameroon-office.jpg',
+      image: '/images/office-cameroon.svg',
       alt: t('locations.cameroon_office_alt'),
       address: t('locations.cameroon_address'),
       phones: [
@@ -98,7 +98,7 @@ export default function Home() {
     {
       badge: t('home.china.foshan'),
       name: t('locations.china_office'),
-      image: '/china-office.jpg',
+      image: '/images/office-china.svg',
       alt: t('locations.china_office_alt'),
       address: t('locations.china_address'),
       phones: [{ label: '+86 190 6845 1378', href: 'tel:+8619068451378' }],
@@ -127,7 +127,7 @@ export default function Home() {
           </div>
           <div className="lg:col-span-5">
             <Image
-              src="/cameroun1.jpg"
+              src="/images/hero.svg"
               alt={c.heroAlt}
               width={600}
               height={720}
@@ -185,7 +185,7 @@ export default function Home() {
           <div className="lg:col-span-5">
             <SectionHeading eyebrow={t('home.china.foshan')} title={t('home.china.services_title')} intro={t('home.china.services_subtitle')} />
             <Image
-              src="/china-market.jpg"
+              src="/images/sourcing.svg"
               alt={t('home.china.operations_center')}
               width={600}
               height={400}
