@@ -73,7 +73,7 @@ type ButtonProps = {
 };
 
 export function Button({ href, children, variant = 'primary', className = '' }: ButtonProps) {
-  const base = 'inline-flex items-center justify-center gap-2 text-sm font-medium transition-colors';
+  const base = 'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors';
   const styles = {
     primary: 'rounded-full bg-accent px-6 py-3 text-white hover:bg-accent-hover',
     secondary: 'rounded-full border border-line bg-white px-6 py-3 text-foreground hover:border-foreground',
