@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Container } from './ui';
 
@@ -12,8 +13,8 @@ const Footer = () => {
     <footer className="border-t border-line bg-surface">
       <Container className="grid gap-12 py-16 md:grid-cols-4">
         <div className="md:col-span-2">
-          <p className="text-lg font-semibold tracking-tight">Paul World Travel</p>
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">{t('footer.slogan')}</p>
+          <Image src="/brand/logo-footer.png" alt="Paul World Travel — Votre bien-être, notre priorité !" width={420} height={379} className="h-32 w-auto" />
+          <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted">{t('footer.slogan')}</p>
         </div>
 
         <div>

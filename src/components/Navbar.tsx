@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Container } from './ui';
@@ -25,9 +26,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b border-line bg-white/90 backdrop-blur">
       <Container className="flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-[10px] font-semibold text-white">
-            PW
-          </span>
+          <Image src="/brand/symbole-nav.png" alt="Paul World Travel" width={160} height={131} priority className="h-12 w-auto" />
           <span className="text-base font-semibold tracking-tight">Paul World Travel</span>
         </Link>
 
