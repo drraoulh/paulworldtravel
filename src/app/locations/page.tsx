@@ -1,161 +1,133 @@
 'use client';
 
-import Image from 'next/image';
-import { FiArrowUpRight } from 'react-icons/fi';
-import { Button, PageHeader, Section, SectionHeading } from '@/components/ui';
-import { useLanguage } from '@/contexts/LanguageContext';
+import Image from "next/image";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import { useLanguage } from "@/contexts/LanguageContext";
+import dynamic from 'next/dynamic';
 
-const EMAIL = 'paulworld2016@yahoo.com';
-
-const copy = {
-  fr: {
-    eyebrow: 'Implantations',
-    country: { cameroon: 'Cameroun', china: 'Chine' },
-    role: { cameroon: 'Siège social', china: 'Bureau achats et logistique' },
-    phone: 'Téléphone',
-    email: 'E-mail',
-    openMap: 'Ouvrir dans Google Maps',
-    presenceTitle: 'Une présence pensée pour vos échanges',
-    ctaTitle: 'Besoin de nous rendre visite ?',
-    ctaText: 'Contactez-nous avant votre passage pour convenir d’un rendez-vous.',
-    cta: 'Nous contacter',
-  },
-  en: {
-    eyebrow: 'Locations',
-    country: { cameroon: 'Cameroon', china: 'China' },
-    role: { cameroon: 'Headquarters', china: 'Sourcing and logistics office' },
-    phone: 'Phone',
-    email: 'Email',
-    openMap: 'Open in Google Maps',
-    presenceTitle: 'A presence built around your trade',
-    ctaTitle: 'Planning a visit?',
-    ctaText: 'Get in touch before you come by so we can set up an appointment.',
-    cta: 'Contact us',
-  },
-};
+// Leaflet needs `window`, so the map is only rendered in the browser (static export).
+const LocationsMap = dynamic(() => import('@/components/LocationsMap'), { ssr: false });
 
 export default function Locations() {
-  const { t, language } = useLanguage();
-  const c = copy[language];
-
-  const offices = [
-    {
-      id: 'cameroon',
-      country: c.country.cameroon,
-      role: c.role.cameroon,
-      city: t('home.cameroon.douala_lendi'),
-      address: t('locations.cameroon_address'),
-      description: t('locations.cameroon_description'),
-      phone: '+237 6 94 24 46 66',
-      phoneHref: 'tel:+237694244666',
-      image: '/images/office-cameroon.svg',
-      imageAlt: t('locations.cameroon_office_alt'),
-      mapQuery: 'Lendi, Douala, Cameroun',
-    },
-    {
-      id: 'china',
-      country: c.country.china,
-      role: c.role.china,
-      city: t('home.china.foshan'),
-      address: t('locations.china_address'),
-      description: t('locations.china_description'),
-      phone: '+86 190 6845 1378',
-      phoneHref: 'tel:+8619068451378',
-      image: '/images/office-china.svg',
-      imageAlt: t('locations.china_office_alt'),
-      mapQuery: 'Foshan, Guangdong, China',
-    },
-  ];
-
-  const hours = [t('contact.monday_friday'), t('contact.saturday'), t('contact.sunday')];
-
+  const { t } = useLanguage();
   return (
-    <>
-      <PageHeader eyebrow={c.eyebrow} title={t('locations.title')} intro={t('locations.subtitle')} />
-
-      <Section>
-        <div className="space-y-20 sm:space-y-28">
-          {offices.map((o) => (
-            <article key={o.id} className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
-              <div className="lg:col-span-5">
-                <div className="relative aspect-[4/3] w-full">
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      
+      <main className="flex-grow">
+        {/* Header Section */}
+        <section className="bg-blue-700 text-white py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-4xl font-bold mb-4">{t('locations.title')}</h1>
+            <p className="text-xl">{t('locations.subtitle')}</p>
+          </div>
+        </section>
+        
+        {/* Locations Content */}
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* China Office */}
+            <div className="mb-16">
+              <h2 className="text-3xl font-bold mb-8 text-gray-900">{t('locations.china_office')}</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div className="relative h-96">
                   <Image
-                    src={o.image}
-                    alt={o.imageAlt}
+                    src="/images/office-china.svg"
+                    alt={t('locations.china_office_alt')}
                     fill
-                    sizes="(min-width: 1024px) 40vw, 100vw"
-                    className="rounded-2xl object-cover"
+                    className="object-cover rounded-lg shadow-xl"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-semibold mb-4">{t('home.china.foshan')}</h3>
+                  <p className="text-gray-600 mb-6">
+                    {t('locations.china_description')}
+                  </p>
+                  <div className="space-y-4">
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>{t('locations.china_address')}</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <span>+8619068451378</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-lg font-bold text-blue-700">paulworld2016@yahoo.com</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Cameroon Office */}
+            <div>
+              <h2 className="text-3xl font-bold mb-8 text-gray-900">{t('locations.cameroon_office')}</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div className="order-2 lg:order-1">
+                  <h3 className="text-2xl font-semibold mb-4">{t('home.cameroon.douala_lendi')}</h3>
+                  <p className="text-gray-600 mb-6">
+                    {t('locations.cameroon_description')}
+                  </p>
+                  <div className="space-y-4">
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>{t('locations.cameroon_address')}</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <span>+237694244666</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-lg font-bold text-blue-700">paulworld2016@yahoo.com</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="relative h-96 order-1 lg:order-2">
+                  <Image
+                    src="/images/office-cameroon.svg"
+                    alt={t('locations.cameroon_office_alt')}
+                    fill
+                    className="object-cover rounded-lg shadow-xl"
                   />
                 </div>
               </div>
-
-              <div className="lg:col-span-7">
-                <p className="text-xs font-medium uppercase tracking-[0.18em] text-accent">
-                  {o.country} · {o.role}
+            </div>
+            
+            {/* Map Section */}
+            <div className="mt-16">
+              <h2 className="text-3xl font-bold mb-8 text-gray-900 text-center">{t('locations.global_presence')}</h2>
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <p className="text-gray-600 mb-8 text-center">
+                  {t('locations.global_description')}
                 </p>
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{o.city}</h2>
-                <p className="mt-4 leading-relaxed text-muted">{o.description}</p>
-
-                <dl className="mt-8 border-t border-line">
-                  <div className="grid grid-cols-1 gap-1 border-b border-line py-4 sm:grid-cols-3 sm:gap-6">
-                    <dt className="text-sm text-muted">{t('locations.address')}</dt>
-                    <dd className="text-foreground sm:col-span-2">{o.address}</dd>
-                  </div>
-                  <div className="grid grid-cols-1 gap-1 border-b border-line py-4 sm:grid-cols-3 sm:gap-6">
-                    <dt className="text-sm text-muted">{c.phone}</dt>
-                    <dd className="sm:col-span-2">
-                      <a href={o.phoneHref} className="text-foreground hover:text-accent">
-                        {o.phone}
-                      </a>
-                    </dd>
-                  </div>
-                  <div className="grid grid-cols-1 gap-1 border-b border-line py-4 sm:grid-cols-3 sm:gap-6">
-                    <dt className="text-sm text-muted">{c.email}</dt>
-                    <dd className="sm:col-span-2">
-                      <a href={`mailto:${EMAIL}`} className="break-all text-foreground hover:text-accent">
-                        {EMAIL}
-                      </a>
-                    </dd>
-                  </div>
-                  <div className="grid grid-cols-1 gap-1 border-b border-line py-4 sm:grid-cols-3 sm:gap-6">
-                    <dt className="text-sm text-muted">{t('locations.hours')}</dt>
-                    <dd className="space-y-1 text-foreground sm:col-span-2">
-                      {hours.map((h) => (
-                        <p key={h}>{h}</p>
-                      ))}
-                    </dd>
-                  </div>
-                </dl>
-
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.mapQuery)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-accent underline-offset-4 hover:text-accent-hover hover:underline"
-                >
-                  {c.openMap}
-                  <FiArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                </a>
+                <div className="relative h-96">
+                  <LocationsMap chinaLabel={t('locations.china_office')} cameroonLabel={t('locations.cameroon_office')} />
+                </div>
               </div>
-            </article>
-          ))}
-        </div>
-      </Section>
-
-      <Section muted>
-        <SectionHeading
-          eyebrow={t('locations.global_presence')}
-          title={c.presenceTitle}
-          intro={t('locations.global_description')}
-        />
-        <div className="flex flex-col gap-6 border-t border-line pt-10 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h3 className="text-xl font-semibold tracking-tight text-foreground">{c.ctaTitle}</h3>
-            <p className="mt-2 leading-relaxed text-muted">{c.ctaText}</p>
+            </div>
           </div>
-          <Button href="/contact/">{c.cta}</Button>
-        </div>
-      </Section>
-    </>
+        </section>
+      </main>
+      
+      <Footer />
+    </div>
   );
 }
