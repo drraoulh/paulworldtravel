@@ -1,292 +1,455 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { FiArrowRight, FiArrowUpRight, FiMail, FiMapPin, FiPhone } from 'react-icons/fi';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Button, Container, Eyebrow, Section, SectionHeading } from '@/components/ui';
+import React, { useState, useEffect } from 'react';
+import Image from "next/image";
+import Link from "next/link";
+import { useLanguage } from "../contexts/LanguageContext";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
-const copy = {
-  fr: {
-    eyebrow: 'Chine · Afrique · Amérique du Nord',
-    title: 'Vos échanges entre la Chine, l’Afrique et l’Amérique du Nord, simplifiés.',
-    intro:
-      'Cargo, change de devises, achats en Chine, visas, création d’entreprise et solutions informatiques. Une seule équipe, de Douala à Foshan.',
-    services: 'Nos services',
-    heroAlt: 'Notre bureau à Douala, Cameroun',
-    routesLabel: 'Nos routes',
-    routes: [
-      { place: 'Chine', detail: 'Bureau de Foshan, Guangdong — sourcing, achats, contrôle qualité' },
-      { place: 'Afrique', detail: 'Siège à Douala, Cameroun — réception, dédouanement, suivi' },
-      { place: 'Amérique du Nord', detail: 'Cargo et accompagnement pour vos projets outre-Atlantique' },
-    ],
-    servicesEyebrow: 'Services',
-    servicesList: [
-      { id: 'cargo', title: 'Cargo maritime et aérien', desc: 'Expédition de marchandises entre la Chine, l’Afrique et l’Amérique du Nord, par bateau ou par avion.' },
-      { id: 'currency', title: 'Change de devises', desc: 'Conversion entre Yuan, FCFA et Dollars à des taux compétitifs.' },
-      { id: 'consulting', title: 'Achats et sourcing en Chine', desc: 'Recherche de fournisseurs, négociation des prix et contrôle qualité avant expédition.' },
-      { id: 'business', title: 'Création d’entreprise', desc: 'Conseil et accompagnement pour créer et développer votre activité.' },
-      { id: 'visa', title: 'Visas et immigration', desc: 'Assistance pour vos visas, démarches d’immigration et formalités administratives.' },
-      { id: 'it', title: 'Solutions informatiques', desc: 'Sites web, outils et accompagnement numérique pour votre entreprise.' },
-    ],
-    processEyebrow: 'Notre méthode',
-    processTitle: 'Un accompagnement clair, de la demande à la livraison.',
-    steps: [
-      { title: 'Échange', desc: 'Vous nous présentez votre besoin : produit, destination, délai ou démarche.' },
-      { title: 'Proposition', desc: 'Nous vous adressons une solution chiffrée et transparente.' },
-      { title: 'Exécution', desc: 'Nos équipes en Chine et au Cameroun gèrent achats, contrôle et expédition.' },
-      { title: 'Suivi', desc: 'Vous êtes informé à chaque étape, jusqu’à la réception.' },
-    ],
-    officesEyebrow: 'Bureaux',
-    officesTitle: 'Présents là où vos affaires se font.',
-    hq: 'Siège',
-    allLocations: 'Voir nos bureaux',
-  },
-  en: {
-    eyebrow: 'China · Africa · North America',
-    title: 'Trade between China, Africa and North America, made simple.',
-    intro:
-      'Cargo, currency exchange, purchasing in China, visas, business creation and IT solutions. One team, from Douala to Foshan.',
-    services: 'Our services',
-    heroAlt: 'Our office in Douala, Cameroon',
-    routesLabel: 'Our routes',
-    routes: [
-      { place: 'China', detail: 'Foshan office, Guangdong — sourcing, purchasing, quality control' },
-      { place: 'Africa', detail: 'Headquarters in Douala, Cameroon — reception, customs, follow-up' },
-      { place: 'North America', detail: 'Cargo and support for your transatlantic projects' },
-    ],
-    servicesEyebrow: 'Services',
-    servicesList: [
-      { id: 'cargo', title: 'Sea and air cargo', desc: 'Shipping goods between China, Africa and North America, by sea or by air.' },
-      { id: 'currency', title: 'Currency exchange', desc: 'Conversion between Yuan, FCFA and Dollars at competitive rates.' },
-      { id: 'consulting', title: 'Purchasing and sourcing in China', desc: 'Supplier search, price negotiation and quality control before shipment.' },
-      { id: 'business', title: 'Business creation', desc: 'Advice and support to set up and grow your business.' },
-      { id: 'visa', title: 'Visas and immigration', desc: 'Help with visas, immigration procedures and paperwork.' },
-      { id: 'it', title: 'IT solutions', desc: 'Websites, tools and digital support for your company.' },
-    ],
-    processEyebrow: 'How we work',
-    processTitle: 'Clear support, from request to delivery.',
-    steps: [
-      { title: 'Talk', desc: 'Tell us what you need: product, destination, timeline or procedure.' },
-      { title: 'Proposal', desc: 'We send you a clear, transparent quote.' },
-      { title: 'Execution', desc: 'Our teams in China and Cameroon handle purchasing, inspection and shipping.' },
-      { title: 'Follow-up', desc: 'You are kept informed at every step, until delivery.' },
-    ],
-    officesEyebrow: 'Offices',
-    officesTitle: 'Present where your business happens.',
-    hq: 'Headquarters',
-    allLocations: 'See our offices',
-  },
+// Composant pour les services avec animation avancée au survol
+const ServiceCard = ({ icon, title, description, link }: { icon: string, title: string, description: string, link: string }) => {
+  const { t } = useLanguage();
+  return (
+    <div className="group relative overflow-hidden bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1 border border-transparent hover:border-blue-200">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-green-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+      <div className="relative p-5 h-full flex flex-col">
+        <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-300">{icon}</div>
+        <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-700 transition-colors duration-300">{title}</h3>
+        <p className="text-gray-600 mb-4 flex-grow text-sm sm:text-base">{description}</p>
+        <Link 
+          href={link} 
+          className="mt-auto inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition-colors duration-300 group-hover:font-semibold"
+        >
+          <span>{t('home.services.learn_more')}</span>
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+const ServiceCarousel = ({ services }: { services: Array<{icon: string, name: string, description: string, link: string}> }) => {
+  const { t } = useLanguage();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Gestion du défilement automatique amélioré
+  useEffect(() => {
+    if (!isPaused) {
+      const interval = setInterval(() => {
+        changeSlide(activeIndex + 1);
+      }, 3000); // 3 secondes par carte pour une expérience plus confortable
+      
+      return () => clearInterval(interval);
+    }
+  }, [services.length, isPaused, activeIndex]);
+  
+  // Fonction pour changer de slide avec animation fluide
+  const changeSlide = (newIndex: number) => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setActiveIndex(newIndex % services.length);
+    
+    // Réinitialisation de l'indicateur de transition après l'animation
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 500); // Correspond à la durée de transition CSS
+  };
+  
+  // Gestion du swipe sur mobile améliorée
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+    setIsPaused(true); // Pause pendant le toucher
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  
+  const handleTouchEnd = () => {
+    const swipeThreshold = 70; // Rend le swipe plus confortable
+    
+    if (touchStart - touchEnd > swipeThreshold) {
+      // Swipe gauche - carte suivante
+      changeSlide(activeIndex + 1);
+    } else if (touchStart - touchEnd < -swipeThreshold) {
+      // Swipe droit - carte précédente
+      changeSlide(activeIndex - 1 + services.length);
+    }
+    
+    // Réactive le défilement automatique après un court délai
+    setTimeout(() => setIsPaused(false), 4000);
+  };
+  
+  // Animation fluide avec transition
+  const getCardStyle = () => {
+    return {
+      transform: `translateX(-${activeIndex * 100}%)`,
+      transition: 'transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)' // Animation plus fluide
+    };
+  };
+  
+  return (
+    <div 
+      className="relative w-full overflow-hidden rounded-xl shadow-lg border border-blue-100" 
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setTimeout(() => setIsPaused(false), 1000)} // Délai court avant de reprendre
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Fond décoré avec motif subtil */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-white/80 opacity-80"></div>
+      
+      {/* Carrousel avec transition plus fluide */}
+      <div 
+        className="flex transition-all duration-500 ease-out h-full relative z-10"
+        style={getCardStyle()}
+      >
+        {services.map((service, index) => (
+          <div 
+            key={index} 
+            className={`w-full flex-shrink-0 px-2 sm:px-3 py-2 transition-all duration-500 ${index === activeIndex ? 'scale-100' : 'scale-95'}`}
+          >
+            <ServiceCard
+              icon={service.icon}
+              title={service.name}
+              description={service.description}
+              link={service.link}
+            />
+          </div>
+        ))}
+      </div>
+      
+      {/* Indicateurs améliorés avec animation */}
+      <div className="absolute -bottom-1 left-0 right-0 flex justify-center space-x-2 pb-3 pt-2 bg-gradient-to-t from-gray-50/90 to-transparent z-20">
+        {services.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              changeSlide(index);
+              setIsPaused(true);
+              setTimeout(() => setIsPaused(false), 4000);
+            }}
+            className={`h-2 rounded-full transition-all duration-300 shadow-sm transform hover:scale-110 ${index === activeIndex ? 'bg-blue-600 w-8' : 'bg-gray-300 hover:bg-blue-400 w-3'}`}
+            aria-label={`Slide ${index + 1}`}
+          />
+        ))}
+      </div>
+      
+      {/* Boutons de navigation améliorés avec effets */}
+      <button 
+        onClick={() => {
+          changeSlide(activeIndex - 1 + services.length);
+          setIsPaused(true);
+          setTimeout(() => setIsPaused(false), 4000);
+        }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg z-20 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        aria-label="Précédent"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7m0 0l-7 7m7-7H3" />
+        </svg>
+      </button>
+      <button 
+        onClick={() => {
+          changeSlide(activeIndex + 1);
+          setIsPaused(true);
+          setTimeout(() => setIsPaused(false), 4000);
+        }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg z-20 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        aria-label="Suivant"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      
+      {/* Badge d'auto-défilement - Amélioré et internationalisé */}
+      <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs px-2 py-1 rounded-full shadow-md z-20 transition-all duration-300 transform hover:scale-105">
+        {isPaused ? (
+          <span className="flex items-center">
+            <svg className="w-3 h-3 mr-1 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {t('home.carousel.paused')}
+          </span>
+        ) : (
+          <span className="flex items-center">
+            <svg className="w-3 h-3 mr-1 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1.998 1.998 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {t('home.carousel.auto')}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default function Home() {
-  const { t, language } = useLanguage();
-  const c = copy[language];
-
-  const offices = [
+  const { t } = useLanguage();
+  
+  const services = [
     {
-      badge: c.hq,
-      name: t('locations.cameroon_office'),
-      image: '/images/office-cameroon.svg',
-      alt: t('locations.cameroon_office_alt'),
-      address: t('locations.cameroon_address'),
-      phones: [
-        { label: '+237 6 94 24 46 66', href: 'tel:+237694244666' },
-        { label: '+237 6 96 96 46 76', href: 'tel:+237696964676' },
-      ],
+      icon: "🚢",
+      name: t('home.services.cargo.title'),
+      description: t('home.services.cargo.description'),
+      link: "/services#cargo"
     },
     {
-      badge: t('home.china.foshan'),
-      name: t('locations.china_office'),
-      image: '/images/office-china.svg',
-      alt: t('locations.china_office_alt'),
-      address: t('locations.china_address'),
-      phones: [{ label: '+86 190 6845 1378', href: 'tel:+8619068451378' }],
+      icon: "💱",
+      name: t('home.services.currency.title'),
+      description: t('home.services.currency.description'),
+      link: "/services#currency"
     },
+    {
+      icon: "🛍️",
+      name: t('home.services.purchasing.title'),
+      description: t('home.services.purchasing.description'),
+      link: "/services#purchasing"
+    },
+    {
+      icon: "🏢",
+      name: t('home.services.business.title'),
+      description: t('home.services.business.description'),
+      link: "/services#business"
+    },
+    {
+      icon: "🛂",
+      name: t('home.services.visa.title'),
+      description: t('home.services.visa.description'),
+      link: "/services#visa"
+    },
+    {
+      icon: "💼",
+      name: t('home.services.it.title'),
+      description: t('home.services.it.description'),
+      link: "/services#it"
+    }
   ];
-
+  
   return (
-    <>
-      {/* Hero */}
-      <section className="border-b border-line">
-        <Container className="grid items-center gap-12 pb-16 pt-16 sm:pb-24 sm:pt-24 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7">
-            <Eyebrow>{c.eyebrow}</Eyebrow>
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">{c.title}</h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{c.intro}</p>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Button href="/contact/">
-                {t('home.contact_button')}
-                <FiArrowRight className="h-4 w-4" aria-hidden />
-              </Button>
-              <Button href="/services/" variant="secondary">
-                {c.services}
-              </Button>
-            </div>
-            <p className="mt-8 text-sm italic text-muted">{t('home.slogan')}</p>
-          </div>
-          <div className="lg:col-span-5">
-            <Image
-              src="/images/hero.svg"
-              alt={c.heroAlt}
-              width={600}
-              height={720}
-              priority
-              className="aspect-[4/3] w-full rounded-2xl object-cover lg:aspect-[5/6]"
-            />
-          </div>
-        </Container>
-      </section>
-
-      {/* Routes */}
-      <section className="border-b border-line">
-        <Container>
-          <h2 className="sr-only">{c.routesLabel}</h2>
-          <dl className="grid divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            {c.routes.map((r) => (
-              <div key={r.place} className="py-8 sm:px-8 sm:first:pl-0 sm:last:pr-0">
-                <dt className="text-2xl font-semibold tracking-tight text-foreground">{r.place}</dt>
-                <dd className="mt-2 text-sm leading-relaxed text-muted">{r.detail}</dd>
-              </div>
-            ))}
-          </dl>
-        </Container>
-      </section>
-
-      {/* Services */}
-      <Section id="services">
-        <SectionHeading eyebrow={c.servicesEyebrow} title={t('home.services.title')} intro={t('home.services.description')} />
-        <ul className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-          {c.servicesList.map((s, i) => (
-            <li key={s.id} className="bg-white">
-              <Link href={`/services/#${s.id}`} className="group flex h-full flex-col p-6 transition-colors hover:bg-surface sm:p-8">
-                <span className="text-xs font-medium text-muted">{String(i + 1).padStart(2, '0')}</span>
-                <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">{s.title}</h3>
-                <p className="mt-2 flex-grow text-sm leading-relaxed text-muted">{s.desc}</p>
-                <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-accent">
-                  {t('home.services.learn_more')}
-                  <FiArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden />
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-10">
-          <Button href="/services/" variant="link">
-            {t('home.services.view_all')}
-            <FiArrowRight className="h-4 w-4" aria-hidden />
-          </Button>
-        </div>
-      </Section>
-
-      {/* China expertise */}
-      <Section>
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-5">
-            <SectionHeading eyebrow={t('home.china.foshan')} title={t('home.china.services_title')} intro={t('home.china.services_subtitle')} />
-            <Image
-              src="/images/sourcing.svg"
-              alt={t('home.china.operations_center')}
-              width={600}
-              height={400}
-              className="aspect-[3/2] w-full rounded-2xl object-cover"
-            />
-          </div>
-          <div className="lg:col-span-7">
-            <dl className="divide-y divide-line border-y border-line">
-              {[
-                ['home.china.services.sourcing', 'home.china.services.sourcing_desc'],
-                ['home.china.services.currency', 'home.china.services.currency_desc'],
-                ['home.china.services.quality', 'home.china.services.quality_desc'],
-                ['home.china.services.admin', 'home.china.services.admin_desc'],
-              ].map(([title, desc]) => (
-                <div key={title} className="grid gap-2 py-6 sm:grid-cols-3 sm:gap-8">
-                  <dt className="font-semibold text-foreground">{t(title)}</dt>
-                  <dd className="leading-relaxed text-muted sm:col-span-2">{t(desc)}</dd>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      
+      <main className="flex-grow">
+        {/* Hero Section - Version améliorée et optimisée pour mobile */}
+        <section className="bg-white text-gray-800 py-8 md:py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row items-center gap-4 md:gap-6">
+              <div className="w-full lg:w-3/5">
+                <div className="mb-6 text-center lg:text-left">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4">Paul World Travel</h1>
+                  <p className="text-lg sm:text-xl md:text-2xl font-light italic">
+                    {t('home.slogan')}
+                  </p>
                 </div>
-              ))}
-            </dl>
-            <div className="mt-8">
-              <Button href="/services/#consulting" variant="link">
-                {t('home.china.discover_all')}
-                <FiArrowRight className="h-4 w-4" aria-hidden />
-              </Button>
+                
+                <div className="p-4 md:p-6 bg-gray-100 rounded-xl border-l-4 border-green-500 mb-6 md:mb-10 shadow-lg">
+                  <p className="font-semibold text-lg md:text-xl mb-2 text-gray-800">{t('home.cameroon.title')}</p>
+                  <p className="text-gray-700 text-base md:text-lg">{t('home.cameroon.description')}</p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full justify-center lg:justify-start">
+                  <Link 
+                    href="/services" 
+                    className="bg-white text-gray-800 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg transform hover:-translate-y-1 flex items-center justify-center"
+                  >
+                    <span>{t('home.cta_button')}</span>
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </Link>
+                  
+                  <Link 
+                    href="/contact" 
+                    className="bg-transparent border-2 border-blue-500 text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-blue-50 transition-all duration-300 flex items-center justify-center"
+                  >
+                    <span>{t('home.contact_button')}</span>
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="w-full sm:w-4/5 md:w-3/4 lg:w-2/5 mt-6 lg:mt-0 mx-auto">
+                <div className="relative rounded-2xl overflow-hidden shadow-xl border-4 border-white/20">
+                  <Image
+                    src="/cameroun1.jpg"
+                    alt="Bureau au Cameroun"
+                    width={600}
+                    height={450}
+                    quality={90}
+                    priority
+                    className="w-full h-auto"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 text-white bg-gradient-to-t from-blue-900/80 to-transparent pt-10 md:pt-12">
+                    <div className="inline-block px-2 py-1 md:px-3 md:py-1 bg-green-600/90 rounded-full text-xs md:text-sm font-semibold mb-1 md:mb-2">
+                      {t('home.locations.douala')}
+                    </div>
+                    <p className="text-base md:text-lg font-bold">{t('home.cameroon.office_title')}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </Section>
-
-      {/* Process */}
-      <Section muted>
-        <SectionHeading eyebrow={c.processEyebrow} title={c.processTitle} />
-        <ol className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {c.steps.map((step, i) => (
-            <li key={step.title} className="border-t border-line pt-6">
-              <span className="text-sm font-medium text-accent">{String(i + 1).padStart(2, '0')}</span>
-              <h3 className="mt-3 text-lg font-semibold tracking-tight text-foreground">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{step.desc}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      {/* Offices */}
-      <Section>
-        <SectionHeading eyebrow={c.officesEyebrow} title={c.officesTitle} intro={t('home.cameroon.office_description')} />
-        <div className="grid gap-8 md:grid-cols-2">
-          {offices.map((o) => (
-            <article key={o.name} className="rounded-2xl border border-line p-4 sm:p-6">
-              <Image src={o.image} alt={o.alt} width={640} height={400} className="aspect-[16/10] w-full rounded-xl object-cover" />
-              <div className="px-2 pb-2 pt-6">
-                <span className="inline-block rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent">{o.badge}</span>
-                <h3 className="mt-4 text-xl font-semibold tracking-tight text-foreground">{o.name}</h3>
-                <ul className="mt-4 space-y-2 text-sm text-muted">
-                  <li className="flex items-start gap-3">
-                    <FiMapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" aria-hidden />
-                    <span>{o.address}</span>
-                  </li>
-                  {o.phones.map((p) => (
-                    <li key={p.href} className="flex items-start gap-3">
-                      <FiPhone className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" aria-hidden />
-                      <a href={p.href} className="hover:text-foreground">{p.label}</a>
-                    </li>
-                  ))}
-                  <li className="flex items-start gap-3">
-                    <FiMail className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" aria-hidden />
-                    <a href="mailto:paulworld2016@yahoo.com" className="hover:text-foreground">paulworld2016@yahoo.com</a>
-                  </li>
-                </ul>
+        </section>
+        
+        {/* Cameroon Office Section - Optimisée pour mobile */}
+        <section className="py-8 sm:py-10 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center">
+              <div className="w-full max-w-3xl">
+                <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border-t-4 border-green-600 text-center">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 sm:mb-2">{t('home.cameroon.office_title')}</h2>
+                  <h3 className="text-lg sm:text-xl font-semibold text-green-600 mb-4 sm:mb-6">{t('home.cameroon.douala_lendi')}</h3>
+                  
+                  <p className="text-gray-700 text-base sm:text-lg mb-4 sm:mb-5">
+                    {t('home.cameroon.office_description')}
+                  </p>
+                  
+                  <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-5 max-w-md mx-auto">
+                    <div className="flex items-center justify-center">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <p className="text-gray-700 text-sm sm:text-base">{t('locations.douala_address')}</p>
+                    </div>
+                    <div className="flex items-center justify-center">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <p className="text-gray-700 text-sm sm:text-base">+237 6 96 96 46 76</p>
+                    </div>
+                    <div className="flex items-center justify-center">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-gray-700 text-sm sm:text-base">paulworld2016@yahoo.com</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                    <Link href="/locations" className="bg-green-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium hover:bg-green-700 transition-all duration-300 shadow-md flex items-center justify-center">
+                      {t('home.cameroon.learn_more')}
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
+                    <Link href="/contact" className="bg-white border border-green-600 text-green-600 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium hover:bg-green-50 transition-all duration-300 shadow-sm">
+                      {t('home.cameroon.contact_team')}
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </article>
-          ))}
-        </div>
-        <div className="mt-10">
-          <Button href="/locations/" variant="secondary">
-            {c.allLocations}
-            <FiArrowRight className="h-4 w-4" aria-hidden />
-          </Button>
-        </div>
-      </Section>
-
-      {/* Closing CTA */}
-      <section className="border-t border-line bg-surface">
-        <Container className="flex flex-col items-start justify-between gap-8 py-20 sm:py-24 md:flex-row md:items-center">
-          <div className="max-w-2xl">
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{t('home.cta.title')}</h2>
-            <p className="mt-4 text-lg leading-relaxed text-muted">{t('home.cta.subtitle')}</p>
+            </div>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button href="/contact/">
-              {t('nav.contact_us')}
-              <FiArrowRight className="h-4 w-4" aria-hidden />
-            </Button>
-            <Button href="tel:+237694244666" variant="secondary">
-              <FiPhone className="h-4 w-4" aria-hidden />
-              +237 6 94 24 46 66
-            </Button>
+        </section>
+        
+        {/* China Services Section - Optimisée pour mobile */}
+        <section className="py-8 sm:py-10 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-4 sm:mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">{t('home.china.services_title')}</h2>
+              <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+                {t('home.china.services_subtitle')}
+              </p>
+            </div>
+            
+            <div className="space-y-4 sm:space-y-5 mt-4 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+              <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border-t-4 border-blue-600">
+                <div className="flex items-center mb-1 sm:mb-2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                  </svg>
+                  <h4 className="text-lg sm:text-xl font-semibold text-gray-800">{t('home.china.services.sourcing')}</h4>
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 mb-2 sm:mb-3">{t('home.china.services.sourcing_desc')}</p>
+              </div>
+              
+              <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border-t-4 border-blue-600">
+                <div className="flex items-center mb-1 sm:mb-2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <h4 className="text-lg sm:text-xl font-semibold text-gray-800">{t('home.china.services.currency')}</h4>
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 mb-2 sm:mb-3">{t('home.china.services.currency_desc')}</p>
+              </div>
+              
+              <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border-t-4 border-blue-600">
+                <div className="flex items-center mb-1 sm:mb-2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <h4 className="text-lg sm:text-xl font-semibold text-gray-800">{t('home.china.services.quality')}</h4>
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 mb-2 sm:mb-3">{t('home.china.services.quality_desc')}</p>
+              </div>
+              
+              <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border-t-4 border-blue-600">
+                <div className="flex items-center mb-1 sm:mb-2">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <h4 className="text-lg sm:text-xl font-semibold text-gray-800">{t('home.china.services.admin')}</h4>
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 mb-1 sm:mb-2">{t('home.china.services.admin_desc')}</p>
+              </div>
+            </div>
+            
+            <div className="text-center mt-2 sm:mt-3">
+              <Link 
+                href="/services#china" 
+                className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg text-sm sm:text-base transition-all duration-300 shadow-lg"
+              >
+                {t('home.china.discover_all')}
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
+            </div>
           </div>
-        </Container>
-      </section>
-    </>
+        </section>
+        
+        {/* CTA Section - Version améliorée et optimisée pour mobile */}
+        <section className="py-4 sm:py-5 bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+              <div className="w-full text-center md:text-left mb-4 md:mb-0">
+                <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">{t('home.cta.title')}</h2>
+                <p className="text-xs sm:text-sm text-white/90">{t('home.cta.subtitle')}</p>
+              </div>
+              
+              <div className="w-full md:w-auto flex justify-center md:justify-end">
+                <Link 
+                  href="/contact" 
+                  className="bg-white text-blue-700 px-4 py-2.5 rounded-md font-medium sm:font-bold hover:bg-blue-50 transition-all duration-300 shadow-md inline-flex items-center justify-center transform hover:-translate-y-1 group w-full sm:w-auto text-center text-sm sm:text-base"
+                >
+                  <span className="mr-1">{t('nav.contact_us')}</span>
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      
+      <Footer />
+    </div>
   );
 }

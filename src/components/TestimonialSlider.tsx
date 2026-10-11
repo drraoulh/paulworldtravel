@@ -1,157 +1,264 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useState, useEffect, ReactElement } from 'react';
+import Image from 'next/image';
+import { getFeaturedTestimonials } from '../services/api';
 
-type Lang = 'fr' | 'en';
-
-export interface Testimonial {
-  id: string;
+// Interface pour le type Testimonial
+interface Testimonial {
+  _id?: string;
   name: string;
-  role: Record<Lang, string>;
+  role: string;
   company?: string;
-  content: Record<Lang, string>;
+  content: string;
   rating: number;
+  featured?: boolean;
+  language?: string;
+  createdAt?: Date;
 }
 
-/**
- * Testimonials shown on the site. The site is a static export, so this local
- * list is the source of truth (no backend fetch).
- */
-export const testimonials: Testimonial[] = [
-  {
-    id: '1',
-    name: 'Jean Durand',
-    role: { fr: 'Directeur Commercial', en: 'Sales Director' },
-    company: 'Import Export SARL',
-    content: {
-      fr: 'Nous travaillons avec Paul World Travel depuis plus de 3 ans pour nos importations de Chine. Leur service est impeccable et les délais sont toujours respectés.',
-      en: 'We have worked with Paul World Travel for more than 3 years on our imports from China. Their service is flawless and deadlines are always met.',
-    },
-    rating: 5,
-  },
-  {
-    id: '2',
-    name: 'Marie Kouassi',
-    role: { fr: 'Entrepreneure', en: 'Entrepreneur' },
-    company: 'Boutique Mode Afrique',
-    content: {
-      fr: 'Grâce à Paul World Travel, j’ai pu établir des contacts solides avec des fournisseurs chinois pour ma boutique de mode.',
-      en: 'Thanks to Paul World Travel, I was able to build strong relationships with Chinese suppliers for my fashion store.',
-    },
-    rating: 5,
-  },
-  {
-    id: '3',
-    name: 'Robert Chen',
-    role: { fr: 'Étudiant', en: 'Student' },
-    content: {
-      fr: 'Le service d’assistance pour l’obtention de mon visa étudiant a été excellent. Toutes les démarches ont été facilitées.',
-      en: 'The support I received to obtain my student visa was excellent. Every step of the process was made easy.',
-    },
-    rating: 5,
-  },
-];
+const TestimonialSlider = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-export function initials(name: string) {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-/** Single quote card, reused by the slider and the testimonials grid. */
-export function TestimonialCard({ testimonial, large = false }: { testimonial: Testimonial; large?: boolean }) {
-  const { language } = useLanguage();
-  const meta = [testimonial.role[language], testimonial.company].filter(Boolean).join(' · ');
-
-  return (
-    <figure className="flex h-full flex-col">
-      <span className="text-5xl font-semibold leading-none text-accent" aria-hidden="true">
-        &ldquo;
-      </span>
-      <blockquote className={`mt-4 flex-1 leading-relaxed text-foreground ${large ? 'text-2xl tracking-tight sm:text-3xl' : 'text-lg'}`}>
-        {testimonial.content[language]}
-      </blockquote>
-      <figcaption className="mt-8 flex items-center gap-4 border-t border-line pt-6">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-medium text-accent" aria-hidden="true">
-          {initials(testimonial.name)}
-        </span>
-        <span>
-          <span className="block font-medium text-foreground">{testimonial.name}</span>
-          <span className="block text-sm text-muted">{meta}</span>
-        </span>
-      </figcaption>
-    </figure>
-  );
-}
-
-const copy = {
-  fr: { prev: 'Témoignage précédent', next: 'Témoignage suivant', goTo: 'Aller au témoignage' },
-  en: { prev: 'Previous testimonial', next: 'Next testimonial', goTo: 'Go to testimonial' },
-};
-
-/** Minimal one-at-a-time quote slider (auto-advances every 7s). */
-export default function TestimonialSlider() {
-  const { language } = useLanguage();
-  const c = copy[language];
-  const [index, setIndex] = useState(0);
-  const count = testimonials.length;
-
-  const next = useCallback(() => setIndex((i) => (i + 1) % count), [count]);
-  const prev = useCallback(() => setIndex((i) => (i - 1 + count) % count), [count]);
-
+  // Récupérer les témoignages depuis l'API
   useEffect(() => {
-    if (count <= 1) return;
-    const id = setInterval(next, 7000);
-    return () => clearInterval(id);
-  }, [count, next, index]);
+    const fetchTestimonials = async () => {
+      try {
+        setLoading(true);
+        const data = await getFeaturedTestimonials();
+        setTestimonials(data.length > 0 ? data : fallbackTestimonials);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+        setTestimonials(fallbackTestimonials);
+        setError('Une erreur est survenue lors du chargement des témoignages.');
+        setLoading(false);
+      }
+    };
 
-  if (count === 0) return null;
+    fetchTestimonials();
+  }, []);
+
+  // Changer de témoignage toutes les 7 secondes
+  useEffect(() => {
+    if (testimonials.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    }, 7000);
+    
+    return () => clearInterval(interval);
+  }, [testimonials.length]);
+
+  // Passer au témoignage suivant
+  const nextTestimonial = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+  };
+
+  // Passer au témoignage précédent
+  const prevTestimonial = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length);
+  };
+
+  // Générer les étoiles en fonction de la note
+  const renderStars = (rating: number): ReactElement[] => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <svg 
+          key={i} 
+          className={`w-5 h-5 ${i <= rating ? 'text-yellow-500' : 'text-gray-300'}`} 
+          fill="currentColor" 
+          viewBox="0 0 20 20" 
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      );
+    }
+    return stars;
+  };
+
+  // Témoignages de secours si l'API ne répond pas
+  const fallbackTestimonials = [
+    {
+      _id: '1',
+      name: 'Jean Durand',
+      role: 'Directeur Commercial',
+      company: 'Import Export SARL',
+      content: 'Nous travaillons avec Paul World Travel depuis plus de 3 ans pour nos importations de Chine. Leur service est impeccable et les délais sont toujours respectés.',
+      rating: 5
+    },
+    {
+      _id: '2',
+      name: 'Marie Kouassi',
+      role: 'Entrepreneure',
+      company: 'Boutique Mode Afrique',
+      content: 'Grâce à Paul World Travel, j\'ai pu établir des contacts solides avec des fournisseurs chinois pour ma boutique de mode.',
+      rating: 5
+    },
+    {
+      _id: '3',
+      name: 'Robert Chen',
+      role: 'Étudiant',
+      company: '',
+      content: 'Le service d\'assistance pour l\'obtention de mon visa étudiant a été excellent. Toutes les démarches ont été facilitées.',
+      rating: 5
+    }
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+      </div>
+    );
+  }
+
+  if (error && testimonials.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return null;
+  }
+
+  const testimonial = testimonials[currentIndex];
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div aria-live="polite">
-        <TestimonialCard key={testimonials[index].id} testimonial={testimonials[index]} large />
-      </div>
-
-      {count > 1 && (
-        <div className="mt-10 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {testimonials.map((item, i) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setIndex(i)}
-                aria-label={`${c.goTo} ${i + 1}`}
-                aria-current={i === index}
-                className={`h-1.5 rounded-full transition-all ${i === index ? 'w-8 bg-accent' : 'w-4 bg-line hover:bg-muted'}`}
-              />
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={prev}
-              aria-label={c.prev}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-foreground transition-colors hover:border-foreground"
-            >
-              <FiChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              aria-label={c.next}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-foreground transition-colors hover:border-foreground"
-            >
-              <FiChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+    <div className="relative bg-blue-50 py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Formes décoratives */}
+      <div className="hidden lg:block lg:absolute lg:inset-y-0 lg:h-full lg:w-full">
+        <div className="relative h-full text-lg max-w-prose mx-auto" aria-hidden="true">
+          <svg
+            className="absolute top-12 left-full transform translate-x-32"
+            width="404"
+            height="384"
+            fill="none"
+            viewBox="0 0 404 384"
+          >
+            <defs>
+              <pattern
+                id="74b3fd99-0a6f-4271-bef2-e80eeafdf357"
+                x="0"
+                y="0"
+                width="20"
+                height="20"
+                patternUnits="userSpaceOnUse"
+              >
+                <rect x="0" y="0" width="4" height="4" className="text-blue-200" fill="currentColor" />
+              </pattern>
+            </defs>
+            <rect width="404" height="384" fill="url(#74b3fd99-0a6f-4271-bef2-e80eeafdf357)" />
+          </svg>
+          <svg
+            className="absolute top-1/2 right-full transform -translate-y-1/2 -translate-x-32"
+            width="404"
+            height="384"
+            fill="none"
+            viewBox="0 0 404 384"
+          >
+            <defs>
+              <pattern
+                id="f210dbf6-a58d-4871-961e-36d5016a0f49"
+                x="0"
+                y="0"
+                width="20"
+                height="20"
+                patternUnits="userSpaceOnUse"
+              >
+                <rect x="0" y="0" width="4" height="4" className="text-blue-200" fill="currentColor" />
+              </pattern>
+            </defs>
+            <rect width="404" height="384" fill="url(#f210dbf6-a58d-4871-961e-36d5016a0f49)" />
+          </svg>
         </div>
-      )}
+      </div>
+      
+      {/* Contenu du testimonial */}
+      <div className="relative max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Ce que nos clients disent</h2>
+          <p className="mt-4 text-lg text-gray-600">Découvrez les expériences de nos clients avec Paul World Travel</p>
+        </div>
+        
+        <div className="bg-white shadow-xl rounded-lg p-8 mb-8 relative">
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+            <div className="bg-blue-700 rounded-full p-3 shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z" />
+              </svg>
+            </div>
+          </div>
+          
+          <blockquote className="mt-6">
+            <p className="text-xl text-gray-700 italic mb-6">{testimonial.content}</p>
+            <div className="flex items-center justify-center gap-1 mb-4">
+              {renderStars(testimonial.rating)}
+            </div>
+            <div className="text-center">
+              <div className="h-16 w-16 rounded-full bg-gray-200 mx-auto mb-3 overflow-hidden">
+                <Image 
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=1d4ed8&color=fff`} 
+                  alt={testimonial.name} 
+                  width={64} 
+                  height={64}
+                />
+              </div>
+              <div className="font-semibold text-gray-900">{testimonial.name}</div>
+              <div className="text-blue-700">{testimonial.role}{testimonial.company ? `, ${testimonial.company}` : ''}</div>
+            </div>
+          </blockquote>
+        </div>
+        
+        {/* Navigation */}
+        {testimonials.length > 1 && (
+          <div className="flex justify-center space-x-4">
+            <button
+              onClick={prevTestimonial}
+              className="p-2 rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
+              aria-label="Témoignage précédent"
+            >
+              <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            {/* Indicateurs */}
+            <div className="flex items-center space-x-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-3 h-3 rounded-full focus:outline-none ${
+                    index === currentIndex ? 'bg-blue-700' : 'bg-gray-300'
+                  }`}
+                  aria-label={`Aller au témoignage ${index + 1}`}
+                />
+              ))}
+            </div>
+            
+            <button
+              onClick={nextTestimonial}
+              className="p-2 rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
+              aria-label="Témoignage suivant"
+            >
+              <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default TestimonialSlider;
