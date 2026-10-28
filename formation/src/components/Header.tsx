@@ -10,7 +10,7 @@ const links = [
   { href: '/tcf-canada/', label: 'Le TCF Canada' },
   { href: '/formules/', label: 'Formules' },
   { href: '/entrainement/', label: 'S’entraîner' },
-  { href: '/test-de-niveau/', label: 'Test de niveau' },
+  { href: '/actualites/', label: 'Dates & actualités' },
 ];
 
 export default function Header() {

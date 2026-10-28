@@ -4,6 +4,7 @@ const items = [
   ['/admin/', 'Inscriptions'],
   ['/admin/corrections/', 'Corrections'],
   ['/admin/generer/', 'Générer des exercices'],
+  ['/admin/actualites/', 'Actualités et examens'],
 ] as const;
 
 export default function AdminNav({ current }: { current: string }) {
