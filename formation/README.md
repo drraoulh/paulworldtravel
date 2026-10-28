@@ -6,9 +6,26 @@ Site de préparation au TCF Canada, prévu sur `formation.paulworldtravel.com`.
 
 ```bash
 cd formation
-npm install
+npm ci
 npm run dev
 ```
+
+Node.js 20 ou supérieur est requis. Cette application est indépendante du site principal : exécuter ses commandes depuis `formation/`.
+
+Pour vérifier la compilation et les types :
+
+```bash
+npm run build
+npx tsc --noEmit
+```
+
+La compilation télécharge la police Archivo via Google Fonts et nécessite l’accès à `fonts.googleapis.com` et `fonts.gstatic.com`.
+
+## État actuel
+
+La vitrine, le mini test de niveau, les comptes candidats, l’espace `/espace/` et l’administration `/admin/` sont implémentés. Les pages `/cours/` (quatre fiches méthode) et `/entrainement/` (six exercices originaux de compréhension écrite, modes guidé et chronométré) sont accessibles gratuitement. Le dernier score est conservé uniquement sur l’appareil, effaçable par le visiteur ; il n’est pas synchronisé avec Supabase. Les cours complets, les modules audio, les tests blancs complets et les corrections par formateur restent à développer ; le plan est dans `../docs/formation-plan.md`.
+
+Sans configuration Supabase, les pages publiques restent consultables, mais les parcours de compte et d’activation ne peuvent pas être validés. Copier `.env.example` vers `.env.local` puis renseigner les paramètres du projet dans ce fichier ignoré par Git. Ne jamais y placer une clé Supabase `service_role` à la place de la clé publique. Les emails nécessitent également la configuration Brevo décrite ci-dessous.
 
 ## Contenu à modifier
 
@@ -35,3 +52,14 @@ npm run dev
 2. Variables d'environnement : voir `.env.example` (Brevo + Supabase).
 3. Domaines : ajouter `formation.paulworldtravel.com`.
 4. Chez LWS (zone DNS de paulworldtravel.com) : enregistrement **CNAME** `formation` → la valeur indiquée par Vercel (en général `cname.vercel-dns.com`).
+
+## Vérifications du code
+
+Avec Node.js 22.18+ (24 recommandé), depuis `formation/` :
+
+```bash
+node --experimental-strip-types --test tests/practice.test.mjs
+npm run build
+```
+
+Les tests couvrent le calcul des résultats, le chronomètre, les dates d’activation et les redirections d’authentification. Les parcours avec Supabase et les emails Brevo nécessitent leurs paramètres réels ; une compilation réussie ne les valide pas.

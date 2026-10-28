@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
 const filters = [
   ['pending', 'En attente'],
   ['active', 'Actives'],
+  ['scheduled', 'À venir'],
   ['expired', 'Terminées'],
   ['cancelled', 'Annulées'],
   ['all', 'Toutes'],
@@ -20,7 +21,7 @@ const filters = [
 
 type Row = Enrollment & { profiles: Pick<Profile, 'email' | 'first_name' | 'last_name' | 'phone' | 'city'> | null };
 
-export default async function Admin({ searchParams }: { searchParams: Promise<{ statut?: string }> }) {
+export default async function Admin({ searchParams }: { searchParams: Promise<{ statut?: string; erreur?: string }> }) {
   if (!supabaseConfigured) redirect('/connexion/');
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -36,9 +37,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     );
   }
   const isAdmin = me.role === 'admin';
-  const filter = (await searchParams).statut ?? 'pending';
+  const params = await searchParams;
+  const filter = filters.some(([key]) => key === params.statut) ? params.statut! : 'pending';
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('enrollments')
     .select('*, profiles!enrollments_user_id_fkey(email, first_name, last_name, phone, city)')
     .order('created_at', { ascending: false })
@@ -69,7 +71,9 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
       <section className="bg-paper py-10">
         <Container className="space-y-4">
-          {list.length === 0 && <p className="rounded-lg bg-white p-6 text-slate">Aucune inscription dans cette catégorie.</p>}
+          {params.erreur && <p role="alert" className="rounded-lg bg-red-50 p-5 text-maple">{params.erreur === 'date' ? 'La date de fin doit être valide et ne pas être passée.' : 'La modification n’a pas pu être enregistrée. Vérifiez votre accès puis réessayez.'}</p>}
+          {error && <p role="alert" className="rounded-lg bg-red-50 p-5 text-maple">Impossible de charger les inscriptions. Vérifiez la configuration Supabase puis réessayez.</p>}
+          {!error && list.length === 0 && <p className="rounded-lg bg-white p-6 text-slate">Aucune inscription dans cette catégorie.</p>}
           {list.map((r) => {
             const p = r.profiles;
             return (

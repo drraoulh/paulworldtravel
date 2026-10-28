@@ -9,6 +9,7 @@ import { Container } from './ui';
 const links = [
   { href: '/tcf-canada/', label: 'Le TCF Canada' },
   { href: '/formules/', label: 'Formules' },
+  { href: '/entrainement/', label: 'S’entraîner' },
   { href: '/test-de-niveau/', label: 'Test de niveau' },
 ];
 
@@ -32,7 +33,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className={linkCls(l.href)}>{l.label}</Link>
           ))}

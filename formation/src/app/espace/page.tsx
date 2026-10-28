@@ -68,6 +68,7 @@ export default async function Espace() {
                   {status === 'active' && (
                     <p className="mt-4 text-slate">Accès ouvert du {formatDate(e.starts_at)} au {formatDate(e.ends_at)}.</p>
                   )}
+                  {status === 'scheduled' && <p className="mt-4 text-slate">Votre accès commencera le {formatDate(e.starts_at)}.</p>}
                   {status === 'expired' && <p className="mt-4 text-slate">Accès terminé le {formatDate(e.ends_at)}.</p>}
                   <dl className="mt-5 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
                     <div><dt className="text-slate">Niveau de départ</dt><dd className="font-semibold">{e.level || 'Non renseigné'}</dd></div>
@@ -78,13 +79,14 @@ export default async function Espace() {
               );
             })}
 
-            <div className="rounded-lg border-2 border-dashed border-rule p-6">
+            <div className="rounded-2xl border border-rule bg-white p-6">
               <h3 className="heading text-lg text-night">Cours, entraînements et tests blancs</h3>
               <p className="mt-2 text-slate">
                 {active
-                  ? 'Vos modules en ligne arrivent ici très bientôt. En attendant, votre formateur vous envoie les supports et les liens des cours.'
-                  : 'Ils apparaîtront ici dès que votre accès sera activé.'}
+                  ? 'Retrouvez les premières fiches méthode et la série gratuite de compréhension écrite. Les modules complets seront ajoutés progressivement.'
+                  : 'Vous pouvez déjà consulter les fiches méthode et essayer la série gratuite de compréhension écrite en attendant l’activation de votre formule.'}
               </p>
+              <div className="mt-5 flex flex-wrap gap-3"><ButtonLink href="/cours/" variant="dark">Fiches méthode</ButtonLink><ButtonLink href="/entrainement/">S’entraîner</ButtonLink></div>
             </div>
           </div>
 

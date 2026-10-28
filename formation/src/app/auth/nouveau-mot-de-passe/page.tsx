@@ -14,7 +14,7 @@ export default function NouveauMotDePasse() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     const supabase = getSupabase();
-    if (!supabase) return;
+    if (!supabase) return setError('La connexion au service de comptes n’est pas configurée. Contactez votre conseiller.');
     if (password.length < 8) return setError('Le mot de passe doit contenir au moins 8 caractères.');
     setBusy(true);
     const { error: err } = await supabase.auth.updateUser({ password });

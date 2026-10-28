@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { safeRedirectPath } from '@/lib/redirect';
 import { getSupabase } from '@/lib/supabase/client';
 
 const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3 text-ink focus:border-ocean focus:outline-none';
@@ -15,7 +16,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: 'error' | 'info'; text: string } | null>(
-    params.get('confirme') ? { kind: 'info', text: 'Votre adresse est confirmée. Connectez-vous avec votre mot de passe.' } : null
+    params.get('erreur') === 'lien' ? { kind: 'error', text: 'Ce lien est invalide ou a expiré. Essayez de vous connecter ou demandez un nouveau lien de réinitialisation.' } : params.get('confirme') ? { kind: 'info', text: 'Votre adresse est confirmée. Connectez-vous avec votre mot de passe.' } : null
   );
 
   if (!supabase) {
@@ -38,7 +39,7 @@ export default function LoginForm() {
         });
       }
       const wanted = params.get('suite') ?? '/espace/';
-      router.replace(wanted.startsWith('/') && !wanted.startsWith('//') ? wanted : '/espace/');
+      router.replace(safeRedirectPath(wanted));
       router.refresh();
     } else {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {

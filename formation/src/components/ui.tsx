@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { ReactNode } from 'react';
 
 export function Container({ children, className = '' }: { children: ReactNode; className?: string }) {
@@ -13,7 +14,7 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
     outline: 'border-2 border-white/70 text-white hover:bg-white hover:text-night',
     dark: 'bg-night text-white hover:bg-ocean',
   }[variant];
-  const cls = `inline-flex items-center justify-center rounded-md px-6 py-3 font-bold transition-colors ${styles} ${className}`;
+  const cls = `inline-flex items-center justify-center rounded-xl px-6 py-3.5 font-bold transition-colors ${styles} ${className}`;
   if (/^(https?:|mailto:|tel:)/.test(href)) {
     return (
       <a href={href} className={cls} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
@@ -26,8 +27,11 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
 
 export function PageHeader({ title, intro, children }: { title: ReactNode; intro?: ReactNode; children?: ReactNode }) {
   return (
-    <header className="bg-night text-white">
+    <header className="relative isolate overflow-hidden bg-night text-white">
+      <Image src="/images/montreal.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover object-center" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-night via-night/95 to-night/60" />
       <Container className="py-14 sm:py-20">
+        <p className="eyebrow mb-5 text-container">Paul World Travel · Formation</p>
         <h1 className="display max-w-3xl text-4xl sm:text-5xl">{title}</h1>
         {intro && <p className="mt-5 max-w-2xl text-lg text-blue-100">{intro}</p>}
         {children}

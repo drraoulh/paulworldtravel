@@ -94,8 +94,8 @@ Points d'attention
 
 ## 8. Étapes
 
-1. **Vitrine + inscription** (fait : accueil, guide TCF, formules, test de niveau, inscription par email ; reste : comptes candidats et activation par l'admin) : accueil, guide TCF, formules, test de niveau gratuit, inscription, activation manuelle par l'admin.
-2. **Entraînement CO/CE** : banque de questions, séries, tests blancs chronométrés, scores et NCLC.
+1. **Vitrine + inscription** : accueil, guide TCF, formules et test de niveau implémentés. Les comptes candidats (inscription, connexion, confirmation d’email, réinitialisation du mot de passe), l’espace `/espace/`, l’administration `/admin/`, l’activation manuelle et l’historique des tests de niveau sont également implémentés. Leur fonctionnement réel reste à valider avec un projet Supabase configuré, le schéma SQL appliqué et les emails configurés (voir `formation/README.md`). Les modules de cours et d’entraînement ne sont pas encore disponibles dans l’espace candidat.
+2. **Entraînement CO/CE** : première série CE gratuite implémentée dans `/entrainement/` (six questions originales, correction guidée ou série de huit minutes, dernier résultat local). Quatre fiches méthode sont disponibles dans `/cours/`. Restent : banque complète, audios CO, tests blancs au format complet et historique synchronisé. Aucun score TCF ni NCLC n’est déduit de cette mini-série.
 3. **Expression écrite et orale** : rédaction, enregistrement audio, pré-correction par IA, validation par le formateur.
 4. **Cours et suivi** : leçons, tableau de bord détaillé, rappels par email.
 

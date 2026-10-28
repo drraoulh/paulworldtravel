@@ -1,0 +1,17 @@
+import type { Metadata } from 'next';
+import { ButtonLink, Container, PageHeader } from '@/components/ui';
+export const metadata: Metadata = { title: 'Fiches méthode TCF Canada' };
+const lessons = [
+  { title: 'Lire avec un objectif', subject: 'Compréhension écrite', steps: ['Lisez la question pour savoir quelle information rechercher.', 'Repérez l’auteur, le destinataire et l’objectif du document.', 'Distinguez une obligation (« exigé ») d’une préférence (« apprécié »).', 'Vérifiez chaque proposition dans le texte, sans ajouter vos propres suppositions.'], example: '« Expérience appréciée, permis exigé » : l’expérience est un avantage ; le permis est une condition indispensable.' },
+  { title: 'Repérer les nuances', subject: 'Vocabulaire et argumentation', steps: ['Soulignez mentalement les mots de liaison : pourtant, donc, malgré, en revanche.', 'Recherchez ce que l’auteur affirme, critique ou propose.', 'Méfiez-vous des réponses absolues (« toujours », « jamais ») quand le texte exprime une nuance.', 'Reformulez l’idée principale avec vos propres mots avant de choisir.'], example: '« Le service est rapide, mais difficile d’accès » exprime un avantage et une limite, pas un rejet total du service.' },
+  { title: 'Organiser sa réponse', subject: 'Expression écrite', steps: ['Identifiez à qui vous écrivez et dans quel but.', 'Préparez un plan court : contexte, idées principales, conclusion.', 'Illustrez chaque idée importante par un exemple précis.', 'Relisez les accords, les temps et les consignes de longueur avant de terminer.'], example: 'Pour demander un renseignement : présentez votre situation, formulez des questions précises, puis remerciez le destinataire.' },
+  { title: 'Développer son point de vue', subject: 'Expression orale', steps: ['Annoncez votre position en une phrase claire.', 'Donnez une raison et un exemple du quotidien.', 'Reconnaissez une limite ou un point de vue différent.', 'Concluez en reformulant votre position sans réciter un texte appris par cœur.'], example: '« Je préfère les transports publics pour leur coût. Par exemple… Toutefois… C’est pourquoi… »' },
+];
+export default function Lessons() {
+  return <><PageHeader title="La méthode avant la vitesse." intro="Quatre fiches gratuites pour mieux comprendre les consignes et structurer vos réponses. À lire avant de vous entraîner." />
+    <section className="bg-paper py-12 sm:py-16"><Container>
+      <div className="grid gap-6 md:grid-cols-2">{lessons.map((lesson, i) => <article key={lesson.title} className="rounded-2xl border border-rule bg-white p-6 sm:p-8"><p className="eyebrow text-ocean">0{i + 1} · {lesson.subject}</p><h2 className="heading mt-4 text-2xl text-night">{lesson.title}</h2><ol className="mt-6 list-decimal space-y-3 pl-5 text-slate">{lesson.steps.map(step => <li key={step}>{step}</li>)}</ol><p className="mt-6 rounded-xl bg-paper p-4 text-sm"><strong>Exemple : </strong>{lesson.example}</p></article>)}</div>
+      <div className="mt-10 flex flex-col items-start gap-4 rounded-2xl bg-night p-8 text-white sm:flex-row sm:items-center sm:justify-between"><p className="heading text-xl">Passez de la méthode à la pratique.</p><ButtonLink href="/entrainement/">Commencer les exercices</ButtonLink></div>
+      <p className="mt-6 text-sm text-slate">Ces fiches ne remplacent pas un cours complet ni la correction d’un formateur. Les modules audio et les tests blancs complets sont en préparation.</p>
+    </Container></section></>;
+}

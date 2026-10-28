@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { ButtonLink, Check, Container, PageHeader } from '@/components/ui';
 import { contact, formules } from '@/content/offers';
 
@@ -19,7 +20,12 @@ export default function Formules() {
         <Container>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {formules.map((f) => (
-              <div key={f.id} className={`flex flex-col rounded-lg bg-white p-6 sm:p-8 ${f.id === 'hybride' ? 'ring-2 ring-ocean' : ''}`}>
+              <div key={f.id} className={`relative flex flex-col overflow-hidden rounded-2xl border border-rule bg-white shadow-sm ${f.id === 'hybride' ? 'ring-2 ring-ocean' : ''}`}>
+                <div className="relative h-48">
+                  <Image src={f.id === 'en-ligne' ? '/images/study.jpg' : f.id === 'presentiel' ? '/images/classroom.jpg' : '/images/montreal.jpg'} alt={f.id === 'en-ligne' ? 'Travail individuel et prise de notes' : f.id === 'presentiel' ? 'Participants dans une salle de cours' : 'Vue sur Montréal'} fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover" />
+                  <span className="absolute bottom-4 left-5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-night">{f.id === 'hybride' ? 'LE MEILLEUR DES DEUX' : f.id === 'en-ligne' ? 'FLEXIBILITÉ' : 'PROXIMITÉ'}</span>
+                </div>
+                <div className="flex flex-1 flex-col p-6 sm:p-8">
                 <h2 className="heading text-2xl text-night">{f.name}</h2>
                 <p className="mt-1 text-slate">{f.where}</p>
                 <p className="mt-4">{f.summary}</p>
@@ -31,6 +37,7 @@ export default function Formules() {
                   <p className="mt-1 text-sm text-slate">{f.schedule ?? 'Prochaines sessions communiquées à l’inscription'}</p>
                 </div>
                 <ButtonLink href={`/inscription/?formule=${f.id}`} variant="dark" className="mt-6">Choisir cette formule</ButtonLink>
+                </div>
               </div>
             ))}
           </div>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import ExamTimeline from '@/components/ExamTimeline';
 import { ButtonLink, Check, Container } from '@/components/ui';
 import { epreuves } from '@/content/tcf';
@@ -15,36 +16,54 @@ export default function Home() {
   const [enLigne, presentiel] = formules;
   return (
     <>
-      <header className="relative isolate overflow-hidden bg-night text-white">
-        <div aria-hidden="true" className="absolute -right-40 -top-40 -z-10 h-[30rem] w-[30rem] rounded-full bg-ocean/40 blur-3xl" />
-        <Container className="py-16 sm:py-24">
-          <p className="font-semibold text-container">Préparation au TCF Canada</p>
-          <h1 className="display mt-4 max-w-4xl text-[2.5rem] sm:text-6xl">Obtenez le NCLC qu’il vous faut pour le Canada.</h1>
-          <p className="mt-6 max-w-2xl text-lg text-blue-100 sm:text-xl">
-            Cours en ligne ou en salle à Douala, entraînement sur les quatre épreuves, tests blancs chronométrés et corrections par des formateurs.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/test-de-niveau/">Faire le test de niveau gratuit</ButtonLink>
-            <ButtonLink href="/formules/" variant="outline">Voir les formules</ButtonLink>
+      <header className="relative overflow-hidden bg-night text-white">
+        <Container className="grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-2 lg:gap-16 lg:py-20">
+          <div>
+            <p className="eyebrow text-container"><span className="inline-block h-2 w-2 rounded-full bg-container" /> Votre projet Canada commence ici</p>
+            <h1 className="display mt-6 text-5xl sm:text-6xl lg:text-[4.4rem]">Votre français.<br />Votre avenir.<br /><span className="text-container">Le Canada.</span></h1>
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-blue-100">Préparez le TCF Canada avec une méthode claire et un accompagnement humain. En ligne, à Douala, à votre rythme.</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href="/test-de-niveau/">Évaluer mon niveau <span aria-hidden="true" className="ml-3">↗</span></ButtonLink>
+              <ButtonLink href="/formules/" variant="outline">Découvrir les formules</ButtonLink>
+            </div>
+            <p className="mt-5 text-sm text-blue-200">Gratuit · 15 questions · Résultat immédiat</p>
           </div>
-          <div className="mt-16 border-t border-white/15 pt-10">
-            <ExamTimeline />
+          <div className="relative pb-8 lg:pl-4">
+            <div className="relative aspect-[4/4] overflow-hidden rounded-[2rem] sm:aspect-[5/4] lg:aspect-[4/4.5]">
+              <Image src="/images/toronto.jpg" alt="La tour CN et la ville de Toronto au coucher du soleil" fill priority sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-night/90 via-transparent to-transparent" />
+              <div className="absolute left-6 top-6 rounded-full bg-white/95 px-4 py-2 text-xs font-bold tracking-wider text-night">DESTINATION CANADA</div>
+              <p className="absolute bottom-8 left-7 right-7 text-2xl font-semibold leading-tight">Un objectif qui vous ressemble.<br /><span className="text-blue-100">Une préparation pour avancer.</span></p>
+            </div>
+            <div className="relative -mt-5 ml-5 mr-5 flex items-center gap-4 rounded-2xl bg-white p-5 text-night shadow-xl sm:ml-10 sm:mr-0">
+              <span aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-container/20 text-2xl">↗</span>
+              <div><p className="font-bold">Un cap, quatre compétences</p><p className="mt-1 text-sm text-slate">Écouter, lire, écrire et parler avec confiance.</p></div>
+            </div>
           </div>
         </Container>
+        <div className="border-t border-white/15 bg-night-deep/60"><Container className="py-8"><ExamTimeline /></Container></div>
       </header>
 
       {/* Two ways to train */}
       <section className="bg-paper py-16 sm:py-20">
         <Container>
+          <p className="eyebrow mb-4 text-ocean">Apprendre à votre façon</p>
           <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">En ligne ou en salle, le même programme</h2>
           <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
             {[enLigne, presentiel].map((f) => (
-              <div key={f.id} className="rounded-lg bg-white p-6 sm:p-8">
+              <div key={f.id} className="overflow-hidden rounded-2xl border border-rule bg-white shadow-sm">
+                <div className="relative h-56 overflow-hidden">
+                  <Image src={f.id === 'en-ligne' ? '/images/study.jpg' : '/images/classroom.jpg'} alt={f.id === 'en-ligne' ? 'Prise de notes pendant une séance de travail individuel' : 'Une salle de cours avec des participants'} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+                  <span className="absolute bottom-4 left-5 rounded-full bg-white px-4 py-2 text-xs font-bold text-night">{f.id === 'en-ligne' ? 'OÙ QUE VOUS SOYEZ' : 'APPRENDRE ENSEMBLE'}</span>
+                </div>
+                <div className="p-6 sm:p-8">
                 <h3 className="heading text-2xl text-night">{f.name}</h3>
                 <p className="mt-1 text-slate">{f.where}</p>
                 <ul className="mt-6 space-y-3">
                   {f.includes.slice(0, 4).map((item) => <Check key={item}>{item}</Check>)}
                 </ul>
+                <Link href={`/inscription/?formule=${f.id}`} className="mt-6 inline-flex font-bold text-ocean hover:underline">Découvrir cette formule <span aria-hidden="true" className="ml-2">→</span></Link>
+                </div>
               </div>
             ))}
           </div>
@@ -58,9 +77,12 @@ export default function Home() {
       <section className="bg-white py-16 sm:py-20">
         <Container>
           <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Chaque épreuve a sa méthode</h2>
+          <p className="mt-4 max-w-2xl text-slate">Commencez par nos fiches gratuites et six exercices originaux de compréhension écrite.</p>
+          <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/entrainement/" variant="dark">Essayer les exercices</ButtonLink><Link href="/cours/" className="px-5 py-3 font-bold text-ocean hover:underline">Lire les fiches méthode →</Link></div>
           <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-10 md:grid-cols-2">
             {epreuves.map((e) => (
-              <div key={e.id} className="border-t-4 border-ocean pt-5">
+              <div key={e.id} className="rounded-2xl border border-rule bg-paper p-6 sm:p-8">
+                <p className="eyebrow mb-4 text-ocean">{e.short}</p>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="heading text-xl text-night">{e.name}</h3>
                   <span className="text-sm font-semibold text-slate">{e.minutes} min, {e.scale.toLowerCase()}</span>
@@ -79,8 +101,8 @@ export default function Home() {
           <h2 className="heading text-3xl text-night sm:text-4xl">Votre parcours jusqu’à l’examen</h2>
           <ol className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map(([title, text], i) => (
-              <li key={title} className="border-t-4 border-night pt-5">
-                <span className="display text-4xl text-sky">{i + 1}</span>
+              <li key={title} className="rounded-2xl border border-rule bg-white p-6">
+                <span className="display text-4xl text-ocean/40">{i + 1}</span>
                 <p className="heading mt-3 text-lg text-night">{title}</p>
                 <p className="mt-2 text-slate">{text}</p>
               </li>

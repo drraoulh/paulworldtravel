@@ -1,12 +1,25 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { supabaseConfigured } from '@/lib/supabase/config';
+import { isValidEndDate } from '@/lib/practice';
 import { createClient } from '@/lib/supabase/server';
 import { escapeHtml, sendEmail } from '@/lib/brevo';
 import { formatDate, formuleName } from '@/lib/labels';
 
 // Every change goes through the signed-in admin's session: row level security
 // rejects it if the account is not an administrator.
+
+async function requireAdmin() {
+  if (!supabaseConfigured) redirect('/connexion/?suite=/admin/');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/connexion/?suite=/admin/');
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'admin') redirect('/espace/');
+  return { supabase, user };
+}
 
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -16,11 +29,10 @@ export async function activateEnrollment(formData: FormData) {
   const endInput = String(formData.get('ends_at') ?? '');
   if (!id) return;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  const { supabase, user } = await requireAdmin();
 
   const start = new Date();
+  if ((endInput && !isValidEndDate(endInput, isoDate(start))) || (!endInput && ![30, 60, 90, 180].includes(days))) redirect('/admin/?erreur=date');
   const end = endInput ? new Date(endInput) : new Date(start.getTime() + Math.max(1, days || 30) * 86_400_000);
   const { data: enrollment, error } = await supabase
     .from('enrollments')
@@ -30,7 +42,7 @@ export async function activateEnrollment(formData: FormData) {
     .single();
   if (error || !enrollment) {
     console.error('Activation failed', error);
-    return;
+    redirect('/admin/?erreur=enregistrement');
   }
 
   // Tell the candidate their access is open (best effort).
@@ -52,24 +64,27 @@ export async function activateEnrollment(formData: FormData) {
     }
   }
   revalidatePath('/admin/');
+  revalidatePath('/espace/');
 }
 
 export async function setEnrollmentStatus(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   const status = String(formData.get('status') ?? '');
   if (!id || !['pending', 'expired', 'cancelled'].includes(status)) return;
-  const supabase = await createClient();
-  const { error } = await supabase.from('enrollments').update({ status }).eq('id', id);
-  if (error) console.error('Status change failed', error);
+  const { supabase } = await requireAdmin();
+  const { data, error } = await supabase.from('enrollments').update({ status }).eq('id', id).select('id').single();
+  if (error || !data) redirect('/admin/?erreur=enregistrement');
   revalidatePath('/admin/');
+  revalidatePath('/espace/');
 }
 
 export async function saveNotes(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   const notes = String(formData.get('staff_notes') ?? '').slice(0, 3000);
   if (!id) return;
-  const supabase = await createClient();
-  const { error } = await supabase.from('enrollments').update({ staff_notes: notes }).eq('id', id);
-  if (error) console.error('Notes failed', error);
+  const { supabase } = await requireAdmin();
+  const { data, error } = await supabase.from('enrollments').update({ staff_notes: notes }).eq('id', id).select('id').single();
+  if (error || !data) redirect('/admin/?erreur=enregistrement');
   revalidatePath('/admin/');
+  revalidatePath('/espace/');
 }

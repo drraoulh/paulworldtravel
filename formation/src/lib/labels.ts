@@ -5,6 +5,7 @@ export const formuleName = (id: string) => formules.find((f) => f.id === id)?.na
 export const statusLabel: Record<string, string> = {
   pending: 'En attente de paiement',
   active: 'Active',
+  scheduled: 'À venir',
   expired: 'Terminée',
   cancelled: 'Annulée',
 };
@@ -12,6 +13,7 @@ export const statusLabel: Record<string, string> = {
 export const statusTone: Record<string, string> = {
   pending: 'bg-container/20 text-night',
   active: 'bg-green-100 text-green-800',
+  scheduled: 'bg-blue-50 text-night',
   expired: 'bg-paper text-slate',
   cancelled: 'bg-red-50 text-maple',
 };
@@ -44,6 +46,4 @@ export interface Profile {
   role: string;
 }
 
-/** An active enrollment past its end date is shown as finished. */
-export const effectiveStatus = (e: Pick<Enrollment, 'status' | 'ends_at'>) =>
-  e.status === 'active' && e.ends_at && e.ends_at < new Date().toISOString().slice(0, 10) ? 'expired' : e.status;
+export { effectiveStatus } from './enrollment';
