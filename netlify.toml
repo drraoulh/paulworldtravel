@@ -1,6 +1,7 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  # Netlify's Next.js runtime serves the pages and the /api/contact email route.
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"

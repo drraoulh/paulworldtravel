@@ -19,6 +19,27 @@ export default function FAQ() {
 
   // Données des FAQ
   const faqs: FAQItem[] = [
+    // Fret Cameroun → Canada
+    {
+      question: 'Puis-je envoyer des colis du Cameroun vers le Canada avec Paul World Travel ?',
+      answer: 'Oui. Nous expédions colis, effets personnels et marchandises de Douala et Yaoundé vers Montréal, Toronto et le reste du Canada, par fret maritime (groupage en conteneur) ou par fret aérien. Déposez votre envoi à notre bureau de Douala ou demandez une collecte.',
+      category: 'canada'
+    },
+    {
+      question: 'Comment est calculé le prix d\'un envoi vers le Canada ?',
+      answer: 'En fret aérien, le prix dépend du poids : nous retenons le plus élevé entre le poids réel et le poids volumétrique. En fret maritime, le prix dépend du volume en mètres cubes. Envoyez-nous le contenu, le poids ou les dimensions et la ville d\'arrivée : nous vous répondons avec un devis et la date du prochain départ.',
+      category: 'canada'
+    },
+    {
+      question: 'Quels produits ne peut-on pas envoyer au Canada ?',
+      answer: 'Le Canada contrôle strictement l\'entrée des aliments, plantes, semences, viandes, produits laitiers et produits d\'origine animale : certains sont interdits, d\'autres nécessitent un permis. Les armes, contrefaçons et médicaments sans ordonnance sont refusés. Avant chaque envoi, nous vérifions avec vous la liste de ce que vous souhaitez expédier.',
+      category: 'canada'
+    },
+    {
+      question: 'Quels documents faut-il pour expédier vers le Canada ?',
+      answer: 'Une pièce d\'identité de l\'expéditeur, les coordonnées complètes du destinataire au Canada et la liste détaillée du contenu avec la valeur de chaque article. Pour des marchandises destinées à la vente, une facture commerciale est nécessaire. Nous préparons la liste de colisage et la déclaration avec vous.',
+      category: 'canada'
+    },
     // Services de cargo
     {
       question: 'Quels sont les délais moyens pour un transport aérien entre la Chine et l\'Afrique ?',
@@ -82,6 +103,7 @@ export default function FAQ() {
   const categories = [
     { id: 'all', name: t('faq.category_all') },
     { id: 'cargo', name: t('faq.category_cargo') },
+    { id: 'canada', name: language === 'fr' ? 'Fret Cameroun → Canada' : 'Freight Cameroon → Canada' },
     { id: 'currency', name: t('faq.category_currency') },
     { id: 'visa', name: t('faq.category_visa') },
     { id: 'consulting', name: t('faq.category_consulting') },

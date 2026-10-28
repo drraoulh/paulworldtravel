@@ -6,12 +6,14 @@ import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
+import CanadaFreight from "@/components/CanadaFreight";
 
 export default function Services() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('all');
   const serviceRefs = {
     cargo: useRef<HTMLDivElement>(null),
+    canada: useRef<HTMLDivElement>(null),
     currency: useRef<HTMLDivElement>(null),
     consulting: useRef<HTMLDivElement>(null),
     visa: useRef<HTMLDivElement>(null),
@@ -80,13 +82,17 @@ export default function Services() {
                     className="bg-transparent border border-white text-white hover:bg-white hover:text-blue-700 px-5 py-2 rounded-full transition-all duration-300 font-medium text-sm">
                     {t('services.consulting_title')}
                   </Link>
+                  <Link href="#canada" 
+                    className="bg-yellow-400 text-blue-900 hover:bg-yellow-300 px-5 py-2 rounded-full transition-all duration-300 font-medium text-sm">
+                    {language === 'fr' ? 'Nouveau : Fret Cameroun → Canada' : 'New: Freight Cameroon → Canada'}
+                  </Link>
                 </div>
               </div>
               
               <div className="md:w-1/2 flex justify-center">
                 <div className="relative w-full max-w-md h-80 rounded-2xl overflow-hidden shadow-2xl">
                   <Image
-                    src="/cargobateauavions.jpg"
+                    src="/images/photos/port-conteneurs.jpg"
                     alt="Paul World Travel Services"
                     fill
                     className="object-cover"
@@ -111,6 +117,12 @@ export default function Services() {
                 className={`whitespace-nowrap px-1 py-2 border-b-2 font-medium text-sm transition-colors duration-200 ${activeTab === 'cargo' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               >
                 {t('services.cargo_title')}
+              </button>
+              <button
+                onClick={() => handleTabClick('canada')}
+                className={`whitespace-nowrap px-1 py-2 border-b-2 font-medium text-sm transition-colors duration-200 ${activeTab === 'canada' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              >
+                {language === 'fr' ? 'Fret Cameroun → Canada' : 'Freight Cameroon → Canada'}
               </button>
               <button
                 onClick={() => handleTabClick('currency')}
@@ -171,7 +183,7 @@ export default function Services() {
                   <div className="lg:w-1/3 relative">
                     <div className="h-60 lg:h-full relative">
                       <Image
-                        src="/cargobateauavions.jpg"
+                        src="/images/photos/cargo-maritime.jpg"
                         alt="Cargo maritime"
                         fill
                         className="object-cover"
@@ -258,6 +270,11 @@ export default function Services() {
               </div>
             </div>
             
+            {/* Fret Cameroun → Canada */}
+            <div className="mb-20 scroll-mt-24" id="canada" ref={serviceRefs.canada}>
+              <CanadaFreight />
+            </div>
+
             {/* Financial Services - Design amélioré */}
             <div className="mb-20" id="currency" ref={serviceRefs.currency}>
               <div className="flex items-center mb-6">
@@ -366,7 +383,7 @@ export default function Services() {
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                   <div className="relative h-48">
                     <Image
-                      src="/marcherchine.jpg"
+                      src="/images/photos/achats-entrepot.jpg"
                       alt="Marché en Chine"
                       fill
                       className="object-cover group-hover:scale-105 transition-all duration-500"
@@ -448,7 +465,7 @@ export default function Services() {
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                   <div className="relative h-48">
                     <Image
-                      src="/images/about.svg"
+                      src="/images/photos/voyage-affaires.jpg"
                       alt="Voyage d'affaires en Chine"
                       fill
                       className="object-cover group-hover:scale-105 transition-all duration-500"
@@ -548,7 +565,7 @@ export default function Services() {
                   <div className="md:w-1/3 relative">
                     <div className="h-60 md:h-full relative">
                       <Image
-                        src="/vvoyageaff.jpg"
+                        src="/images/photos/partenariat.jpg"
                         alt="Notre équipe de consultants"
                         fill
                         className="object-cover"
@@ -697,7 +714,7 @@ export default function Services() {
                     <div className="bg-white rounded-xl overflow-hidden shadow-md h-full relative group">
                       <div className="h-40 relative">
                         <Image 
-                          src="/serviceimmigration.jpg" 
+                          src="/images/photos/visa-voyage.jpg" 
                           alt={t('services.immigration_services_alt')} 
                           fill 
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -831,7 +848,7 @@ export default function Services() {
                     <div className="md:w-1/2 flex justify-center">
                       <div className="relative w-full max-w-md h-60 rounded-xl overflow-hidden shadow-lg">
                         <Image 
-                          src="/images/business.svg" 
+                          src="/images/photos/creation-entreprise.jpg" 
                           alt="Création d'entreprise" 
                           fill 
                           className="object-cover"
@@ -1030,7 +1047,7 @@ export default function Services() {
                   <div className="md:w-1/2 relative">
                     <div className="h-64 md:h-full relative">
                       <Image 
-                        src="/images/it.svg" 
+                        src="/images/photos/solutions-it.jpg" 
                         alt="Solutions informatiques" 
                         fill 
                         className="object-cover"
@@ -1251,7 +1268,7 @@ export default function Services() {
                 <div className="absolute right-0 top-0 h-full w-1/3 overflow-hidden pointer-events-none hidden lg:block">
                   <div className="absolute right-0 top-0 w-full h-full">
                     <Image 
-                      src="/images/cargo.svg" 
+                      src="/images/photos/douane-transit.jpg" 
                       alt="Services douaniers" 
                       fill 
                       className="object-cover opacity-20"

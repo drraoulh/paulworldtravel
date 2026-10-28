@@ -72,6 +72,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/services/#canada" className="text-blue-200 hover:text-white transition-colors flex items-center">
+                  <span className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span>
+                  {language === 'fr' ? 'Fret Cameroun → Canada' : 'Freight Cameroon → Canada'}
+                </Link>
+              </li>
+              <li>
                 <Link href="/services" className="text-blue-200 hover:text-white transition-colors flex items-center">
                   <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
                   {t('services.air_freight')}
@@ -140,9 +146,15 @@ const Footer = () => {
 
         <div className="mt-12 pt-6 border-t border-blue-700">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-blue-300 text-sm">
-              © {currentYear} Paul World Travel. {t('footer.all_rights_reserved')}
-            </p>
+            <div>
+              <p className="text-blue-300 text-sm">
+                © {currentYear} Paul World Travel. {t('footer.all_rights_reserved')}
+              </p>
+              <p className="text-blue-400 text-xs mt-1">
+                Photos : Unsplash · Port autonome de Douala : Mboupda Talla Roger,{' '}
+                <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">CC BY-SA 3.0</a>
+              </p>
+            </div>
             <div className="flex space-x-4 mt-4 md:mt-0">
               <Link href="/privacy" className="text-blue-300 hover:text-white transition-colors">
                 {t('footer.privacy_policy')}

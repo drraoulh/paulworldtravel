@@ -4,19 +4,28 @@ import { useState } from 'react';
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { sendForm, SendFormResult } from "@/services/sendForm";
 
 export default function Contact() {
-  const { t } = useLanguage();
-  const [formData, setFormData] = useState({
+  const { t, language } = useLanguage();
+  const fr = language === 'fr';
+  const emptyForm = {
     firstName: '',
     lastName: '',
     email: '',
-    subject: 'Demande de contact',
-    message: ''
-  });
-  
+    phone: '',
+    service: '',
+    message: '',
+    website: '' // honeypot, hidden from visitors
+  };
+  const [formData, setFormData] = useState(emptyForm);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | SendFormResult>('idle');
+
+  const serviceOptions = fr
+    ? ['Fret Cameroun → Canada', 'Fret Chine → Afrique (maritime / aérien)', 'Achats et sourcing en Chine', 'Change de devises', 'Visa et immigration', "Création d'entreprise et comptabilité", 'Solutions informatiques', 'Dédouanement et transit', 'Autre demande']
+    : ['Freight Cameroon → Canada', 'Freight China → Africa (sea / air)', 'Purchasing and sourcing in China', 'Currency exchange', 'Visa and immigration', 'Business creation and accounting', 'IT solutions', 'Customs clearance and transit', 'Other request'];
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -26,34 +35,12 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    try {
-      const form = e.target as HTMLFormElement;
-      const formData = new FormData(form);
-      
-      // Ajoutez ici votre ID de formulaire Formspree
-      const response = await fetch('https://formspree.io/f/xxxxxxxx', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      
-      if (response.ok) {
-        setSubmitStatus('success');
-        form.reset();
-      } else {
-        throw new Error('Erreur lors de l\'envoi du formulaire');
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
+    const result = await sendForm('contact', formData);
+    setSubmitStatus(result);
+    if (result === 'success') setFormData(emptyForm);
+    setIsSubmitting(false);
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -75,10 +62,10 @@ export default function Contact() {
               <div>
                 <h2 className="text-2xl font-bold mb-6 text-gray-900">{t('contact.send_message')}</h2>
                 <form name="contact" className="space-y-6" onSubmit={handleSubmit}>
-                  {/* Champ caché pour le nom complet */}
-                  <input type="hidden" name="_subject" value="Nouveau message de contact" />
-                  <input type="hidden" name="_language" value="fr" />
-                  
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="website">Site web</label>
+                    <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" value={formData.website} onChange={handleChange} />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -117,7 +104,8 @@ export default function Contact() {
                     <input
                       type="email"
                       id="email"
-                      name="_replyto"
+                      name="email"
+                      autoComplete="email"
                       value={formData.email}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -126,20 +114,40 @@ export default function Contact() {
                   </div>
                   
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('contact.subject')}
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                      {fr ? 'Téléphone / WhatsApp (facultatif)' : 'Phone / WhatsApp (optional)'}
                     </label>
                     <input
-                      type="text"
-                      id="subject"
-                      name="_subject"
-                      value={formData.subject}
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      autoComplete="tel"
+                      placeholder="+237 6 XX XX XX XX"
+                      value={formData.phone}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
                     />
                   </div>
-                  
+
+                  <div>
+                    <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">
+                      {fr ? 'Service concerné' : 'Service'}
+                    </label>
+                    <select
+                      id="service"
+                      name="service"
+                      value={formData.service}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    >
+                      <option value="" disabled>{fr ? 'Choisissez un service' : 'Choose a service'}</option>
+                      {serviceOptions.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
                       {t('contact.message')}
@@ -147,7 +155,8 @@ export default function Contact() {
                     <textarea
                       id="message"
                       name="message"
-                      rows={4}
+                      rows={5}
+                      placeholder={fr ? 'Décrivez votre besoin : type de marchandise, poids ou volume, ville de départ et d\'arrivée, délai souhaité…' : 'Describe what you need: type of goods, weight or volume, departure and arrival cities, timing…'}
                       value={formData.message}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -165,17 +174,26 @@ export default function Contact() {
                     </button>
                   </div>
                   
-                  {submitStatus === 'success' && (
-                    <div className="p-4 bg-green-100 text-green-700 rounded-md">
-                      {t('contact.success_message')}
-                    </div>
-                  )}
-                  
-                  {submitStatus === 'error' && (
-                    <div className="p-4 bg-red-100 text-red-700 rounded-md">
-                      {t('contact.error_message')}
-                    </div>
-                  )}
+                  <div aria-live="polite">
+                    {submitStatus === 'success' && (
+                      <div className="p-4 bg-green-100 text-green-700 rounded-md">
+                        {fr ? 'Merci ! Votre message a bien été envoyé. Nous vous répondons sous 24 h ouvrées.' : 'Thank you! Your message has been sent. We reply within one business day.'}
+                      </div>
+                    )}
+                    {submitStatus === 'invalid' && (
+                      <div className="p-4 bg-red-100 text-red-700 rounded-md">
+                        {fr ? 'Vérifiez votre nom, votre adresse email et votre message, puis réessayez.' : 'Check your name, email address and message, then try again.'}
+                      </div>
+                    )}
+                    {(submitStatus === 'error' || submitStatus === 'not_configured') && (
+                      <div className="p-4 bg-red-100 text-red-700 rounded-md">
+                        {fr ? "Le message n'a pas pu être envoyé. Écrivez-nous à " : 'The message could not be sent. Email us at '}
+                        <a href="mailto:paulworld2016@yahoo.com" className="underline">paulworld2016@yahoo.com</a>
+                        {fr ? ' ou sur ' : ' or message us on '}
+                        <a href="https://wa.me/237694244666" target="_blank" rel="noopener noreferrer" className="underline">WhatsApp</a>.
+                      </div>
+                    )}
+                  </div>
                 </form>
               </div>
               

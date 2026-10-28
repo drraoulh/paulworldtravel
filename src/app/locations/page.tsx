@@ -33,7 +33,7 @@ export default function Locations() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="relative h-96">
                   <Image
-                    src="/images/office-china.svg"
+                    src="/images/photos/chine-skyline.jpg"
                     alt={t('locations.china_office_alt')}
                     fill
                     className="object-cover rounded-lg shadow-xl"
@@ -102,7 +102,7 @@ export default function Locations() {
                 </div>
                 <div className="relative h-96 order-1 lg:order-2">
                   <Image
-                    src="/images/office-cameroon.svg"
+                    src="/images/photos/douala-port.jpg"
                     alt={t('locations.cameroon_office_alt')}
                     fill
                     className="object-cover rounded-lg shadow-xl"

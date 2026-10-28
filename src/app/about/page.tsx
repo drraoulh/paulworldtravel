@@ -38,7 +38,7 @@ export default function About() {
               </div>
               <div className="relative h-96">
                 <Image
-                  src="/vvoyageaff.jpg"
+                  src="/images/photos/port-conteneurs.jpg"
                   alt="L'équipe de Paul World Travel"
                   fill
                   className="object-cover rounded-lg shadow-xl"

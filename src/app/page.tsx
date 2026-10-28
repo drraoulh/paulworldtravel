@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useLanguage } from "../contexts/LanguageContext";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { CanadaHighlight, ServicesOverview } from "../components/HomeHighlights";
 
 // Composant pour les services avec animation avancée au survol
 const ServiceCard = ({ icon, title, description, link }: { icon: string, title: string, description: string, link: string }) => {
@@ -286,7 +287,7 @@ export default function Home() {
               <div className="w-full sm:w-4/5 md:w-3/4 lg:w-2/5 mt-6 lg:mt-0 mx-auto">
                 <div className="relative rounded-2xl overflow-hidden shadow-xl border-4 border-white/20">
                   <Image
-                    src="/cameroun1.jpg"
+                    src="/images/photos/douala-port.jpg"
                     alt="Bureau au Cameroun"
                     width={600}
                     height={450}
@@ -358,6 +359,10 @@ export default function Home() {
           </div>
         </section>
         
+        <CanadaHighlight />
+
+        <ServicesOverview />
+
         {/* China Services Section - Optimisée pour mobile */}
         <section className="py-8 sm:py-10 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -412,7 +417,7 @@ export default function Home() {
             
             <div className="text-center mt-2 sm:mt-3">
               <Link 
-                href="/services#china" 
+                href="/services/#consulting" 
                 className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg text-sm sm:text-base transition-all duration-300 shadow-lg"
               >
                 {t('home.china.discover_all')}
