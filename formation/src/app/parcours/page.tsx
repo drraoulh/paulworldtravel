@@ -20,7 +20,7 @@ export default function Parcours() {
   const allIds = modules.flatMap((m) => m.lessons.map((l) => lessonId(m, l)));
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/etudiants.jpg', alt: 'Deux étudiants révisent ensemble' }}
         title="Votre parcours vers le TCF Canada."
         intro="Quatre étapes, quatre épreuves, une méthode. Suivez le parcours dans l’ordre ou allez directement à l’épreuve qui vous inquiète le plus."
       >

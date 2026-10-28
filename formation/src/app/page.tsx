@@ -1,10 +1,11 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import LevelScale from '@/components/LevelScale';
 import { ButtonLink, Check, Container } from '@/components/ui';
 import { contact, formules } from '@/content/offers';
 import { lessonCount } from '@/content/parcours';
 import { epreuves } from '@/content/tcf';
-import { epreuveConfigs } from '@/lib/epreuves';
+import { EPREUVE_IMAGES, epreuveConfigs } from '@/lib/epreuves';
 
 const nclc7 = [
   ['458', 'en compréhension orale, sur 699'],
@@ -20,6 +21,7 @@ export default function Home() {
       {/* Hero: the level scale is the one memorable element. */}
       <header className="border-b border-rule bg-white">
         <Container className="pb-14 pt-14 sm:pb-20 sm:pt-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-14">
           <div className="max-w-3xl">
             <h1 className="display text-[2.6rem] text-night sm:text-6xl lg:text-[4.2rem]">Le TCF Canada, une épreuve à la fois.</h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate sm:text-xl">
@@ -29,6 +31,10 @@ export default function Home() {
               <ButtonLink href="/test-de-niveau/">Évaluer mon niveau gratuitement</ButtonLink>
               <Link href="#epreuves" className="font-bold text-night underline decoration-rule decoration-2 underline-offset-8 hover:decoration-night">Voir les quatre épreuves</Link>
             </div>
+          </div>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper lg:aspect-[4/5]">
+            <Image src="/images/etudiants.jpg" alt="Deux étudiants révisent ensemble leurs cahiers" fill priority sizes="(min-width: 1024px) 38vw, 100vw" className="object-cover" />
+          </div>
           </div>
           <div className="mt-16 sm:mt-20">
             <LevelScale target={7} label={<>NCLC 7 : le minimum de l’Entrée express pour les travailleurs qualifiés</>} />
@@ -49,7 +55,10 @@ export default function Home() {
                 const info = epreuves.find((x) => x.id === e.module.id)!;
                 const practice = e.sections.find((s) => s.key === 'series' || s.key === 'simulateur')!;
                 return (
-                  <li key={e.slug} className="grid gap-x-8 gap-y-2 border-b border-rule py-7 sm:grid-cols-[1fr_auto]">
+                  <li key={e.slug} className="grid gap-x-6 gap-y-3 border-b border-rule py-7 sm:grid-cols-[7rem_1fr_auto]">
+                    <Link href={`/epreuve/${e.slug}/`} className="relative hidden aspect-square overflow-hidden rounded-xl bg-paper sm:block" tabIndex={-1} aria-hidden="true">
+                      <Image src={EPREUVE_IMAGES[e.module.id].src} alt="" fill sizes="7rem" className="object-cover" />
+                    </Link>
                     <div>
                       <Link href={`/epreuve/${e.slug}/`} className="heading text-2xl text-night hover:text-ocean">{info.name}</Link>
                       <p className="mt-1 text-sm text-slate">{info.format}, {info.minutes} minutes</p>
@@ -68,8 +77,10 @@ export default function Home() {
       </section>
 
       {/* Mock exam */}
-      <section className="bg-night text-white">
-        <Container className="grid gap-8 py-14 sm:py-16 lg:grid-cols-[2fr_1fr] lg:items-center">
+      <section className="relative isolate overflow-hidden bg-night text-white">
+        <Image src="/images/examen.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover object-center" />
+        <div className="absolute inset-0 -z-10 bg-night/85" />
+        <Container className="grid gap-8 py-16 sm:py-24 lg:grid-cols-[2fr_1fr] lg:items-center">
           <div>
             <h2 className="heading text-3xl sm:text-4xl">L’examen blanc, avec les vraies durées</h2>
             <p className="mt-4 max-w-2xl text-lg text-blue-100">
@@ -129,6 +140,9 @@ export default function Home() {
           <div className="mt-10 grid gap-10 md:grid-cols-3">
             {[enLigne, presentiel, hybride].filter(Boolean).map((f) => (
               <div key={f.id}>
+                <div className="relative mb-5 aspect-[3/2] overflow-hidden rounded-2xl bg-white">
+                  <Image src={f.id === 'en-ligne' ? '/images/study.jpg' : f.id === 'presentiel' ? '/images/classe.jpg' : '/images/montreal.jpg'} alt={f.id === 'en-ligne' ? 'Prise de notes pendant un cours en ligne' : f.id === 'presentiel' ? 'Étudiants en salle de cours' : 'Vue sur Montréal'} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+                </div>
                 <h3 className="heading text-2xl text-night">{f.name}</h3>
                 <p className="mt-1 text-slate">{f.where}</p>
                 <ul className="mt-5 space-y-2.5 text-ink">{f.includes.slice(0, 4).map((item) => <Check key={item}>{item}</Check>)}</ul>

@@ -14,7 +14,7 @@ export default function ExamenBlanc() {
   const numbers = seriesFor('co').map((s) => s.number).filter((n) => ce.has(n));
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/examen.jpg', alt: 'Étudiants concentrés pendant un examen écrit' }}
         title="Examen blanc, en conditions réelles."
         intro="Les trois épreuves écrites et orales collectives enchaînées, avec les durées officielles : compréhension orale, compréhension écrite, puis expression écrite."
       />

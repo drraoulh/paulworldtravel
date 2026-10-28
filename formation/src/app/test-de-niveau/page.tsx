@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function TestDeNiveau() {
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/study.jpg', alt: 'Prise de notes pendant une révision' }}
         title="Test de niveau gratuit"
         intro="Quinze questions de grammaire, de vocabulaire et de lecture, de la plus simple à la plus difficile. Chaque réponse est expliquée. Comptez environ dix minutes."
       />
