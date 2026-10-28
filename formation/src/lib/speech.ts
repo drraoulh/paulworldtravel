@@ -39,7 +39,33 @@ export function speakLines(lines: { voice: 'a' | 'b'; text: string }[], onEnd: (
   queue.forEach((u) => synth.speak(u));
 }
 
-export const stopSpeaking = () => { generation++; if (speechSupported()) window.speechSynthesis.cancel(); };
+export const stopSpeaking = () => {
+  generation++;
+  stopPlayer();
+  if (speechSupported()) window.speechSynthesis.cancel();
+};
 
 /** Some browsers load their voices asynchronously. */
 export const warmUpVoices = () => { if (speechSupported()) window.speechSynthesis.getVoices(); };
+
+// Recorded documents (MP3 files generated with open French voices). They play on every
+// device; the browser voice above is only a fallback if a file cannot be loaded.
+let player: HTMLAudioElement | null = null;
+
+export function playDocument(src: string | undefined, lines: { voice: 'a' | 'b'; text: string }[], onEnd: () => void) {
+  stopSpeaking();
+  const mine = generation;
+  const fallback = () => {
+    if (mine !== generation) return;
+    if (speechSupported()) speakLines(lines, onEnd);
+    else onEnd();
+  };
+  if (!src) return fallback();
+  player ??= new Audio();
+  player.src = src;
+  player.onended = () => { if (mine === generation) onEnd(); };
+  player.onerror = fallback;
+  player.play().catch(fallback);
+}
+
+const stopPlayer = () => { if (player) { player.onended = null; player.onerror = null; player.pause(); } };

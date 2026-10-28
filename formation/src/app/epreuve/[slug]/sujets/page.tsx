@@ -48,7 +48,7 @@ export default async function SujetsPage({ params }: Props) {
                     <p className="mt-2 text-lg text-ink">{s.prompt}</p>
                     {s.documents && <div className="mt-3 space-y-2">{s.documents.map((d) => <blockquote key={d} className="border-l-4 border-sky bg-paper p-3 text-sm">{d}</blockquote>)}</div>}
                     <div className="mt-5 flex flex-wrap items-center gap-4">
-                      <Link href={`/epreuve/${e.slug}/simulateur/?sujet=${s.id}`} className="rounded-xl bg-night px-5 py-3 font-bold text-white hover:bg-ocean">
+                      <Link href={`/epreuve/${e.slug}/simulateur/?sujet=${s.id}`} className="rounded-full bg-night px-5 py-3 font-bold text-white hover:bg-ocean">
                         {isEe ? 'Rédiger sur ce sujet' : 'M’entraîner sur ce sujet'}
                       </Link>
                     </div>

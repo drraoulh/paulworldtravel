@@ -76,9 +76,9 @@ export default function Tutor() {
         <div className="flex gap-3">
           <label className="flex-1">
             <span className="sr-only">Votre question</span>
-            <input value={input} onChange={(e) => setInput(e.target.value)} maxLength={1500} placeholder="Votre question…" className="w-full rounded-xl border border-rule px-4 py-3 focus:border-ocean focus:outline-none" />
+            <input value={input} onChange={(e) => setInput(e.target.value)} maxLength={1500} placeholder="Votre question…" className="w-full rounded-full border border-rule px-4 py-3 focus:border-ocean focus:outline-none" />
           </label>
-          <button disabled={busy || !input.trim()} className="rounded-xl bg-container px-5 py-3 font-bold text-night hover:bg-container-hover disabled:opacity-50">Envoyer</button>
+          <button disabled={busy || !input.trim()} className="rounded-full bg-container px-5 py-3 font-bold text-night hover:bg-container-hover disabled:opacity-50">Envoyer</button>
         </div>
         <div className="mt-2"><Quota remaining={quota.remaining} plan={quota.plan} unit="question" /></div>
       </form>

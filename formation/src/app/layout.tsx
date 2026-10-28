@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
-import { Archivo } from 'next/font/google';
+import { Atkinson_Hyperlegible_Next, Literata } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-const archivo = Archivo({ variable: '--font-archivo', subsets: ['latin'], axes: ['wdth'] });
+// Literata: a typeface designed for long reading (titles and lessons).
+// Atkinson Hyperlegible Next: designed for legibility (interface, answers, numbers).
+const literata = Literata({ variable: '--font-literata', subsets: ['latin'], axes: ['opsz'] });
+const atkinson = Atkinson_Hyperlegible_Next({ variable: '--font-atkinson', subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr">
-      <body className={`${archivo.variable} antialiased`}>
+      <body className={`${literata.variable} ${atkinson.variable} antialiased`}>
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">{children}</main>

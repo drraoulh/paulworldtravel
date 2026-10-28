@@ -28,14 +28,14 @@ export default async function SeriesPage({ params }: Props) {
       epreuve={e}
       active="series"
       title="Séries d’entraînement"
-      intro={`Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. ${id === 'co' ? 'Les documents sont lus par la voix de votre navigateur.' : 'Sans compte, gratuit.'}`}
+      intro={`Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. ${id === 'co' ? 'Chaque document est un enregistrement à écouter, une seule fois en conditions d’examen.' : 'Sans compte, gratuit.'}`}
     >
       <Container className="space-y-12">
         <SeriesList epreuve={id} slug={e.slug} series={series} />
         {id === 'ce' && <TeamSeries />}
         <p className="text-sm text-slate">
           Questions originales créées pour cette plateforme, pas des questions officielles du TCF.
-          {id === 'co' && ' La voix de synthèse aide à travailler la méthode ; complétez avec la radio et des podcasts francophones pour habituer votre oreille aux vrais accents.'}
+          {id === 'co' && ' Les enregistrements sont produits avec des voix de synthèse libres (voix SIWIS, licence CC BY 4.0 ; voix UPMC Pierre, licence CC BY-SA 4.0). Complétez avec la radio et des podcasts francophones pour habituer votre oreille aux vrais accents.'}
         </p>
       </Container>
     </EpreuveShell>

@@ -37,19 +37,19 @@ export default async function LessonPage({ params }: Props) {
       intro={<>Leçon {index + 1} sur {m.lessons.length}, {lesson.minutes} min de lecture. Objectif : {lesson.goal}</>}
     >
       <Container className="grid gap-10 lg:grid-cols-[1fr_18rem]">
-        <article className="min-w-0 max-w-3xl space-y-10">
+        <article className="min-w-0 max-w-[44rem] space-y-10">
           {lesson.sections.map((s) => (
             <section key={s.heading}>
               <h2 className="heading text-2xl text-night">{s.heading}</h2>
-              {s.paragraphs?.map((p) => <p key={p} className="mt-4 text-lg leading-relaxed text-ink">{p}</p>)}
-              {s.list && <ul className="mt-4 list-disc space-y-2 pl-6 text-lg leading-relaxed text-ink">{s.list.map((li) => <li key={li}>{li}</li>)}</ul>}
+              {s.paragraphs?.map((p) => <p key={p} className="reading mt-4 text-ink">{p}</p>)}
+              {s.list && <ul className="reading mt-4 list-disc space-y-2 pl-6 text-ink marker:text-slate">{s.list.map((li) => <li key={li}>{li}</li>)}</ul>}
             </section>
           ))}
 
           {lesson.model && (
             <section className="rounded-2xl border-l-4 border-container bg-white p-6 sm:p-8">
               <h2 className="heading text-xl text-night">{lesson.model.title}</h2>
-              <p className="mt-4 whitespace-pre-line text-lg leading-relaxed text-ink">{lesson.model.text}</p>
+              <p className="reading mt-4 whitespace-pre-line text-ink">{lesson.model.text}</p>
               {lesson.model.note && <p className="mt-5 border-t border-rule pt-4 text-slate"><strong className="text-night">Pourquoi ça marche : </strong>{lesson.model.note}</p>}
             </section>
           )}
@@ -90,7 +90,7 @@ export default async function LessonPage({ params }: Props) {
           </nav>
         </article>
 
-        <aside className="hidden lg:block lg:sticky lg:top-28 lg:self-start">
+        <aside className="hidden lg:block lg:sticky lg:top-32 lg:self-start">
           <div className="rounded-2xl bg-white p-5">
             <p className="font-semibold text-night">Méthodologie</p>
             <ol className="mt-4 space-y-1">

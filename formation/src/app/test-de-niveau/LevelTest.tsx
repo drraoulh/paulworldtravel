@@ -68,7 +68,7 @@ export default function LevelTest() {
           Ce test rapide donne une indication. Il ne remplace pas un test blanc complet, que nous vous proposons au début de la formation.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link href={`/inscription/?niveau=${level}`} className="inline-flex items-center justify-center rounded-md bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">
+          <Link href={`/inscription/?niveau=${level}`} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">
             M’inscrire avec ce résultat
           </Link>
           <button onClick={restart} className="inline-flex items-center justify-center rounded-md border-2 border-night px-6 py-3 font-bold text-night hover:bg-night hover:text-white">

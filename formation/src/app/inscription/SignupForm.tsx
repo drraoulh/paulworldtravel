@@ -232,7 +232,7 @@ export default function SignupForm() {
         </p>
       )}
 
-      <button type="submit" disabled={status === 'sending'} className="mt-8 inline-flex w-full items-center justify-center rounded-md bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-60 sm:w-auto">
+      <button type="submit" disabled={status === 'sending'} className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-60 sm:w-auto">
         {status === 'sending' ? 'Envoi en cours…' : 'Envoyer mon inscription'}
       </button>
     </form>
