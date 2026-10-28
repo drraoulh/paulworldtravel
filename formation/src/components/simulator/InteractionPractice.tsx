@@ -197,7 +197,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
             Vous parlez à tour de rôle : appuyez sur « Parler », posez votre question, puis sur « Envoyer ». Le chronomètre s’arrête pendant que l’interlocuteur répond.
           </p>
           <div className="flex flex-wrap items-center gap-4">
-            <button onClick={startPrep} className="inline-flex items-center rounded-xl bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">
+            <button onClick={startPrep} className="inline-flex items-center rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">
               {phase === 'done' ? 'Refaire la tâche' : `Commencer la préparation (${fmt(prepTotal)})`}
             </button>
             <label className="flex items-center gap-2 text-sm text-ink">
@@ -214,7 +214,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
           <div className="flex flex-wrap items-center gap-4">
             <span className="font-mono text-3xl text-night" aria-live="polite">{fmt(prepLeft)}</span>
             <span className="text-slate">de préparation restantes</span>
-            <button onClick={startDialog} className="ml-auto rounded-xl bg-night px-5 py-3 font-bold text-white hover:bg-ocean">Je suis prêt, commencer l’échange</button>
+            <button onClick={startDialog} className="ml-auto rounded-full bg-night px-5 py-3 font-bold text-white hover:bg-ocean">Je suis prêt, commencer l’échange</button>
           </div>
           <label className="block">
             <span className="text-sm font-semibold text-night">Vos notes (elles ne sont pas envoyées)</span>
@@ -254,15 +254,15 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
           {phase === 'dialog' && (
             <div className="flex flex-wrap items-center gap-3">
               {sub !== 'recording' ? (
-                <button onClick={talk} disabled={sub === 'waiting'} className="inline-flex items-center gap-2 rounded-xl bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
+                <button onClick={talk} disabled={sub === 'waiting'} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
                   <span className="h-3 w-3 rounded-full bg-white" aria-hidden="true" /> Parler
                 </button>
               ) : (
-                <button onClick={() => sendTurn(false)} className="inline-flex items-center gap-2 rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
+                <button onClick={() => sendTurn(false)} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
                   <span className="h-3 w-3 bg-white" aria-hidden="true" /> Envoyer ma réplique
                 </button>
               )}
-              <button onClick={finish} disabled={sub === 'waiting'} className="rounded-xl border border-rule px-5 py-3 font-semibold text-night hover:border-ocean disabled:opacity-50">
+              <button onClick={finish} disabled={sub === 'waiting'} className="rounded-full border border-rule px-5 py-3 font-semibold text-night hover:border-ocean disabled:opacity-50">
                 Terminer l’échange
               </button>
             </div>
@@ -271,7 +271,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
           {(phase === 'ended' || phase === 'grading') && (
             <div className="flex flex-wrap items-center gap-4">
               <p className="w-full font-semibold text-night">Échange terminé : {candidateTurns} réplique{candidateTurns > 1 ? 's' : ''} de votre part.</p>
-              <button onClick={grade} disabled={phase === 'grading' || !candidateTurns} className="inline-flex items-center justify-center rounded-xl bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
+              <button onClick={grade} disabled={phase === 'grading' || !candidateTurns} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
                 {phase === 'grading' ? 'Correction en cours…' : 'Faire corriger mon échange'}
               </button>
               <Quota remaining={quota.remaining} plan={quota.plan} unit="correction" />

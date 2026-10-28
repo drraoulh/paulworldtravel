@@ -30,8 +30,9 @@ export default function SpeakingPractice() {
           {[...speakingTasks].sort((a, b) => a.task - b.task).map((t) => (
             <label key={t.id} className={`cursor-pointer rounded-2xl border-2 bg-white p-4 ${t.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'} ${busy ? 'pointer-events-none opacity-60' : ''}`}>
               <input type="radio" name="task" className="sr-only" checked={t.id === task.id} disabled={busy} onChange={() => setTask(t)} />
-              <span className="block text-sm font-bold text-ocean">{t.title}</span>
-              <span className="mt-1 block text-sm text-slate">{duration(t)}</span>
+              <span className="block text-sm font-bold text-night">{t.title}</span>
+              <span className="mt-1 line-clamp-2 block text-sm text-ink">{t.prompt}</span>
+              <span className="mt-2 block text-xs text-slate">{duration(t)}</span>
               {t.mode === 'interaction' && <span className="mt-2 block text-xs font-semibold text-night">Dialogue avec un interlocuteur IA</span>}
             </label>
           ))}

@@ -54,14 +54,14 @@ export default function LessonQuiz({ questions, lessonId }: { questions: QuizQue
       ))}
       <div className="flex flex-wrap items-center gap-4" aria-live="polite">
         {!checked ? (
-          <button onClick={check} disabled={!complete} className="rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
+          <button onClick={check} disabled={!complete} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
             Vérifier mes réponses
           </button>
         ) : (
           <>
             <p className="heading text-xl text-night">{score} / {questions.length}</p>
             <p className="text-slate">{score === questions.length ? 'Leçon validée.' : 'Relisez les passages concernés, puis réessayez.'}</p>
-            <button onClick={() => { setPicked(questions.map(() => null)); setChecked(false); }} className="rounded-xl border border-rule px-5 py-3 font-semibold text-night hover:border-ocean">
+            <button onClick={() => { setPicked(questions.map(() => null)); setChecked(false); }} className="rounded-full border border-rule px-5 py-3 font-semibold text-night hover:border-ocean">
               Recommencer
             </button>
           </>

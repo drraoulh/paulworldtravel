@@ -1,21 +1,23 @@
 @import "tailwindcss";
 
 /*
- * Paul World Travel Formation: same blues as the main site,
- * with the container yellow kept for the main action and a maple red for Canada.
+ * Paul World Travel Formation: "ink and highlighter".
+ * Ink blue for text and dark surfaces, exam-sheet grey for quiet surfaces,
+ * pen blue for links, and the highlighter yellow kept for what matters:
+ * the main action, the current place, the target level.
  */
 :root {
-  --night: #0a2a5e;
-  --night-deep: #071d42;
-  --ocean: #1452c8;
-  --sky: #3aa0e8;
-  --container: #f2b705;
-  --container-hover: #ffc928;
-  --maple: #c8102e;
-  --paper: #f5f8fc;
-  --ink: #0e1726;
-  --slate: #4a5872;
-  --rule: #dbe3ee;
+  --night: #14213d;       /* ink */
+  --night-deep: #0d1730;
+  --ocean: #2442c7;       /* pen blue */
+  --sky: #9fb2ee;
+  --container: #ffd84a;   /* highlighter */
+  --container-hover: #ffcb1f;
+  --maple: #b83a2a;       /* corrections, recording */
+  --paper: #f1f4f8;       /* exam-sheet grey */
+  --ink: #1b2436;
+  --slate: #515c70;
+  --rule: #d8dee7;
 }
 
 @theme inline {
@@ -30,7 +32,10 @@
   --color-ink: var(--ink);
   --color-slate: var(--slate);
   --color-rule: var(--rule);
-  --font-sans: var(--font-archivo);
+  --font-sans: var(--font-atkinson);
+  --font-serif: var(--font-literata);
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.875rem;
 }
 
 html { scroll-behavior: smooth; }
@@ -38,25 +43,51 @@ html { scroll-behavior: smooth; }
 body {
   background: #ffffff;
   color: var(--ink);
-  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-family: var(--font-atkinson), system-ui, sans-serif;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-.display { font-stretch: 125%; font-weight: 800; letter-spacing: -0.01em; line-height: 1.02; }
-.heading { font-stretch: 112%; font-weight: 700; line-height: 1.15; }
+/* Titles in Literata: large optical size, quiet weight. */
+.display {
+  font-family: var(--font-literata), Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 560;
+  letter-spacing: -0.018em;
+  line-height: 1.08;
+}
+.heading {
+  font-family: var(--font-literata), Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.22;
+}
 
-:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+/* Long reading (lessons, corrigés): serif with a little more air. */
+.reading {
+  font-family: var(--font-literata), Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+/* The highlighter stroke: under the current tab or menu item, on key expressions. */
+.marked {
+  background-image: linear-gradient(transparent 58%, var(--container) 58%, var(--container) 92%, transparent 92%);
+}
+
+:focus-visible { outline: 3px solid var(--ocean); outline-offset: 2px; border-radius: 4px; }
+::selection { background: var(--container); color: var(--night); }
+
+input:not([type='checkbox']):not([type='radio']), select, textarea { border-radius: .625rem; }
+input:not([type='checkbox']):not([type='radio']):focus, select:focus, textarea:focus { border-color: var(--ocean); }
+input[type='radio'], input[type='checkbox'] { accent-color: var(--night); }
+
+/* Signature: the level scale on the home page. The marker travels once to the target. */
+@keyframes marker-in { from { left: 0; opacity: 0; } 15% { opacity: 1; } }
+.scale-marker { animation: marker-in 1.4s cubic-bezier(.2, .7, .2, 1) .3s both; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0s !important; }
 }
-
-.eyebrow { display: flex; align-items: center; gap: .65rem; font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; line-height: 1.6; }
-body { line-height: 1.65; }
-.display { letter-spacing: -.045em; line-height: 1.07; }
-.heading { letter-spacing: -.025em; line-height: 1.2; }
-::selection { background: #f2b705; color: #0a2a5e; }
-input:not([type='checkbox']):not([type='radio']), select, textarea { border-radius: .75rem; }
-input:not([type='checkbox']):not([type='radio']):focus, select:focus, textarea:focus { border-color: var(--ocean); }
-nav { box-shadow: 0 1px 0 rgb(255 255 255 / .12); }

@@ -23,7 +23,6 @@ export default function Formules() {
               <div key={f.id} className={`relative flex flex-col overflow-hidden rounded-2xl border border-rule bg-white shadow-sm ${f.id === 'hybride' ? 'ring-2 ring-ocean' : ''}`}>
                 <div className="relative h-48">
                   <Image src={f.id === 'en-ligne' ? '/images/study.jpg' : f.id === 'presentiel' ? '/images/classroom.jpg' : '/images/montreal.jpg'} alt={f.id === 'en-ligne' ? 'Travail individuel et prise de notes' : f.id === 'presentiel' ? 'Participants dans une salle de cours' : 'Vue sur Montréal'} fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover" />
-                  <span className="absolute bottom-4 left-5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-night">{f.id === 'hybride' ? 'LE MEILLEUR DES DEUX' : f.id === 'en-ligne' ? 'FLEXIBILITÉ' : 'PROXIMITÉ'}</span>
                 </div>
                 <div className="flex flex-1 flex-col p-6 sm:p-8">
                 <h2 className="heading text-2xl text-night">{f.name}</h2>

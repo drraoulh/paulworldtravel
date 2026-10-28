@@ -91,7 +91,7 @@ export default function WritingPractice() {
         {signedIn === false ? (
           <div className="mt-6"><SignInPrompt next="/epreuve/expression-ecrite/simulateur/" /></div>
         ) : (
-          <button onClick={submit} disabled={busy || words < 20 || signedIn === null} className="mt-6 inline-flex items-center justify-center rounded-xl bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
+          <button onClick={submit} disabled={busy || words < 20 || signedIn === null} className="mt-6 inline-flex items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
             {busy ? 'Correction en cours (30 s environ)…' : 'Faire corriger mon texte'}
           </button>
         )}

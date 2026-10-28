@@ -79,11 +79,11 @@ export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-4">
           {phase !== 'recording' ? (
-            <button onClick={start} disabled={phase === 'sending'} className="inline-flex items-center gap-2 rounded-xl bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
+            <button onClick={start} disabled={phase === 'sending'} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
               <span className="h-3 w-3 rounded-full bg-white" aria-hidden="true" /> {audio ? 'Recommencer l’enregistrement' : 'Commencer l’enregistrement'}
             </button>
           ) : (
-            <button onClick={stop} className="inline-flex items-center gap-2 rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
+            <button onClick={stop} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
               <span className="h-3 w-3 bg-white" aria-hidden="true" /> Arrêter
             </button>
           )}
@@ -97,7 +97,7 @@ export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask
           <>
             <audio controls src={audio.url} className="w-full max-w-md" />
             <div className="flex flex-wrap items-center gap-4">
-              <button onClick={send} disabled={phase === 'sending'} className="inline-flex items-center justify-center rounded-xl bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
+              <button onClick={send} disabled={phase === 'sending'} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
                 {phase === 'sending' ? 'Transcription et correction (1 min environ)…' : 'Faire corriger mon oral'}
               </button>
               <Quota remaining={quota.remaining} plan={quota.plan} unit="correction" />

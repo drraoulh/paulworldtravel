@@ -47,7 +47,7 @@ export default function GenerateForm() {
         <select name="count" defaultValue="3" className={inputCls}>{[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}</select>
       </label>
       <div className="sm:col-span-2 lg:col-span-5">
-        <button disabled={busy} className="rounded-xl bg-container px-6 py-3 font-bold text-night hover:bg-container-hover disabled:opacity-50">{busy ? 'Génération en cours…' : 'Générer des brouillons'}</button>
+        <button disabled={busy} className="rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover disabled:opacity-50">{busy ? 'Génération en cours…' : 'Générer des brouillons'}</button>
         {message && <p role="status" className={`mt-3 text-sm ${message.ok ? 'text-green-700' : 'text-maple'}`}>{message.text}</p>}
       </div>
     </form>

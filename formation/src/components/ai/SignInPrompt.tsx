@@ -8,7 +8,7 @@ export default function SignInPrompt({ next }: { next: string }) {
         La correction par l’IA est réservée aux comptes candidats. L’inscription est gratuite et donne droit à un essai : deux corrections écrites, une correction orale et quinze questions au tuteur.
       </p>
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <Link href="/inscription/" className="inline-flex items-center justify-center rounded-xl bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">Créer mon compte</Link>
+        <Link href="/inscription/" className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">Créer mon compte</Link>
         <Link href={`/connexion/?suite=${encodeURIComponent(next)}`} className="inline-flex items-center justify-center rounded-xl border-2 border-night px-6 py-3 font-bold text-night hover:bg-night hover:text-white">J’ai déjà un compte</Link>
       </div>
     </div>

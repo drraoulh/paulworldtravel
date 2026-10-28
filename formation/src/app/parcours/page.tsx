@@ -24,7 +24,7 @@ export default function Parcours() {
         title="Votre parcours vers le TCF Canada."
         intro="Quatre étapes, quatre épreuves, une méthode. Suivez le parcours dans l’ordre ou allez directement à l’épreuve qui vous inquiète le plus."
       >
-        <div className="mt-8 max-w-sm"><ProgressBar ids={allIds} dark label="leçons terminées sur ce navigateur" /></div>
+        <div className="mt-8 max-w-sm"><ProgressBar ids={allIds} label="leçons terminées sur ce navigateur" /></div>
       </PageHeader>
 
       <section className="bg-paper py-12 sm:py-16">

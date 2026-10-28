@@ -4,11 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BANDS, SERIES_SECONDS, type SeriesQuestion } from '@/content/series';
 import { seededOrder } from '@/lib/shuffle';
 import { saveSeriesResult, seriesKey, type SeriesResult } from '@/lib/results';
-import { speakLines, speechSupported, stopSpeaking, warmUpVoices } from '@/lib/speech';
+import { playDocument, stopSpeaking, warmUpVoices } from '@/lib/speech';
 
 type Mode = 'exam' | 'training';
 type Listen = 'ready' | 'playing' | 'heard';
 
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
 
 function grade(questions: SeriesQuestion[], answers: (number | null)[]) {
@@ -42,12 +43,11 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   const [deadline, setDeadline] = useState<number | null>(null);
   const [left, setLeft] = useState<number>(SERIES_SECONDS[epreuve]);
   const [done, setDone] = useState(false);
-  const [canSpeak, setCanSpeak] = useState(true);
   const top = useRef<HTMLDivElement>(null);
   const orders = useMemo(() => questions.map((q, i) => seededOrder(`${epreuve}${number}-${i}-${q.prompt}`, 4)), [questions, epreuve, number]);
   const q = questions[index];
 
-  useEffect(() => { setCanSpeak(!isCo || speechSupported()); warmUpVoices(); return stopSpeaking; }, [isCo]);
+  useEffect(() => { warmUpVoices(); return stopSpeaking; }, []);
 
   const finish = useCallback(() => {
     stopSpeaking();
@@ -94,15 +94,12 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   const play = () => {
     setListen('playing');
     setPlays((n) => n + 1);
-    speakLines(q.lines ?? [], () => setListen('heard'));
+    playDocument(isCo ? `/audio/co/co-${number}-${index + 1}.mp3` : undefined, q.lines ?? [], () => setListen('heard'));
   };
 
   const pick = (choice: number) => setAnswers((a) => a.map((v, i) => (i === index ? choice : v)));
   const check = () => setChecked((c) => c.map((v, i) => (i === index ? true : v)));
 
-  if (!canSpeak) {
-    return <p className="rounded-2xl bg-white p-6 text-slate">Votre navigateur ne sait pas lire les documents à voix haute. Essayez avec Chrome, Edge ou Safari à jour.</p>;
-  }
 
   if (!mode) {
     return (
@@ -172,7 +169,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
           </ol>
         </div>
         {!onFinish && (
-          <button onClick={() => { setAnswers(questions.map(() => null)); setChecked(questions.map(() => false)); setDone(false); setIndex(0); setListen('ready'); setPlays(0); setDeadline(null); setLeft(SERIES_SECONDS[epreuve]); setMode(null); }} className="rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
+          <button onClick={() => { setAnswers(questions.map(() => null)); setChecked(questions.map(() => false)); setDone(false); setIndex(0); setListen('ready'); setPlays(0); setDeadline(null); setLeft(SERIES_SECONDS[epreuve]); setMode(null); }} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
             Refaire la série
           </button>
         )}
@@ -191,8 +188,15 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
 
   return (
     <div ref={top} className="scroll-mt-28 space-y-4">
-      <div className="sticky top-16 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur md:top-20">
-        <span className="font-semibold text-night">Question {index + 1} sur {questions.length} <span className="ml-1 text-sm font-normal text-slate">niveau {q.level}</span></span>
+      <div className="sticky top-16 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur lg:top-[6.9rem]">
+        <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <span className="font-semibold text-night">Question {index + 1} sur {questions.length}</span>
+          <span className="flex items-center gap-1" aria-label={`Niveau ${q.level}`}>
+            {LEVELS.map((l) => (
+              <span key={l} className={`rounded px-1.5 py-0.5 text-xs tabular-nums ${l === q.level ? 'bg-container font-bold text-night' : 'text-slate/60'}`}>{l}</span>
+            ))}
+          </span>
+        </span>
         {exam
           ? <span className={`font-mono text-lg ${left < 300 ? 'text-maple' : 'text-night'}`} aria-label="Temps restant">{fmt(left)}</span>
           : <span className="text-sm text-slate">Mode entraînement</span>}
@@ -201,7 +205,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
       <div className="rounded-2xl bg-white p-6 sm:p-8">
         {isCo ? (
           <div className="flex flex-wrap items-center gap-4">
-            <button onClick={play} disabled={!canReplay || listen === 'playing'} className="inline-flex items-center gap-2 rounded-xl bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
+            <button onClick={play} disabled={!canReplay || listen === 'playing'} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true"><path d="M6 4l10 6-10 6V4z" /></svg>
               {listen === 'playing' ? 'Écoute en cours…' : plays === 0 ? 'Écouter le document' : 'Réécouter'}
             </button>
@@ -243,18 +247,18 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           {!exam && !isChecked && (
-            <button onClick={check} disabled={chosen === null} className="rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">Vérifier</button>
+            <button onClick={check} disabled={chosen === null} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">Vérifier</button>
           )}
           {(exam || isChecked) && index < questions.length - 1 && (
-            <button onClick={() => go(index + 1)} disabled={exam && isCo && chosen === null && listen !== 'heard'} className="rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
+            <button onClick={() => go(index + 1)} disabled={exam && isCo && chosen === null && listen !== 'heard'} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
               Question suivante
             </button>
           )}
-          {!isCo && index > 0 && <button onClick={() => go(index - 1)} className="rounded-xl border border-rule px-5 py-3 font-semibold text-night hover:border-ocean">Précédente</button>}
+          {!isCo && index > 0 && <button onClick={() => go(index - 1)} className="rounded-full border border-rule px-5 py-3 font-semibold text-night hover:border-ocean">Précédente</button>}
           {(index === questions.length - 1 || exam) && (
             <button
               onClick={() => { if (!exam || index === questions.length - 1 || confirm(`Terminer maintenant ? ${questions.length - answeredCount} question(s) sans réponse compteront comme fausses.`)) finish(); }}
-              className={index === questions.length - 1 ? 'rounded-xl bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover' : 'ml-auto text-sm font-semibold text-slate hover:text-maple'}
+              className={index === questions.length - 1 ? 'rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover' : 'ml-auto text-sm font-semibold text-slate hover:text-maple'}
             >
               {index === questions.length - 1 ? 'Voir mon résultat' : 'Terminer la série'}
             </button>

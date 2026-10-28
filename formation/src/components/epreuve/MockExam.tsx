@@ -76,7 +76,7 @@ export default function MockExam({ series }: { series: number[] }) {
                 </label>
               ))}
             </div>
-            <button onClick={() => setPhase('co')} className="mt-6 rounded-xl bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">Commencer l’examen</button>
+            <button onClick={() => setPhase('co')} className="mt-6 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">Commencer l’examen</button>
           </fieldset>
         </div>
       )}
@@ -92,7 +92,7 @@ export default function MockExam({ series }: { series: number[] }) {
         <div className="rounded-2xl bg-white p-6 text-center sm:p-10">
           <p className="text-slate">Épreuve terminée. Prenez quelques minutes de pause si vous le souhaitez.</p>
           <p className="heading mt-4 text-2xl text-night">Prochaine épreuve : {phase === 'break-ce' ? 'compréhension écrite, 60 minutes' : 'expression écrite, 60 minutes'}</p>
-          <button onClick={() => setPhase(phase === 'break-ce' ? 'ce' : 'ee')} className="mt-6 rounded-xl bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">Commencer l’épreuve</button>
+          <button onClick={() => setPhase(phase === 'break-ce' ? 'ce' : 'ee')} className="mt-6 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">Commencer l’épreuve</button>
         </div>
       )}
 
@@ -145,7 +145,7 @@ function MockWriting({ subjects, texts, setTexts, onFinish }: {
   return (
     <section className="space-y-4">
       <p className="font-semibold text-night">Épreuve 3 sur 3 : expression écrite</p>
-      <div className="sticky top-16 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur md:top-20">
+      <div className="sticky top-16 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur lg:top-[6.9rem]">
         <div className="flex gap-1" role="tablist">
           {subjects.map((s, i) => (
             <button key={s.id} role="tab" aria-selected={tab === i} onClick={() => setTab(i)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === i ? 'bg-night text-white' : 'bg-paper text-slate hover:text-night'}`}>
@@ -171,10 +171,10 @@ function MockWriting({ subjects, texts, setTexts, onFinish }: {
         </label>
         <p className={`mt-2 text-sm ${words >= t.minWords && words <= t.maxWords ? 'text-green-700' : 'text-slate'}`}>{words} mots</p>
         <div className="mt-6 flex flex-wrap gap-3">
-          {tab < 2 && <button onClick={() => setTab(tab + 1)} className="rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">Tâche suivante</button>}
+          {tab < 2 && <button onClick={() => setTab(tab + 1)} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">Tâche suivante</button>}
           <button
             onClick={() => { if (confirm('Rendre votre copie maintenant ? Vous ne pourrez plus la modifier.')) { finished.current = true; onFinish(); } }}
-            className="rounded-xl bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover"
+            className="rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover"
           >
             Rendre ma copie
           </button>
@@ -221,7 +221,7 @@ function MockResults({ serie, co, ce, subjects, texts }: { serie: number; co: nu
       <div className="rounded-2xl bg-white p-6 sm:p-8">
         <h2 className="heading text-xl text-night">Votre expression écrite</h2>
         <p className="mt-2 text-slate">Faites corriger vos trois textes par l’IA : cela utilise trois corrections d’écrit de votre compte.</p>
-        <button onClick={correct} disabled={busy} className="mt-4 rounded-xl bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
+        <button onClick={correct} disabled={busy} className="mt-4 rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
           {busy ? 'Correction en cours…' : 'Faire corriger mes trois textes'}
         </button>
         <div className="mt-6 space-y-4">
@@ -250,8 +250,8 @@ function MockResults({ serie, co, ce, subjects, texts }: { serie: number; co: nu
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/espace/" className="rounded-xl bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">Voir mon espace</Link>
-        <Link href="/epreuve/expression-orale/simulateur/" className="rounded-xl border border-rule px-6 py-3.5 font-semibold text-night hover:border-ocean">Passer l’expression orale</Link>
+        <Link href="/espace/" className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">Voir mon espace</Link>
+        <Link href="/epreuve/expression-orale/simulateur/" className="rounded-full border border-rule px-6 py-3.5 font-semibold text-night hover:border-ocean">Passer l’expression orale</Link>
       </div>
     </div>
   );
