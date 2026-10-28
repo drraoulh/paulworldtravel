@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
@@ -29,14 +30,26 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
   return <Link href={href} className={cls}>{children}</Link>;
 }
 
-/** Page title: typographic, on the exam-sheet grey, left aligned. */
-export function PageHeader({ title, intro, children }: { title: ReactNode; intro?: ReactNode; children?: ReactNode }) {
+/** Page title on white, left aligned, with an optional photograph beside it. */
+export function PageHeader({ title, intro, children, image }: {
+  title: ReactNode;
+  intro?: ReactNode;
+  children?: ReactNode;
+  image?: { src: string; alt: string };
+}) {
   return (
     <header className="border-b border-rule bg-white">
-      <Container className="py-12 sm:py-16">
-        <h1 className="display max-w-3xl text-[2.4rem] text-night sm:text-[3.2rem]">{title}</h1>
-        {intro && <p className="mt-5 max-w-2xl text-lg text-slate">{intro}</p>}
-        {children}
+      <Container className={`py-12 sm:py-16 ${image ? 'grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14' : ''}`}>
+        <div>
+          <h1 className="display max-w-3xl text-[2.4rem] text-night sm:text-[3.2rem]">{title}</h1>
+          {intro && <p className="mt-5 max-w-2xl text-lg text-slate">{intro}</p>}
+          {children}
+        </div>
+        {image && (
+          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-paper lg:aspect-[4/3]">
+            <Image src={image.src} alt={image.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
+          </div>
+        )}
       </Container>
     </header>
   );
