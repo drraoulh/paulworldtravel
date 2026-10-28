@@ -39,7 +39,7 @@ Sans configuration Supabase, les pages publiques restent consultables, mais les 
 2. Authentication > URL Configuration :
    - Site URL : `https://formation.paulworldtravel.com`
    - Redirect URLs : `https://formation.paulworldtravel.com/**` et `https://*.vercel.app/**`
-3. Authentication > Emails > SMTP Settings (pour envoyer les emails de confirmation via Brevo) :
+3. Emails d'authentification : envoyés par le site via Brevo (route `/api/auth-email/`, hook Supabase « Send Email » configuré, secret `SEND_EMAIL_HOOK_SECRET` dans Vercel). Ancienne option SMTP, inutile maintenant : Authentication > Emails > SMTP Settings (pour envoyer les emails de confirmation via Brevo) :
    hôte `smtp-relay.brevo.com`, port `587`, identifiant SMTP et clé SMTP fournis par Brevo (SMTP & API > SMTP),
    expéditeur `infos@paulworldtravel.com`, nom `PAULWORLD TRAVEL`.
 4. Créer votre compte sur le site, puis dans le SQL Editor :
