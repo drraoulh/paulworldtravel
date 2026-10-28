@@ -15,6 +15,8 @@ import { formules } from '@/content/offers';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const EMAIL_LOGO =
+  '<table role="presentation" style="margin:0 0 20px"><tr><td style="vertical-align:middle"><img src="https://www.paulworldtravel.com/brand/symbole-nav.png" alt="Paul World Travel" width="56" height="46" style="display:block;border:0"></td><td style="vertical-align:middle;padding-left:12px;font-family:Arial,sans-serif;font-size:18px;font-weight:bold;color:#0a2a5e">Paul World Travel</td></tr></table>';
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 const DEFAULT_TO = 'infos@paulworldtravel.com';
 const MAX = 3000;
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
       to: (process.env.SIGNUP_TO_EMAIL || DEFAULT_TO).split(',').map((e) => e.trim()).filter(Boolean).map((email) => ({ email })),
       replyTo: { email: f.email, name: name.slice(0, 70) },
       subject: `Inscription TCF Canada — ${name} (${formule.name})`.slice(0, 200),
-      htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px"><h2 style="color:#1452c8">Nouvelle inscription TCF Canada</h2><table style="border-collapse:collapse">${rows}</table></div>`,
+      htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px">${EMAIL_LOGO}<h2 style="color:#1452c8">Nouvelle inscription TCF Canada</h2><table style="border-collapse:collapse">${rows}</table></div>`,
       textContent: Object.entries(f).map(([k, v]) => `${LABELS[k]} : ${v}`).join('\n'),
       tags: ['formation', 'inscription-tcf'],
     });
@@ -102,7 +104,7 @@ export async function POST(request: Request) {
       replyTo: { email: senderEmail, name: sender.name },
       subject: 'Votre inscription à la préparation au TCF Canada',
       htmlContent:
-        `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726"><p>Bonjour ${escapeHtml(f.firstName)},</p>` +
+        `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}<p>Bonjour ${escapeHtml(f.firstName)},</p>` +
         `<p>Nous avons bien reçu votre inscription à la formule <strong>${escapeHtml(formule.name)}</strong>.</p>` +
         `<p>Un conseiller vous contacte sous 24 h ouvrées avec le tarif, le calendrier et les moyens de paiement.</p>` +
         `<p>À très bientôt,<br>Paul World Travel Formation<br>WhatsApp : +237 6 94 24 46 66</p></div>`,

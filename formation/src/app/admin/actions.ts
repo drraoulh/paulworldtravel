@@ -21,6 +21,8 @@ async function requireAdmin() {
   return { supabase, user };
 }
 
+const EMAIL_LOGO =
+  '<table role="presentation" style="margin:0 0 20px"><tr><td style="vertical-align:middle"><img src="https://www.paulworldtravel.com/brand/symbole-nav.png" alt="Paul World Travel" width="56" height="46" style="display:block;border:0"></td><td style="vertical-align:middle;padding-left:12px;font-family:Arial,sans-serif;font-size:18px;font-weight:bold;color:#0a2a5e">Paul World Travel</td></tr></table>';
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 
 export async function activateEnrollment(formData: FormData) {
@@ -53,7 +55,7 @@ export async function activateEnrollment(formData: FormData) {
         to: [{ email: candidate.email }],
         subject: 'Votre accès à la préparation au TCF Canada est activé',
         htmlContent:
-          `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726"><p>Bonjour ${escapeHtml(candidate.first_name ?? '')},</p>` +
+          `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}<p>Bonjour ${escapeHtml(candidate.first_name ?? '')},</p>` +
           `<p>Votre paiement est bien reçu : votre formule <strong>${escapeHtml(formuleName(enrollment.formule))}</strong> est active jusqu’au ${formatDate(enrollment.ends_at)}.</p>` +
           `<p>Connectez-vous à votre espace pour suivre votre préparation : https://formation.paulworldtravel.com/espace/</p>` +
           `<p>Bonne préparation,<br>Paul World Travel Formation<br>WhatsApp : +237 6 94 24 46 66</p></div>`,
