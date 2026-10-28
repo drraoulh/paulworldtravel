@@ -153,3 +153,12 @@ create policy "results_select" on public.level_test_results
 -- First administrator: after creating your own account on the site, run
 --   update public.profiles set role = 'admin' where email = 'infos@paulworldtravel.com';
 -- ---------------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------------
+-- Hardening (security advisor): helper functions are not callable anonymously.
+-- ---------------------------------------------------------------------------
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+revoke execute on function public.is_admin() from public, anon;
+revoke execute on function public.is_staff() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.is_staff() to authenticated;
