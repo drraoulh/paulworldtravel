@@ -17,10 +17,11 @@ export default async function Espace() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/connexion/?suite=/espace/');
 
-  const [{ data: profile }, { data: enrollments }, { data: results }] = await Promise.all([
+  const [{ data: profile }, { data: enrollments }, { data: results }, { data: submissions }] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single<Profile>(),
     supabase.from('enrollments').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).returns<Enrollment[]>(),
     supabase.from('level_test_results').select('level, score, total, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(3),
+    supabase.from('submissions').select('id, kind, task_prompt, ai_score, trainer_score, trainer_comment, status, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10),
   ]);
   const isStaff = profile?.role === 'admin' || profile?.role === 'trainer';
   const active = enrollments?.find((e) => effectiveStatus(e) === 'active');
@@ -83,10 +84,38 @@ export default async function Espace() {
               <h3 className="heading text-lg text-night">Cours, entraînements et tests blancs</h3>
               <p className="mt-2 text-slate">
                 {active
-                  ? 'Retrouvez les premières fiches méthode et la série gratuite de compréhension écrite. Les modules complets seront ajoutés progressivement.'
-                  : 'Vous pouvez déjà consulter les fiches méthode et essayer la série gratuite de compréhension écrite en attendant l’activation de votre formule.'}
+                  ? 'Vos corrections d’expression écrite et orale par l’IA et le tuteur sont disponibles chaque jour.'
+                  : 'Votre compte vous donne un essai gratuit : deux corrections écrites, une correction orale et quinze questions au tuteur. Votre formule les débloque chaque jour.'}
               </p>
-              <div className="mt-5 flex flex-wrap gap-3"><ButtonLink href="/cours/" variant="dark">Fiches méthode</ButtonLink><ButtonLink href="/entrainement/">S’entraîner</ButtonLink></div>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <ButtonLink href="/entrainement/expression-ecrite/" variant="dark">Expression écrite</ButtonLink>
+                <ButtonLink href="/entrainement/expression-orale/" variant="dark">Expression orale</ButtonLink>
+                <ButtonLink href="/entrainement/tuteur/">Tuteur</ButtonLink>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-rule bg-white p-6">
+              <h3 className="heading text-lg text-night">Mes corrections</h3>
+              {(submissions ?? []).length === 0 ? (
+                <p className="mt-2 text-slate">Vos productions corrigées apparaîtront ici.</p>
+              ) : (
+                <ul className="mt-4 divide-y divide-rule">
+                  {(submissions ?? []).map((s) => (
+                    <li key={s.id} className="flex flex-col gap-1 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+                      <div>
+                        <p className="font-semibold text-night">{s.kind === 'ee' ? 'Expression écrite' : 'Expression orale'} · {formatDate(s.created_at)}</p>
+                        <p className="line-clamp-1 text-sm text-slate">{s.task_prompt}</p>
+                        {s.trainer_comment && <p className="mt-1 text-sm"><span className="font-semibold">Votre formateur : </span>{s.trainer_comment}</p>}
+                      </div>
+                      <p className="shrink-0 text-sm sm:text-right">
+                        {s.status === 'trainer_reviewed'
+                          ? <><span className="heading text-xl text-night">{s.trainer_score} / 20</span><span className="block text-slate">note du formateur</span></>
+                          : <><span className="heading text-xl text-night">{s.ai_score} / 20</span><span className="block text-slate">estimation IA</span></>}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 

@@ -2,12 +2,40 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Container, PageHeader } from '@/components/ui';
 import ReadingPractice from './ReadingPractice';
-export const metadata: Metadata = { title: 'Entraînement de compréhension écrite' };
+import TeamSeries from './TeamSeries';
+
+export const metadata: Metadata = { title: 'S’entraîner au TCF Canada' };
+
+const modules = [
+  { href: '/entrainement/expression-ecrite/', name: 'Expression écrite', text: 'Rédigez une tâche, recevez une note sur 20, vos erreurs expliquées et une version améliorée.', tag: 'Corrigé par l’IA' },
+  { href: '/entrainement/expression-orale/', name: 'Expression orale', text: 'Enregistrez votre réponse au micro : transcription, note sur 20 et réponse modèle.', tag: 'Corrigé par l’IA' },
+  { href: '/entrainement/tuteur/', name: 'Tuteur de français', text: 'Posez vos questions de grammaire, de vocabulaire ou de méthode, à toute heure.', tag: 'Disponible 24 h/24' },
+  { href: '#comprehension-ecrite', name: 'Compréhension écrite', text: 'Une série gratuite de six questions, avec ou sans chronomètre.', tag: 'Sans compte' },
+];
+
 export default function Training() {
-  return <><PageHeader title="Lisez, comprenez, progressez." intro="Un premier entraînement gratuit en compréhension écrite. Prenez le temps de comprendre les textes, puis apprenez à gérer le chronomètre." />
-    <section className="bg-paper py-12 sm:py-16"><Container>
-      <p className="mb-6 max-w-3xl text-slate">Six questions originales, de A2 à B2. Cette série de découverte n’est pas un test blanc officiel et ne délivre pas de score TCF. Aucun compte nécessaire.</p>
-      <ReadingPractice />
-      <Link href="/cours/" className="mt-8 inline-block font-bold text-ocean hover:underline">Consulter les fiches méthode →</Link>
-    </Container></section></>;
+  return (
+    <>
+      <PageHeader title="Entraînez-vous sur les quatre épreuves." intro="Des exercices originaux, corrigés en quelques secondes. Un compte gratuit donne droit à un essai des corrections par l’IA ; votre formule active les débloque chaque jour." />
+      <section className="bg-paper py-12 sm:py-16">
+        <Container>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {modules.map((m) => (
+              <Link key={m.href} href={m.href} className="group rounded-2xl border border-rule bg-white p-6 transition-colors hover:border-ocean">
+                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-ocean">{m.tag}</span>
+                <h2 className="heading mt-4 text-xl text-night group-hover:text-ocean">{m.name}</h2>
+                <p className="mt-2 text-slate">{m.text}</p>
+              </Link>
+            ))}
+          </div>
+
+          <h2 id="comprehension-ecrite" className="heading mb-4 mt-16 scroll-mt-28 text-2xl text-night">Compréhension écrite</h2>
+          <p className="mb-6 max-w-3xl text-slate">Six questions originales, de A2 à B2. Cette série de découverte n’est pas un test blanc officiel et ne délivre pas de score TCF. Aucun compte nécessaire.</p>
+          <ReadingPractice />
+          <TeamSeries />
+          <Link href="/cours/" className="mt-8 inline-block font-bold text-ocean hover:underline">Consulter les fiches méthode</Link>
+        </Container>
+      </section>
+    </>
+  );
 }
