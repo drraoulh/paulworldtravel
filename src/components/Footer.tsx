@@ -22,7 +22,6 @@ const copy = {
     hq: 'Siège : Douala, Lendi',
     china: 'Bureau : Foshan, Guangdong',
     rights: 'Tous droits réservés.',
-    credits: 'Photos : Unsplash. Port autonome de Douala : Mboupda Talla Roger,',
     lang: 'English',
   },
   en: {
@@ -40,7 +39,6 @@ const copy = {
     hq: 'Head office: Douala, Lendi',
     china: 'Office: Foshan, Guangdong',
     rights: 'All rights reserved.',
-    credits: 'Photos: Unsplash. Port of Douala: Mboupda Talla Roger,',
     lang: 'Français',
   },
 };
@@ -101,13 +99,7 @@ const Footer = () => {
 
       <div className="border-t border-white/10">
         <Container className="flex flex-col gap-3 py-6 text-sm text-blue-200 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p>© {new Date().getFullYear()} Paul World Travel. {c.rights}</p>
-            <p className="mt-1 text-xs text-blue-300">
-              {c.credits}{' '}
-              <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">CC BY-SA 3.0</a>
-            </p>
-          </div>
+          <p>© {new Date().getFullYear()} Paul World Travel. {c.rights}</p>
           <button onClick={() => setLanguage(language === 'fr' ? 'en' : 'fr')} className="self-start rounded-md border border-white/30 px-4 py-2 hover:bg-white/10 sm:self-auto">
             {c.lang}
           </button>

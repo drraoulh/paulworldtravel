@@ -99,6 +99,10 @@ export default function About() {
           </div>
         </Container>
       </section>
+      <p className="bg-night px-4 pb-6 text-center text-xs text-blue-300">
+        {language === 'fr' ? 'Photos : Unsplash. Port autonome de Douala : Mboupda Talla Roger,' : 'Photos: Unsplash. Port of Douala: Mboupda Talla Roger,'}{' '}
+        <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">CC BY-SA 3.0</a>
+      </p>
     </>
   );
 }
