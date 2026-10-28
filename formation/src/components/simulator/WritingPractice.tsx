@@ -7,6 +7,7 @@ import FeedbackView from '@/components/ai/FeedbackView';
 import Quota from '@/components/ai/Quota';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
+import { getSessionCombinaison } from '@/content/combinaisons-sessions';
 import { isCombinaison, parseCombiTaskId, toWritingTask, type Combinaison } from '@/lib/combinaisons';
 import { getSupabase } from '@/lib/supabase/client';
 
@@ -40,16 +41,19 @@ export default function WritingPractice() {
     }
     // A task of a candidates' combination: loaded from the published list.
     const combi = parseCombiTaskId(new URLSearchParams(window.location.search).get('sujet') ?? '');
+    const show = (data: Combinaison | null) => {
+      if (!combi || !data || !isCombinaison(data.content)) return;
+      const t = toWritingTask(data, combi.task);
+      setExtra(t);
+      setTask(t);
+      setText(savedTask === undefined && saved?.taskId === t.id ? savedText : '');
+    };
+    const fixed = combi ? getSessionCombinaison(combi.id) : null;
     const supabase = getSupabase();
-    if (combi && supabase) {
+    if (fixed) show(fixed);
+    else if (combi && supabase) {
       supabase.from('question_drafts').select('id, theme, created_at, content').eq('id', combi.id).eq('status', 'approved').maybeSingle()
-        .then(({ data }: { data: Combinaison | null }) => {
-          if (!data || !isCombinaison(data.content)) return;
-          const t = toWritingTask(data, combi.task);
-          setExtra(t);
-          setTask(t);
-          setText(savedTask === undefined && saved?.taskId === t.id ? savedText : '');
-        });
+        .then(({ data }: { data: Combinaison | null }) => show(data));
     }
   }, []);
   useEffect(() => {

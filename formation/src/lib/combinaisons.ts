@@ -45,7 +45,7 @@ export const TASK_LIMITS = {
 export const combiTaskId = (id: string, task: 1 | 2 | 3) => `cmb:${id}:${task}`;
 
 export function parseCombiTaskId(taskId: string) {
-  const m = /^cmb:([0-9a-f-]{36}):([123])$/.exec(taskId);
+  const m = /^cmb:([0-9a-f-]{36}|\d{4}-\d{2}-\d{1,2}):([123])$/.exec(taskId);
   return m ? { id: m[1], task: Number(m[2]) as 1 | 2 | 3 } : null;
 }
 
