@@ -36,6 +36,7 @@ export default function Header() {
           {links.map((l) => (
             <Link key={l.href} href={l.href} className={linkCls(l.href)}>{l.label}</Link>
           ))}
+          <Link href="/espace/" className={linkCls('/espace/')}>Mon espace</Link>
           <Link href="/inscription/" className="rounded-md bg-container px-5 py-2.5 text-sm font-bold text-night transition-colors hover:bg-container-hover">
             S’inscrire
           </Link>
@@ -54,6 +55,7 @@ export default function Header() {
             {links.map((l) => (
               <Link key={l.href} href={l.href} className="block border-b border-white/10 py-4 text-lg font-medium">{l.label}</Link>
             ))}
+            <Link href="/espace/" className="block border-b border-white/10 py-4 text-lg font-medium">Mon espace</Link>
             <Link href="/inscription/" className="mt-4 mb-2 block rounded-md bg-container px-5 py-3 text-center font-bold text-night">S’inscrire</Link>
           </Container>
         </div>

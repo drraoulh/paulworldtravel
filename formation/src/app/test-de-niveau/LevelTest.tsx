@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { estimateLevel, levelAdvice, questions } from '@/content/levelTest';
+import { getSupabase } from '@/lib/supabase/client';
 
 export default function LevelTest() {
   const [index, setIndex] = useState(0);
@@ -10,6 +11,23 @@ export default function LevelTest() {
   const [checked, setChecked] = useState(false);
   const [done, setDone] = useState(false);
   const top = useRef<HTMLDivElement>(null);
+
+  // Save the result (linked to the account when signed in) for the candidate's space and our statistics.
+  useEffect(() => {
+    if (!done) return;
+    const supabase = getSupabase();
+    if (!supabase) return;
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      await supabase.from('level_test_results').insert({
+        user_id: data.session?.user.id ?? null,
+        level: estimateLevel(correct),
+        score: correct,
+        total: questions.length,
+      });
+    })().catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
   // Bring the card back into view when the question or the result changes.
   useEffect(() => {
