@@ -16,8 +16,6 @@ const links = [
 
 // Shown in the mobile menu, after the épreuves.
 const more = [
-  { href: '/entrainement/series/', label: 'Combinaisons mensuelles' },
-  { href: '/actualites/', label: 'Dates & actualités' },
   { href: '/parcours/', label: 'Parcours de formation' },
   { href: '/tcf-canada/', label: 'Le TCF Canada' },
   { href: '/formules/', label: 'Formules' },

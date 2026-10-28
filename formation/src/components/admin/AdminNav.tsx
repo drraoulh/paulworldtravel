@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
 const items = [
-  ['/admin/actualites/', 'Actualités et examens'],
   ['/admin/', 'Inscriptions'],
   ['/admin/corrections/', 'Corrections'],
   ['/admin/generer/', 'Générer des exercices'],
