@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/*
+ * Paul World Travel Formation: same blues as the main site,
+ * with the container yellow kept for the main action and a maple red for Canada.
+ */
+:root {
+  --night: #0a2a5e;
+  --night-deep: #071d42;
+  --ocean: #1452c8;
+  --sky: #3aa0e8;
+  --container: #f2b705;
+  --container-hover: #ffc928;
+  --maple: #c8102e;
+  --paper: #f5f8fc;
+  --ink: #0e1726;
+  --slate: #4a5872;
+  --rule: #dbe3ee;
+}
+
+@theme inline {
+  --color-night: var(--night);
+  --color-night-deep: var(--night-deep);
+  --color-ocean: var(--ocean);
+  --color-sky: var(--sky);
+  --color-container: var(--container);
+  --color-container-hover: var(--container-hover);
+  --color-maple: var(--maple);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
+  --color-rule: var(--rule);
+  --font-sans: var(--font-archivo);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.display { font-stretch: 125%; font-weight: 800; letter-spacing: -0.01em; line-height: 1.02; }
+.heading { font-stretch: 112%; font-weight: 700; line-height: 1.15; }
+
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

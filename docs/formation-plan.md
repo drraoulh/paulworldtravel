@@ -1,6 +1,8 @@
-# tcf.paulworldtravel.com — plan de la plateforme de préparation au TCF Canada
+# formation.paulworldtravel.com — plan de la plateforme de formation
 
-Version de travail, à valider ensemble avant de coder.
+Version de travail. Le code est dans le dossier `formation/` (voir `formation/README.md`).
+
+Première formation : TCF Canada. Ensuite : anglais (IELTS, CELPIP), allemand (Goethe) et italien (CILS, CELI). Cours en ligne et en présentiel à Douala.
 
 ## 1. Objectif
 
@@ -66,9 +68,9 @@ Espace formateur et admin
 
 - Next.js (même base que le site actuel, même charte « bleu logistique » avec un accent propre au TCF).
 - Supabase : comptes (email ou téléphone), base de données, stockage des audios, règles d'accès par rôle.
-- Hébergement Vercel, projet séparé, domaine `tcf.paulworldtravel.com`.
+- Hébergement Vercel, projet séparé (Root Directory `formation`), domaine `formation.paulworldtravel.com`. Le domaine est chez LWS : un enregistrement CNAME `formation` pointe vers Vercel.
 - Emails (inscription, accès activé, correction disponible) via Brevo, comme le site principal.
-- Code dans un dossier `tcf/` de ce dépôt, ou dans un dépôt séparé (à décider).
+- Plusieurs langues prévues : chaque contenu (question, test, formule) portera un champ `exam` (tcf-canada, ielts, goethe…).
 
 
 ## 7. Intelligence artificielle (OpenRouter + Hugging Face)
@@ -92,7 +94,7 @@ Points d'attention
 
 ## 8. Étapes
 
-1. **Vitrine + inscription** : accueil, guide TCF, formules, test de niveau gratuit, inscription, activation manuelle par l'admin.
+1. **Vitrine + inscription** (fait : accueil, guide TCF, formules, test de niveau, inscription par email ; reste : comptes candidats et activation par l'admin) : accueil, guide TCF, formules, test de niveau gratuit, inscription, activation manuelle par l'admin.
 2. **Entraînement CO/CE** : banque de questions, séries, tests blancs chronométrés, scores et NCLC.
 3. **Expression écrite et orale** : rédaction, enregistrement audio, pré-correction par IA, validation par le formateur.
 4. **Cours et suivi** : leçons, tableau de bord détaillé, rappels par email.
@@ -100,6 +102,5 @@ Points d'attention
 ## 9. Questions ouvertes
 
 - Formules et prix (ex. 1 mois / 3 mois, toutes épreuves ou à la carte) ?
-- Cours en ligne uniquement, ou aussi en présentiel à Douala avec des sessions et dates ?
+- Dates et horaires des sessions en présentiel à Douala ?
 - Qui produit les questions et les audios au départ ? Combien de tests blancs au lancement ?
-- Le nom de domaine `paulworldtravel.com` est-il déjà acheté, et chez qui ?
