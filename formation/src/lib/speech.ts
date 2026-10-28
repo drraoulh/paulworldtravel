@@ -52,7 +52,8 @@ export const warmUpVoices = () => { if (speechSupported()) window.speechSynthesi
 // device; the browser voice above is only a fallback if a file cannot be loaded.
 let player: HTMLAudioElement | null = null;
 
-export function playDocument(src: string | undefined, lines: { voice: 'a' | 'b'; text: string }[], onEnd: () => void) {
+/** onProgress receives the position and length in seconds (recorded files only). */
+export function playDocument(src: string | undefined, lines: { voice: 'a' | 'b'; text: string }[], onEnd: () => void, onProgress?: (current: number, duration: number) => void) {
   stopSpeaking();
   const mine = generation;
   const fallback = () => {
@@ -64,8 +65,10 @@ export function playDocument(src: string | undefined, lines: { voice: 'a' | 'b';
   player ??= new Audio();
   player.src = src;
   player.onended = () => { if (mine === generation) onEnd(); };
+  const p = player;
+  p.ontimeupdate = () => { if (mine === generation && Number.isFinite(p.duration)) onProgress?.(p.currentTime, p.duration); };
   player.onerror = fallback;
   player.play().catch(fallback);
 }
 
-const stopPlayer = () => { if (player) { player.onended = null; player.onerror = null; player.pause(); } };
+const stopPlayer = () => { if (player) { player.onended = null; player.onerror = null; player.ontimeupdate = null; player.pause(); } };
