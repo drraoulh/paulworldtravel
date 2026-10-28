@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
  *   BREVO_API_KEY        – Brevo API v3 key (SMTP & API > API keys)
  *   BREVO_SENDER_EMAIL   – a sender address validated in Brevo (Senders & IP)
  * Optional:
- *   BREVO_SENDER_NAME    – display name of the sender (default "Paul World Travel")
+ *   BREVO_SENDER_NAME    – display name of the sender (default "PAULWORLD TRAVEL")
  *   CONTACT_TO_EMAIL     – where submissions are delivered, comma-separated
  *                          (default paulworld2016@yahoo.com and infos@paulworldtravel.com)
  */
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
         accept: 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: process.env.BREVO_SENDER_NAME || 'Paul World Travel', email: senderEmail },
+        sender: { name: process.env.BREVO_SENDER_NAME || 'PAULWORLD TRAVEL', email: senderEmail },
         to: (process.env.CONTACT_TO_EMAIL || DEFAULT_RECIPIENTS)
           .split(',')
           .map((address) => address.trim())
@@ -147,6 +147,33 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Brevo request failed', error);
     return NextResponse.json({ ok: false, error: 'send_failed' }, { status: 502 });
+  }
+
+  // Acknowledgement to the visitor. Replies to it land in the sender's inbox (infos@).
+  // It is a courtesy: the message is already delivered if this one fails.
+  try {
+    const firstName = escapeHtml((fields.firstName ?? name).split(' ')[0]);
+    const ack = await fetch(BREVO_URL, {
+      method: 'POST',
+      headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({
+        sender: { name: process.env.BREVO_SENDER_NAME || 'PAULWORLD TRAVEL', email: senderEmail },
+        to: [{ email, name: name.slice(0, 70) }],
+        replyTo: { email: senderEmail, name: process.env.BREVO_SENDER_NAME || 'PAULWORLD TRAVEL' },
+        subject: 'Nous avons bien reçu votre message | We received your message',
+        htmlContent:
+          `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">` +
+          `<p>Bonjour ${firstName},</p>` +
+          `<p>Merci pour votre message${fields.service ? ` concernant <strong>${escapeHtml(fields.service)}</strong>` : ''}. ` +
+          `Notre équipe vous répond sous 24 h ouvrées. Pour une demande urgente, écrivez-nous sur WhatsApp : +237 6 94 24 46 66.</p>` +
+          `<p style="color:#4a5872">Thank you for your message. Our team will reply within one business day.</p>` +
+          `<p>Paul World Travel<br>Lendi, entrée Commissaire, Douala</p></div>`,
+        tags: ['site-web', 'accuse-reception'],
+      }),
+    });
+    if (!ack.ok) console.error('Acknowledgement failed', ack.status, await ack.text());
+  } catch (error) {
+    console.error('Acknowledgement request failed', error);
   }
 
   return NextResponse.json({ ok: true });

@@ -8,7 +8,7 @@ import { formules } from '@/content/offers';
  * Environment variables (Vercel project settings, never in the code):
  *   BREVO_API_KEY       required
  *   BREVO_SENDER_EMAIL  required, a sender validated in Brevo
- *   BREVO_SENDER_NAME   optional, default "Paul World Travel Formation"
+ *   BREVO_SENDER_NAME   optional, default "PAULWORLD TRAVEL"
  *   SIGNUP_TO_EMAIL     optional, comma-separated, default infos@paulworldtravel.com
  */
 
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
     console.error('Brevo is not configured: set BREVO_API_KEY and BREVO_SENDER_EMAIL.');
     return NextResponse.json({ ok: false, error: 'email_not_configured' }, { status: 503 });
   }
-  const sender = { name: process.env.BREVO_SENDER_NAME || 'Paul World Travel Formation', email: senderEmail };
+  const sender = { name: process.env.BREVO_SENDER_NAME || 'PAULWORLD TRAVEL', email: senderEmail };
   const name = `${f.firstName} ${f.lastName}`;
 
   const rows = Object.entries(f)
@@ -99,6 +99,7 @@ export async function POST(request: Request) {
     await send(apiKey, {
       sender,
       to: [{ email: f.email, name: name.slice(0, 70) }],
+      replyTo: { email: senderEmail, name: sender.name },
       subject: 'Votre inscription à la préparation au TCF Canada',
       htmlContent:
         `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726"><p>Bonjour ${escapeHtml(f.firstName)},</p>` +
