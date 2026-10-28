@@ -1,6 +1,6 @@
 'use client';
 
-import { useDoneLessons } from './progress';
+import { useDoneLessons } from './useDoneLessons';
 
 /** Count of completed lessons among `ids`, with a bar. */
 export function ProgressBar({ ids, label = 'leçons terminées', dark = false }: { ids: string[]; label?: string; dark?: boolean }) {

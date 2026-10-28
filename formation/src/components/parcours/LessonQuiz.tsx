@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { QuizQuestion } from '@/content/parcours';
 import { seededOrder as order } from '@/lib/shuffle';
-import { useDoneLessons } from './progress';
+import { useDoneLessons } from './useDoneLessons';
 
 export default function LessonQuiz({ questions, lessonId }: { questions: QuizQuestion[]; lessonId: string }) {
   const orders = useMemo(() => questions.map((q) => order(q.prompt, q.choices.length)), [questions]);
