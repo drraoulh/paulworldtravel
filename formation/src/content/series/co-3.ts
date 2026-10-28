@@ -7,9 +7,9 @@ export const co3: Series = {
   epreuve: 'co',
   number: 3,
   questions: [
-    picture('A1', { src: '/images/co/serie-3-1.jpg', alt: 'Une cliente paie par carte au comptoir d’un café ; la serveuse sourit.' },
+    picture('A1', { src: '/images/co/serie-3-1.jpg', alt: 'Une cliente paie par carte au comptoir d’une boulangerie ; le boulanger lui tend une baguette.' },
       ['Elle lit le journal dans le métro.', 'La cliente paie par carte au comptoir.', 'Le serveur apporte deux cafés à une table.', 'Elles attendent devant un cinéma.'], 1,
-      'On voit une cliente qui tend sa carte au-dessus d’un terminal de paiement, au comptoir.'),
+      'La cliente tend sa carte bancaire au comptoir, à côté du terminal de paiement.'),
     picture('A1', { src: '/images/co/serie-3-2.jpg', alt: 'Une famille de trois générations partage un repas autour d’une table.' },
       ['Les enfants jouent au ballon dans le jardin.', 'Un couple attend le bus sous la pluie.', 'Toute la famille partage un repas à table.', 'Le grand-père répare une voiture.'], 2,
       'Grands-parents, parents et enfants sont réunis autour d’une table servie.'),
