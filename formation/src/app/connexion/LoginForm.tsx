@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { safeRedirectPath } from '@/lib/redirect';
 import { getSupabase } from '@/lib/supabase/client';
 
@@ -9,7 +9,6 @@ const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3
 
 export default function LoginForm() {
   const supabase = getSupabase();
-  const router = useRouter();
   const params = useSearchParams();
   const [mode, setMode] = useState<'login' | 'reset'>('login');
   const [email, setEmail] = useState('');
@@ -39,8 +38,8 @@ export default function LoginForm() {
         });
       }
       const wanted = params.get('suite') ?? '/espace/';
-      router.replace(safeRedirectPath(wanted));
-      router.refresh();
+      // Full navigation: the server must receive the new session cookie with the request.
+      window.location.assign(safeRedirectPath(wanted));
     } else {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/auth/confirm/?suite=/auth/nouveau-mot-de-passe/`,
@@ -72,7 +71,7 @@ export default function LoginForm() {
           {message.text}
         </p>
       )}
-      <button type="submit" disabled={busy} className="mt-8 inline-flex w-full items-center justify-center rounded-md bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-60">
+      <button type="submit" disabled={busy} className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-60">
         {busy ? 'Un instant…' : mode === 'login' ? 'Me connecter' : 'Recevoir le lien'}
       </button>
       <button type="button" onClick={() => { setMode(mode === 'login' ? 'reset' : 'login'); setMessage(null); }} className="mt-5 text-sm font-semibold text-ocean hover:underline">

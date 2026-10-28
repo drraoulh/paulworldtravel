@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Analytics } from '@vercel/analytics/next';
 
 // One family, two voices: wide and heavy for headings, normal width for reading.
 const archivo = Archivo({
@@ -34,6 +35,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );

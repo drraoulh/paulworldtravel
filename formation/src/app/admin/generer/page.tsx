@@ -18,7 +18,7 @@ const statusLabel: Record<string, string> = { draft: 'Brouillon', approved: 'Val
 
 export default async function Generer() {
   const { supabase, isAdmin } = await requireStaff('/admin/generer/');
-  const { data } = await supabase.from('question_drafts').select('*').neq('status', 'rejected').order('created_at', { ascending: false }).limit(60).returns<Draft[]>();
+  const { data } = await supabase.from('question_drafts').select('*').in('epreuve', ['ce', 'co']).neq('status', 'rejected').order('created_at', { ascending: false }).limit(60).returns<Draft[]>();
 
   return (
     <>

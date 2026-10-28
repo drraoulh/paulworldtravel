@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
 const items = [
+  ['/admin/actualites/', 'Actualités et examens'],
   ['/admin/', 'Inscriptions'],
   ['/admin/corrections/', 'Corrections'],
   ['/admin/generer/', 'Générer des exercices'],
-  ['/admin/actualites/', 'Actualités et examens'],
+  ['/admin/combinaisons/', 'Combinaisons'],
 ] as const;
 
 export default function AdminNav({ current }: { current: string }) {

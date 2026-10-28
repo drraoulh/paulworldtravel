@@ -88,10 +88,16 @@ export default async function Espace() {
                   : 'Votre compte vous donne un essai gratuit : deux corrections écrites, une correction orale et quinze questions au tuteur. Votre formule les débloque chaque jour.'}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <ButtonLink href="/entrainement/expression-ecrite/" variant="dark">Expression écrite</ButtonLink>
-                <ButtonLink href="/entrainement/expression-orale/" variant="dark">Expression orale</ButtonLink>
+                <ButtonLink href="/epreuve/expression-ecrite/simulateur/" variant="dark">Expression écrite</ButtonLink>
+                <ButtonLink href="/epreuve/expression-orale/simulateur/" variant="dark">Expression orale</ButtonLink>
                 <ButtonLink href="/entrainement/tuteur/">Tuteur</ButtonLink>
               </div>
+            </div>
+
+            <div className="rounded-2xl border border-rule bg-white p-6">
+              <h3 className="heading text-lg text-night">Vous avez passé le TCF ?</h3>
+              <p className="mt-2 text-slate">Partagez les sujets d’expression écrite que vous avez eus. Nous les reformulons et les publions pour les prochains candidats.</p>
+              <ButtonLink href="/partager-mes-sujets/" variant="dark" className="mt-4">Partager mes sujets</ButtonLink>
             </div>
 
             <div className="rounded-2xl border border-rule bg-white p-6">

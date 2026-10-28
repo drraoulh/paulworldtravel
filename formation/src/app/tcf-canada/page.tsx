@@ -17,7 +17,7 @@ const faq = [
 export default function TcfCanada() {
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/toronto.jpg', alt: 'Toronto et la tour CN au coucher du soleil' }}
         title="Le TCF Canada, épreuve par épreuve"
         intro="Le Test de connaissance du français pour le Canada évalue quatre compétences. Chacune reçoit un score, converti ensuite en niveau NCLC par l’immigration canadienne."
       />

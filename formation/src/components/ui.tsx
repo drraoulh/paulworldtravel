@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 export function Container({ children, className = '' }: { children: ReactNode; className?: string }) {
@@ -8,13 +8,18 @@ export function Container({ children, className = '' }: { children: ReactNode; c
 
 type ButtonProps = { href: string; children: ReactNode; variant?: 'primary' | 'outline' | 'dark'; className?: string };
 
+/*
+ * primary: the highlighter, for the one main action of a screen.
+ * dark: ink, for secondary actions on light surfaces.
+ * outline: for actions on ink surfaces.
+ */
 export function ButtonLink({ href, children, variant = 'primary', className = '' }: ButtonProps) {
   const styles = {
     primary: 'bg-container text-night hover:bg-container-hover',
-    outline: 'border-2 border-white/70 text-white hover:bg-white hover:text-night',
+    outline: 'border border-white/50 text-white hover:bg-white hover:text-night',
     dark: 'bg-night text-white hover:bg-ocean',
   }[variant];
-  const cls = `inline-flex items-center justify-center rounded-xl px-6 py-3.5 font-bold transition-colors ${styles} ${className}`;
+  const cls = `inline-flex items-center justify-center rounded-full px-6 py-3.5 font-bold transition-colors ${styles} ${className}`;
   if (/^(https?:|mailto:|tel:)/.test(href)) {
     return (
       <a href={href} className={cls} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
@@ -25,16 +30,26 @@ export function ButtonLink({ href, children, variant = 'primary', className = ''
   return <Link href={href} className={cls}>{children}</Link>;
 }
 
-export function PageHeader({ title, intro, children }: { title: ReactNode; intro?: ReactNode; children?: ReactNode }) {
+/** Page title on white, left aligned, with an optional photograph beside it. */
+export function PageHeader({ title, intro, children, image }: {
+  title: ReactNode;
+  intro?: ReactNode;
+  children?: ReactNode;
+  image?: { src: string; alt: string };
+}) {
   return (
-    <header className="relative isolate overflow-hidden bg-night text-white">
-      <Image src="/images/montreal.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover object-center" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-night via-night/95 to-night/60" />
-      <Container className="py-14 sm:py-20">
-        <p className="eyebrow mb-5 text-container">Paul World Travel · Formation</p>
-        <h1 className="display max-w-3xl text-4xl sm:text-5xl">{title}</h1>
-        {intro && <p className="mt-5 max-w-2xl text-lg text-blue-100">{intro}</p>}
-        {children}
+    <header className="border-b border-rule bg-white">
+      <Container className={`py-12 sm:py-16 ${image ? 'grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14' : ''}`}>
+        <div>
+          <h1 className="display max-w-3xl text-[2.4rem] text-night sm:text-[3.2rem]">{title}</h1>
+          {intro && <p className="mt-5 max-w-2xl text-lg text-slate">{intro}</p>}
+          {children}
+        </div>
+        {image && (
+          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-paper lg:aspect-[4/3]">
+            <Image src={image.src} alt={image.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
+          </div>
+        )}
       </Container>
     </header>
   );
