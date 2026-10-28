@@ -1,7 +1,7 @@
 import { writingTasks, wordCount } from '@/content/expression';
 import { checkAccess, errorResponse } from '@/lib/ai/access';
 import { aiConfigured, chat, MODELS, parseJson } from '@/lib/ai/openrouter';
-import { cleanFeedback, writingPrompt, type Feedback } from '@/lib/ai/prompts';
+import { cleanFeedback, writingPrompt } from '@/lib/ai/prompts';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     const access = await checkAccess('writing');
     const answer = await chat(MODELS.grading(), writingPrompt(task, text, words), { json: true, maxTokens: 3000 });
-    const feedback = cleanFeedback(parseJson<Partial<Feedback>>(answer));
+    const feedback = cleanFeedback(parseJson(answer), 'ee');
 
     await access.record();
     const { data, error } = await access.admin

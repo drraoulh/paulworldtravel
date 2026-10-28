@@ -9,7 +9,7 @@ export default function ExpressionOrale() {
     <>
       <PageHeader
         title="Parlez, l’IA vous écoute."
-        intro="Enregistrez votre réponse à une tâche d’expression orale. Elle est transcrite, puis notée sur 20 avec vos erreurs et une réponse modèle."
+        intro="Tâches 1 et 3 : enregistrez votre réponse. Tâche 2 : préparez-vous 2 minutes, puis dialoguez avec un interlocuteur joué par l’IA. Votre oral est transcrit, puis noté sur 20 avec vos erreurs et un modèle."
       />
       <section className="bg-paper py-12 sm:py-16"><Container><SpeakingPractice /></Container></section>
     </>

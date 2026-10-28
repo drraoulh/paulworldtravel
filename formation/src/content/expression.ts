@@ -82,8 +82,14 @@ export interface SpeakingTask {
   title: string;
   prompt: string;
   tips: string[];
-  /** Maximum recording length, in seconds (official speaking time). */
+  /** Official speaking time, in seconds (for task 2: the dialogue, without preparation). */
   seconds: number;
+  /** 'interaction': the candidate talks with an AI partner, turn by turn. */
+  mode: 'monologue' | 'interaction';
+  /** Official preparation time, in seconds. */
+  prepSeconds?: number;
+  /** Role played by the AI in an interaction. `facts` keeps its answers consistent. */
+  partner?: { role: string; opening: string; facts: string };
 }
 
 export const speakingTasks: SpeakingTask[] = [
@@ -94,14 +100,32 @@ export const speakingTasks: SpeakingTask[] = [
     prompt: 'Présentez-vous : votre parcours, votre travail ou vos études, votre famille, vos loisirs et votre projet au Canada.',
     tips: ['Parlez de vous au présent, au passé et au futur.', 'Donnez des détails concrets plutôt qu’une liste.'],
     seconds: 120,
+    mode: 'monologue',
   },
   {
     id: 'eo2-logement',
     task: 2,
     title: 'Tâche 2 : obtenir des informations',
     prompt: 'Vous voulez louer un appartement à Montréal. Vous appelez le propriétaire : posez-lui des questions sur le logement, le loyer, les charges, le quartier et la date de disponibilité.',
-    tips: ['Saluez et présentez la raison de votre appel.', 'Variez les formes de questions (est-ce que, inversion, combien, quand…).'],
+    tips: [
+      'Pendant les 2 minutes de préparation, notez les questions à poser.',
+      'Saluez et présentez la raison de votre appel.',
+      'Variez les formes de questions (est-ce que, inversion, combien, quand…) et réagissez aux réponses.',
+    ],
     seconds: 210,
+    mode: 'interaction',
+    prepSeconds: 120,
+    partner: {
+      role: 'le propriétaire de l’appartement, qui répond au téléphone',
+      opening: 'Allô, oui, bonjour !',
+      facts:
+        'Appartement 4 ½ (deux chambres) au 3e étage sans ascenseur, rue Saint-Denis, sur le Plateau-Mont-Royal. ' +
+        'Loyer : 1 450 $ par mois, chauffage et eau chaude inclus ; électricité en plus, environ 60 $ par mois. ' +
+        'Libre le 1er juillet. Bail de 12 mois. Pas de chien, un chat est accepté. ' +
+        'Métro Mont-Royal à 5 minutes à pied, épicerie, pharmacie et parc La Fontaine à proximité. ' +
+        'Laveuse et sécheuse dans le sous-sol commun. Pas de stationnement, vignette de rue possible. ' +
+        'Pas de dépôt de garantie : le premier mois se paie à la signature. Visite possible samedi à 10 h.',
+    },
   },
   {
     id: 'eo3-transport',
@@ -110,6 +134,7 @@ export const speakingTasks: SpeakingTask[] = [
     prompt: '« Dans les grandes villes, il faudrait interdire les voitures dans le centre. » Qu’en pensez-vous ? Donnez votre avis et justifiez-le avec des exemples.',
     tips: ['Annoncez clairement votre position.', 'Donnez au moins deux arguments illustrés, puis une nuance.'],
     seconds: 270,
+    mode: 'monologue',
   },
 ];
 
