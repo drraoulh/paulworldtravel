@@ -3,21 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Container, EMAIL, WHATSAPP_CM } from './site';
+import { services } from '@/content/services';
+import { Container, EMAIL, EMAIL_INFO, WHATSAPP_CM } from './site';
 
 const copy = {
   fr: {
     slogan: "Let's travel and build a better world together",
     about: 'Transport de marchandises, achats en Chine, change, visas et accompagnement des entreprises entre le Cameroun, la Chine et le Canada.',
     services: 'Services',
-    servicesLinks: [
-      ['/services/#cargo', 'Cargo Chine → Afrique'],
-      ['/services/#canada', 'Fret Cameroun → Canada'],
-      ['/services/#consulting', 'Achats en Chine'],
-      ['/services/#currency', 'Change de devises'],
-      ['/services/#visa', 'Visas et immigration'],
-      ['/services/#customs', 'Douane et transit'],
-    ],
     company: 'Paul World Travel',
     companyLinks: [
       ['/about/', 'Qui sommes-nous'],
@@ -36,14 +29,6 @@ const copy = {
     slogan: "Let's travel and build a better world together",
     about: 'Freight, purchasing in China, currency exchange, visas and business support between Cameroon, China and Canada.',
     services: 'Services',
-    servicesLinks: [
-      ['/services/#cargo', 'Cargo China → Africa'],
-      ['/services/#canada', 'Freight Cameroon → Canada'],
-      ['/services/#consulting', 'Purchasing in China'],
-      ['/services/#currency', 'Currency exchange'],
-      ['/services/#visa', 'Visas and immigration'],
-      ['/services/#customs', 'Customs and transit'],
-    ],
     company: 'Paul World Travel',
     companyLinks: [
       ['/about/', 'About us'],
@@ -81,9 +66,9 @@ const Footer = () => {
         <div className="lg:col-span-3">
           <h2 className="heading mb-4 text-white">{c.services}</h2>
           <ul className="space-y-2.5">
-            {c.servicesLinks.map(([href, label]) => (
-              <li key={href}>
-                <Link href={href} className="hover:text-white">{label}</Link>
+            {services.map((svc) => (
+              <li key={svc.slug}>
+                <Link href={`/services/${svc.slug}/`} className="hover:text-white">{svc[language].name}</Link>
               </li>
             ))}
           </ul>
@@ -107,6 +92,7 @@ const Footer = () => {
             <li>{c.china}</li>
             <li><a href="tel:+237694244666" className="hover:text-white">+237 6 94 24 46 66</a></li>
             <li><a href="tel:+8619068451378" className="hover:text-white">+86 190 6845 1378</a></li>
+            <li><a href={`mailto:${EMAIL_INFO}`} className="hover:text-white">{EMAIL_INFO}</a></li>
             <li><a href={`mailto:${EMAIL}`} className="hover:text-white">{EMAIL}</a></li>
             <li><a href={WHATSAPP_CM} target="_blank" rel="noopener noreferrer" className="font-semibold text-container hover:text-container-hover">WhatsApp</a></li>
           </ul>

@@ -1,368 +1,72 @@
 'use client';
 
-import { Fragment } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
-import CanadaFreight from '@/components/CanadaFreight';
-import { ButtonLink, CheckItem, Container, EMAIL, PageHero } from '@/components/site';
-
-type Item = { title: string; desc?: string };
-type Group = { title: string; items: Item[] };
-type Service = {
-  id: string;
-  title: string;
-  lead: string;
-  tags?: string[];
-  stats?: { value: string; label: string }[];
-  image?: { src: string; alt: string };
-  groups: Group[];
-};
+import { areas, servicesByArea, type Area } from '@/content/services';
+import { ButtonLink, Container, PageHero } from '@/components/site';
 
 const copy = {
   fr: {
-    eyebrow: 'Services',
-    indexLabel: 'Sur cette page',
-    contactCta: 'Demander un devis',
-    routes: 'Chine, Afrique et Amérique du Nord',
-    cargo: {
-      lead: 'Expédition de marchandises entre la Chine, l’Afrique et l’Amérique du Nord, par mer ou par air, avec suivi et formalités pris en charge.',
-      sea: ['Solutions personnalisées pour tous types de marchandises', 'Gestion complète des formalités douanières'],
-      air: ['Respect des normes et réglementations nord-américaines', 'Coordination avec les services douaniers locaux'],
-    },
-    currency: { lead: 'Échange de devises entre Yuan, FCFA, Dollar et Euro pour vos paiements fournisseurs et vos opérations à l’international.', group: 'Nos engagements' },
-    consulting: { purchasing: 'Achats en Chine', travel: 'Voyages & formation' },
-    visa: {
-      student: ['Orientation et choix du programme', 'Préparation à l’entretien', 'Suivi jusqu’à l’arrivée'],
-      pr: ['Évaluation de l’éligibilité', 'Préparation du dossier', 'Suivi de la demande'],
-      stats: [
-        { value: '98%', label: 'Taux de réussite visas étudiants' },
-        { value: '30+', label: 'Dossiers d’immigration réussis' },
-        { value: '5+', label: 'Années d’expérience' },
-        { value: '15+', label: 'Pays de destination' },
-      ],
-    },
-    business: {
-      title: 'Création d’entreprise & comptabilité',
-      lead: 'Que vous souhaitiez créer une entreprise au Cameroun, en Chine ou en Amérique du Nord, nous vous accompagnons de la conception à la mise en œuvre, jusqu’à la gestion comptable et fiscale.',
-      creation: 'Création de sociétés',
-      creationItems: [
-        { title: 'Entreprise individuelle', desc: 'Création rapide et simplifiée pour les entrepreneurs indépendants' },
-        { title: 'SARL / LLC', desc: 'Sociétés à responsabilité limitée avec protection juridique' },
-        { title: 'SA / Corporation', desc: 'Sociétés anonymes pour les projets d’envergure' },
-        { title: 'Business plans & DSF', desc: 'Plans d’affaires et montage de dossiers' },
-      ],
-      accounting: 'Comptabilité & fiscalité',
-      accountingItems: [
-        { title: 'Suivi comptable', desc: 'Tenue régulière de la comptabilité et des livres' },
-        { title: 'Conseil fiscal', desc: 'Optimisation fiscale et conseil stratégique' },
-        { title: 'Déclarations fiscales', desc: 'Préparation et dépôt auprès des autorités' },
-        { title: 'Optimisation structurelle', desc: 'Une structure adaptée pour maximiser vos avantages' },
-      ],
-    },
-    it: {
-      title: 'Solutions informatiques',
-      lead: 'Des logiciels de gestion aux sites web performants, nous digitalisons et optimisons vos processus d’affaires.',
-      sage: 'Logiciels de gestion (partenaire SAGE)',
-      sageItems: [
-        { title: 'SAGE Comptable', desc: 'Installation, paramétrage et personnalisation' },
-        { title: 'SAGE Paie', desc: 'Automatisation de la paie et gestion RH' },
-        { title: 'SAGE Gestion Commerciale', desc: 'Ventes, stocks et relation client' },
-        { title: 'Formation & support', desc: 'Formation des utilisateurs et assistance continue' },
-      ],
-      web: 'Développement web',
-      webItems: [
-        { title: 'Sites web en 48h', desc: 'Sites vitrines professionnels livrés rapidement' },
-        { title: 'E-commerce', desc: 'Boutiques en ligne avec paiement sécurisé' },
-        { title: 'Applications sur mesure', desc: 'Applications web adaptées à vos processus' },
-        { title: 'Maintenance & support', desc: 'Mises à jour et support technique réactif' },
-      ],
-    },
-    customs: {
-      title: 'Douane & transit',
-      lead: 'Nous simplifions vos opérations d’import-export et optimisons vos coûts, grâce à notre présence en Chine et au Cameroun et à nos partenaires en Amérique du Nord.',
-      tags: ['Dédouanement express', 'Conformité réglementaire', 'Optimisation fiscale', 'Traitement prioritaire'],
-      licenses: 'Licences & formalités',
-      licensesItems: [
-        { title: 'Licences d’import et d’export', desc: 'Obtention des autorisations auprès des organismes compétents' },
-        { title: 'Formalités douanières', desc: 'Préparation des déclarations et vérification des documents' },
-        { title: 'Conseil réglementaire', desc: 'Exigences, restrictions et quotas applicables' },
-        { title: 'Optimisation des coûts', desc: 'Réduction des frais de douane et taxes d’importation' },
-      ],
-      extra: 'Services complémentaires',
-      extraItems: [
-        { title: 'Entreposage temporaire', desc: 'Stockage sécurisé en attente de dédouanement' },
-        { title: 'Transport local', desc: 'Livraison à destination finale après dédouanement' },
-        { title: 'Assurance transport', desc: 'Protection de vos marchandises à chaque étape' },
-        { title: 'Suivi administratif', desc: 'Documentation et reporting réguliers' },
-      ],
-    },
-    ctaTitle: 'Un projet entre l’Afrique, la Chine et l’Amérique du Nord ?',
-    ctaIntro: 'Parlez-nous de votre besoin : nous vous répondons rapidement avec une solution adaptée.',
+    title: 'Tous nos services',
+    intro: 'Transport, commerce avec la Chine, démarches administratives et numérique : choisissez un service pour tout savoir sur son fonctionnement.',
+    more: 'Voir le service',
+    ctaTitle: 'Vous ne savez pas quel service choisir ?',
+    ctaText: 'Décrivez votre projet, nous vous orientons.',
+    cta: 'Nous écrire',
   },
   en: {
-    eyebrow: 'Services',
-    indexLabel: 'On this page',
-    contactCta: 'Request a quote',
-    routes: 'China, Africa and North America',
-    cargo: {
-      lead: 'Shipping between China, Africa and North America by sea or air, with tracking and paperwork handled for you.',
-      sea: ['Tailored solutions for all types of goods', 'Full handling of customs formalities'],
-      air: ['Compliance with North American standards and regulations', 'Coordination with local customs services'],
-    },
-    currency: { lead: 'Currency exchange between Yuan, CFA franc, Dollar and Euro for supplier payments and international operations.', group: 'Our commitments' },
-    consulting: { purchasing: 'Purchasing in China', travel: 'Travel & training' },
-    visa: {
-      student: ['Guidance and program selection', 'Interview preparation', 'Follow-up until arrival'],
-      pr: ['Eligibility assessment', 'File preparation', 'Application follow-up'],
-      stats: [
-        { value: '98%', label: 'Student visa success rate' },
-        { value: '30+', label: 'Successful immigration files' },
-        { value: '5+', label: 'Years of experience' },
-        { value: '15+', label: 'Destination countries' },
-      ],
-    },
-    business: {
-      title: 'Business creation & accounting',
-      lead: 'Whether you are starting a company in Cameroon, China or North America, we support you from concept to launch, through to accounting and tax management.',
-      creation: 'Company formation',
-      creationItems: [
-        { title: 'Sole proprietorship', desc: 'Fast, simple setup for independent entrepreneurs' },
-        { title: 'SARL / LLC', desc: 'Limited liability companies with legal protection' },
-        { title: 'SA / Corporation', desc: 'Corporations for large-scale projects' },
-        { title: 'Business plans & DSF', desc: 'Business plans and application files' },
-      ],
-      accounting: 'Accounting & tax',
-      accountingItems: [
-        { title: 'Bookkeeping', desc: 'Regular accounting and ledger management' },
-        { title: 'Tax advice', desc: 'Tax optimization and strategic advice' },
-        { title: 'Tax filings', desc: 'Preparation and submission to tax authorities' },
-        { title: 'Structural optimization', desc: 'The right structure to maximize your benefits' },
-      ],
-    },
-    it: {
-      title: 'IT solutions',
-      lead: 'From management software to fast websites, we digitize and streamline your business processes.',
-      sage: 'Management software (SAGE partner)',
-      sageItems: [
-        { title: 'SAGE Accounting', desc: 'Installation, configuration and customization' },
-        { title: 'SAGE Payroll', desc: 'Payroll automation and HR management' },
-        { title: 'SAGE Sales Management', desc: 'Sales, inventory and customer relations' },
-        { title: 'Training & support', desc: 'User training and ongoing assistance' },
-      ],
-      web: 'Web development',
-      webItems: [
-        { title: 'Websites in 48h', desc: 'Professional showcase sites, delivered fast' },
-        { title: 'E-commerce', desc: 'Online stores with secure payments' },
-        { title: 'Custom applications', desc: 'Web apps built around your processes' },
-        { title: 'Maintenance & support', desc: 'Updates and responsive technical support' },
-      ],
-    },
-    customs: {
-      title: 'Customs & transit',
-      lead: 'We simplify your import-export operations and reduce costs, through our presence in China and Cameroon and our partners in North America.',
-      tags: ['Express clearance', 'Regulatory compliance', 'Tax optimization', 'Priority handling'],
-      licenses: 'Licenses & formalities',
-      licensesItems: [
-        { title: 'Import and export licenses', desc: 'Obtaining permits from the relevant authorities' },
-        { title: 'Customs formalities', desc: 'Declaration preparation and document checks' },
-        { title: 'Regulatory advice', desc: 'Applicable requirements, restrictions and quotas' },
-        { title: 'Cost optimization', desc: 'Lower customs fees and import taxes' },
-      ],
-      extra: 'Additional services',
-      extraItems: [
-        { title: 'Temporary storage', desc: 'Secure storage pending customs clearance' },
-        { title: 'Local transport', desc: 'Final delivery after customs clearance' },
-        { title: 'Transport insurance', desc: 'Protection for your goods at every stage' },
-        { title: 'Administrative follow-up', desc: 'Documentation and regular reporting' },
-      ],
-    },
-    ctaTitle: 'A project between Africa, China and North America?',
-    ctaIntro: 'Tell us what you need and we will get back to you quickly with a tailored solution.',
+    title: 'All our services',
+    intro: 'Transport, trading with China, paperwork and digital: pick a service to see how it works.',
+    more: 'See the service',
+    ctaTitle: 'Not sure which service you need?',
+    ctaText: 'Describe your project and we will point you in the right direction.',
+    cta: 'Write to us',
   },
 };
 
-export default function Services() {
-  const { t, language } = useLanguage();
+const order: Area[] = ['transport', 'trade', 'paperwork', 'digital'];
+
+export default function ServicesIndex() {
+  const { language } = useLanguage();
   const c = copy[language];
-  const s = (key: string) => t(`services.${key}`);
-  const pair = (key: string): Item => ({ title: s(key), desc: s(`${key}_desc`) });
-
-  const services: Service[] = [
-    {
-      id: 'cargo',
-      title: s('cargo_title'),
-      lead: c.cargo.lead,
-      tags: [c.routes],
-      image: { src: '/images/photos/cargo-maritime.jpg', alt: s('cargo_title') },
-      groups: [
-        { title: s('sea_transport'), items: [{ title: s('sea_transport_desc') }, ...c.cargo.sea.map((title) => ({ title }))] },
-        {
-          title: s('air_transport'),
-          items: [{ title: s('air_transport_desc') }, { title: s('door_to_door_desc') }, ...c.cargo.air.map((title) => ({ title }))],
-        },
-      ],
-    },
-    {
-      id: 'currency',
-      title: s('currency_title'),
-      lead: c.currency.lead,
-      tags: ['Yuan ¥', 'FCFA', 'Dollar $', 'Euro €'],
-      image: { src: '/images/photos/change-devises.jpg', alt: s('currency_title') },
-      groups: [
-        {
-          title: c.currency.group,
-          items: ['competitive_rates', 'reliability', 'real_time_tracking', 'personalized_service'].map(pair),
-        },
-      ],
-    },
-    {
-      id: 'consulting',
-      title: s('consulting_title'),
-      lead: s('consulting_desc'),
-      image: { src: '/images/photos/achats-entrepot.jpg', alt: s('consulting_title') },
-      groups: [
-        { title: c.consulting.purchasing, items: ['personalized_service', 'competitive_rates', 'reliability'].map(pair) },
-        { title: c.consulting.travel, items: ['business_travel', 'tourism', 'translation', 'training'].map((k) => ({ title: s(k === 'business_travel' ? k : `${k}_title`), desc: s(`${k}_desc`) })) },
-      ],
-    },
-    {
-      id: 'visa',
-      title: s('visa_title'),
-      lead: s('visa_desc'),
-      stats: c.visa.stats,
-      image: { src: '/images/photos/visa-voyage.jpg', alt: s('visa_title') },
-      groups: [
-        { title: s('student_visa'), items: [{ title: s('student_visa_desc') }, ...c.visa.student.map((title) => ({ title }))] },
-        { title: s('permanent_residence'), items: [{ title: s('permanent_residence_desc') }, ...c.visa.pr.map((title) => ({ title }))] },
-        { title: s('other_immigration_services'), items: ['business_visa', 'work_visa', 'family_reunification', 'refugee_status'].map(pair) },
-      ],
-    },
-    {
-      id: 'business',
-      title: c.business.title,
-      lead: c.business.lead,
-      image: { src: '/images/photos/creation-entreprise.jpg', alt: c.business.title },
-      groups: [
-        { title: c.business.creation, items: c.business.creationItems },
-        { title: c.business.accounting, items: c.business.accountingItems },
-      ],
-    },
-    {
-      id: 'it',
-      title: c.it.title,
-      lead: c.it.lead,
-      image: { src: '/images/photos/solutions-it.jpg', alt: c.it.title },
-      groups: [
-        { title: c.it.sage, items: c.it.sageItems },
-        { title: c.it.web, items: c.it.webItems },
-      ],
-    },
-    {
-      id: 'customs',
-      title: c.customs.title,
-      lead: c.customs.lead,
-      tags: c.customs.tags,
-      image: { src: '/images/photos/douane-transit.jpg', alt: c.customs.title },
-      groups: [
-        { title: c.customs.licenses, items: c.customs.licensesItems },
-        { title: c.customs.extra, items: c.customs.extraItems },
-      ],
-    },
-  ];
-
-  const canadaLabel = language === 'fr' ? 'Fret Cameroun → Canada' : 'Freight Cameroon → Canada';
-  const index = [services[0], { id: 'canada', title: canadaLabel }, ...services.slice(1)];
 
   return (
     <>
-      <PageHero title={s('global_solutions')} intro={s('global_presence')} image="/images/photos/cargo-maritime.jpg">
-        <div className="mt-8 flex flex-wrap gap-3">
-          <ButtonLink href="/contact/">{c.contactCta}</ButtonLink>
-          <ButtonLink href="#canada" variant="outline">{canadaLabel}</ButtonLink>
-        </div>
-      </PageHero>
+      <PageHero title={c.title} intro={c.intro} image="/images/photos/port-conteneurs.jpg" />
 
-      {/* In-page index: one chip per service, stays under the header while scrolling */}
-      <nav aria-label={c.indexLabel} className="sticky top-16 z-40 border-b border-rule bg-white/95 backdrop-blur md:top-20">
-        <Container className="flex gap-2 overflow-x-auto py-3">
-          {index.map((svc) => (
-            <a key={svc.id} href={`#${svc.id}`} className="whitespace-nowrap rounded-md border border-rule px-3 py-1.5 text-sm font-medium text-night hover:border-ocean hover:text-ocean">
-              {svc.title}
-            </a>
-          ))}
-        </Container>
-      </nav>
-
-      {services.map((svc, i) => (
-        <Fragment key={svc.id}>
-          <section id={svc.id} className={`scroll-mt-36 py-16 sm:py-20 ${i % 2 === 0 ? 'bg-white' : 'bg-paper'}`}>
-            <Container className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-              <div className="lg:col-span-5">
-                <h2 className="display text-3xl text-night sm:text-4xl">{svc.title}</h2>
-                <p className="mt-4 text-lg text-slate">{svc.lead}</p>
-                {svc.tags && (
-                  <ul className="mt-5 flex flex-wrap gap-2">
-                    {svc.tags.map((tag) => (
-                      <li key={tag} className="rounded-md bg-night px-3 py-1 text-sm font-medium text-white">{tag}</li>
-                    ))}
-                  </ul>
-                )}
-                {svc.image && (
-                  <div className="relative mt-8 h-64 overflow-hidden rounded-lg">
-                    <Image src={svc.image.src} alt={svc.image.alt} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
+      {order.map((area, i) => (
+        <section key={area} className={`py-16 sm:py-20 ${i % 2 === 0 ? 'bg-white' : 'bg-paper'}`}>
+          <Container>
+            <div className="mb-8 max-w-2xl">
+              <h2 className="heading text-3xl text-night sm:text-4xl">{areas[area][language].name}</h2>
+              <p className="mt-3 text-lg text-slate">{areas[area][language].text}</p>
+            </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {servicesByArea(area).map((s) => (
+                <Link key={s.slug} href={`/services/${s.slug}/`} className="group overflow-hidden rounded-lg border border-rule bg-white hover:border-ocean">
+                  <div className="relative h-48">
+                    <Image src={s.image} alt="" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                   </div>
-                )}
-                {svc.stats && (
-                  <dl className="mt-8 grid grid-cols-2 gap-4">
-                    {svc.stats.map((st) => (
-                      <div key={st.label} className="border-l-4 border-sky pl-4">
-                        <dt className="text-sm text-slate">{st.label}</dt>
-                        <dd className="display text-3xl text-night">{st.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                )}
-                <ButtonLink href="/contact/" className="mt-8">{c.contactCta}</ButtonLink>
-              </div>
-
-              <div className="grid grid-cols-1 content-start gap-6 lg:col-span-7">
-                {svc.groups.map((group) => (
-                  <div key={group.title} className={`rounded-lg border-t-4 border-ocean p-6 ${i % 2 === 0 ? 'bg-paper' : 'bg-white'}`}>
-                    <h3 className="heading text-xl text-night">{group.title}</h3>
-                    <ul className="mt-4 space-y-4">
-                      {group.items.map((item) => (
-                        <CheckItem key={item.title}>
-                          <span className="font-semibold text-night">{item.title}</span>
-                          {item.desc && <span className="block text-slate">{item.desc}</span>}
-                        </CheckItem>
-                      ))}
-                    </ul>
+                  <div className="p-6">
+                    <h3 className="heading text-xl text-night">{s[language].name}</h3>
+                    <p className="mt-2 text-slate">{s[language].summary}</p>
+                    <span className="mt-4 inline-block font-bold text-ocean group-hover:underline">{c.more}</span>
                   </div>
-                ))}
-              </div>
-            </Container>
-          </section>
-
-          {svc.id === 'cargo' && (
-            <section id="canada" className="scroll-mt-36 bg-paper py-16 sm:py-20">
-              <Container>
-                <CanadaFreight />
-              </Container>
-            </section>
-          )}
-        </Fragment>
+                </Link>
+              ))}
+            </div>
+          </Container>
+        </section>
       ))}
 
       <section className="bg-night py-16 text-white sm:py-20">
-        <Container className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-2xl">
+        <Container className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
             <h2 className="display text-3xl sm:text-4xl">{c.ctaTitle}</h2>
-            <p className="mt-4 text-lg text-blue-100">{c.ctaIntro}</p>
+            <p className="mt-3 text-lg text-blue-100">{c.ctaText}</p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/contact/">{c.contactCta}</ButtonLink>
-            <ButtonLink href={`mailto:${EMAIL}`} variant="outline">{EMAIL}</ButtonLink>
-          </div>
+          <ButtonLink href="/contact/">{c.cta}</ButtonLink>
         </Container>
       </section>
     </>

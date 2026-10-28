@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ButtonLink, Container, EMAIL, PageHero, SectionTitle } from '@/components/site';
+import { ButtonLink, Container, EMAIL, EMAIL_INFO, PageHero, SectionTitle } from '@/components/site';
 import { offices, hours } from '@/components/offices';
 
 // Leaflet needs `window`, so the map is only rendered in the browser.
@@ -80,6 +80,7 @@ export default function Locations() {
                 </div>
                 <div>
                   <dt className="text-sm text-slate">{c.email}</dt>
+                  <dd><a href={`mailto:${EMAIL_INFO}`} className="font-bold text-night hover:text-ocean">{EMAIL_INFO}</a></dd>
                   <dd><a href={`mailto:${EMAIL}`} className="font-bold text-night hover:text-ocean">{EMAIL}</a></dd>
                 </div>
               </dl>

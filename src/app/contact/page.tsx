@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { sendForm, SendFormResult } from '@/services/sendForm';
-import { Container, EMAIL, PageHero, WHATSAPP_CM, WHATSAPP_CN } from '@/components/site';
+import { Container, EMAIL, EMAIL_INFO, PageHero, WHATSAPP_CM, WHATSAPP_CN } from '@/components/site';
+import { contactOptions } from '@/content/services';
 import { offices, hours } from '@/components/offices';
 
 const copy = {
@@ -30,7 +31,6 @@ const copy = {
     whatsappCm: 'WhatsApp Cameroun',
     whatsappCn: 'WhatsApp Chine',
     hoursTitle: 'Horaires',
-    services: ['Fret Cameroun → Canada', 'Fret Chine → Afrique (maritime / aérien)', 'Achats et sourcing en Chine', 'Change de devises', 'Visa et immigration', "Création d'entreprise et comptabilité", 'Solutions informatiques', 'Dédouanement et transit', 'Autre demande'],
   },
   en: {
     title: 'Get a quote or ask a question',
@@ -54,7 +54,6 @@ const copy = {
     whatsappCm: 'WhatsApp Cameroon',
     whatsappCn: 'WhatsApp China',
     hoursTitle: 'Opening hours',
-    services: ['Freight Cameroon → Canada', 'Freight China → Africa (sea / air)', 'Purchasing and sourcing in China', 'Currency exchange', 'Visa and immigration', 'Business creation and accounting', 'IT solutions', 'Customs clearance and transit', 'Other request'],
   },
 };
 
@@ -64,7 +63,7 @@ const field = 'w-full rounded-md border border-rule bg-white px-4 py-3 text-ink 
 
 export default function Contact() {
   const { language } = useLanguage();
-  const c = copy[language];
+  const c = { ...copy[language], services: contactOptions(language) };
   const [form, setForm] = useState(emptyForm);
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState<'idle' | SendFormResult>('idle');
@@ -72,8 +71,8 @@ export default function Contact() {
   // A service picked elsewhere on the site (?service=...) is pre-selected.
   useEffect(() => {
     const wanted = new URLSearchParams(window.location.search).get('service');
-    if (wanted && c.services.includes(wanted)) setForm((f) => ({ ...f, service: wanted }));
-  }, [c.services]);
+    if (wanted && contactOptions(language).includes(wanted)) setForm((f) => ({ ...f, service: wanted }));
+  }, [language]);
 
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -146,7 +145,7 @@ export default function Contact() {
               {(status === 'error' || status === 'not_configured') && (
                 <p className="rounded-md bg-red-50 p-4 font-medium text-red-800">
                   {c.failedA}
-                  <a href={`mailto:${EMAIL}`} className="underline">{EMAIL}</a>
+                  <a href={`mailto:${EMAIL_INFO}`} className="underline">{EMAIL_INFO}</a>
                   {c.failedB}
                   <a href={WHATSAPP_CM} target="_blank" rel="noopener noreferrer" className="underline">WhatsApp</a>.
                 </p>
@@ -160,6 +159,7 @@ export default function Contact() {
               <ul className="mt-4 space-y-3">
                 <li><a href={WHATSAPP_CM} target="_blank" rel="noopener noreferrer" className="font-bold text-container hover:text-container-hover">{c.whatsappCm} : +237 6 94 24 46 66</a></li>
                 <li><a href={WHATSAPP_CN} target="_blank" rel="noopener noreferrer" className="font-bold text-container hover:text-container-hover">{c.whatsappCn} : +86 190 6845 1378</a></li>
+                <li><a href={`mailto:${EMAIL_INFO}`} className="text-blue-100 hover:text-white">{EMAIL_INFO}</a></li>
                 <li><a href={`mailto:${EMAIL}`} className="text-blue-100 hover:text-white">{EMAIL}</a></li>
               </ul>
             </div>

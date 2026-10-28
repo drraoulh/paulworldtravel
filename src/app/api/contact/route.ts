@@ -9,7 +9,8 @@ import { NextResponse } from 'next/server';
  *   BREVO_SENDER_EMAIL   – a sender address validated in Brevo (Senders & IP)
  * Optional:
  *   BREVO_SENDER_NAME    – display name of the sender (default "Paul World Travel")
- *   CONTACT_TO_EMAIL     – where submissions are delivered (default paulworld2016@yahoo.com)
+ *   CONTACT_TO_EMAIL     – where submissions are delivered, comma-separated
+ *                          (default paulworld2016@yahoo.com and infos@paulworldtravel.com)
  */
 
 export const runtime = 'nodejs';
@@ -46,6 +47,7 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 const MAX_FIELD_LENGTH = 5000;
+const DEFAULT_RECIPIENTS = 'paulworld2016@yahoo.com,infos@paulworldtravel.com';
 
 function escapeHtml(value: string) {
   return value
@@ -125,7 +127,11 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         sender: { name: process.env.BREVO_SENDER_NAME || 'Paul World Travel', email: senderEmail },
-        to: [{ email: process.env.CONTACT_TO_EMAIL || 'paulworld2016@yahoo.com', name: 'Paul World Travel' }],
+        to: (process.env.CONTACT_TO_EMAIL || DEFAULT_RECIPIENTS)
+          .split(',')
+          .map((address) => address.trim())
+          .filter(Boolean)
+          .map((address) => ({ email: address, name: 'Paul World Travel' })),
         replyTo: { email, name: name.slice(0, 70) },
         subject: subjectLine,
         htmlContent,
