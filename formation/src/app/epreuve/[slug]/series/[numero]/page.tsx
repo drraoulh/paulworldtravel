@@ -28,7 +28,7 @@ export default async function SeriePage({ params }: Props) {
 
   return (
     <EpreuveShell epreuve={e} active="series" title={`Série ${series.number}`} intro={`${series.questions.length} questions de ${e.module.name.toLowerCase()}, du niveau A1 au C2.`}>
-      <Container className="max-w-4xl">
+      <Container className="max-w-6xl">
         <SeriesRunner epreuve={id} number={series.number} questions={series.questions} />
         <Link href={`/epreuve/${e.slug}/series/`} className="mt-8 inline-block font-semibold text-ocean hover:underline">Toutes les séries</Link>
       </Container>
