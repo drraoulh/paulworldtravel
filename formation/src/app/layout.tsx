@@ -3,6 +3,7 @@ import { Atkinson_Hyperlegible_Next, Literata } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Analytics } from '@vercel/analytics/next';
 
 // Literata: a typeface designed for long reading (titles and lessons).
 // Atkinson Hyperlegible Next: designed for legibility (interface, answers, numbers).
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
+        <Analytics />
       </body>
     </html>
   );
