@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ButtonLink, CheckItem, WHATSAPP_CM } from './site';
 
 // Freight service Cameroon → Canada, styled like the other blocks of the services page.
 
@@ -95,116 +95,77 @@ const copy = {
   },
 };
 
-const Check = () => (
-  <svg className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-  </svg>
-);
-
 export default function CanadaFreight() {
   const { language } = useLanguage();
   const c = copy[language];
 
   return (
-    <>
-      <div className="flex items-center mb-6">
-        <div className="bg-blue-100 p-2 rounded-full mr-3">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h2 className="text-3xl font-bold text-gray-900">{c.title}</h2>
-        <span className="ml-3 rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">{c.badge}</span>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div className="lg:flex">
-          <div className="lg:w-1/3 relative">
-            <div className="h-60 lg:h-full relative">
-              <Image src="/images/photos/canada-toronto.jpg" alt={c.imageAlt} fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover" />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-blue-900/60 to-transparent opacity-60"></div>
-            <div className="absolute bottom-0 left-0 p-6 text-white">
-              <h3 className="text-xl font-bold">{c.title}</h3>
-              <p>{c.route}</p>
-            </div>
-          </div>
-
-          <div className="lg:w-2/3 p-8">
-            <p className="text-gray-700 mb-8 leading-relaxed">{c.intro}</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                [c.seaTitle, c.sea],
-                [c.airTitle, c.air],
-              ].map(([title, items]) => (
-                <div key={title as string} className="bg-blue-50 p-6 rounded-xl border-l-4 border-blue-500">
-                  <h3 className="text-xl font-semibold mb-4 text-blue-800">{title as string}</h3>
-                  <ul className="space-y-3">
-                    {(items as string[]).map((item) => (
-                      <li key={item} className="flex items-start">
-                        <Check />
-                        <span className="text-gray-600">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+    <div>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <p className="inline-block rounded-md bg-container px-3 py-1 text-sm font-bold text-night">{c.badge}</p>
+          <h2 className="display mt-4 text-4xl text-night sm:text-5xl">{c.title}</h2>
+          <p className="heading mt-3 text-lg text-ocean">{c.route}</p>
+          <p className="mt-5 text-lg text-slate">{c.intro}</p>
+          <div className="relative mt-8 h-72 overflow-hidden rounded-lg">
+            <Image src="/images/photos/canada-toronto.jpg" alt={c.imageAlt} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
           </div>
         </div>
 
-        <div className="border-t border-gray-100 p-8">
-          <h3 className="text-xl font-semibold mb-6 text-gray-900">{c.stepsTitle}</h3>
-          <ol className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            {c.steps.map(([title, text], i) => (
-              <li key={title}>
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 font-bold text-white">{i + 1}</div>
-                <p className="font-semibold text-gray-900 mb-1">{title}</p>
-                <p className="text-sm text-gray-600">{text}</p>
-              </li>
+        <div className="space-y-6 lg:col-span-7">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {([
+              [c.seaTitle, c.sea],
+              [c.airTitle, c.air],
+            ] as [string, string[]][]).map(([title, items]) => (
+              <div key={title} className="rounded-lg border-t-4 border-ocean bg-white p-6">
+                <h3 className="heading text-xl text-night">{title}</h3>
+                <ul className="mt-4 space-y-3 text-slate">
+                  {items.map((item) => <CheckItem key={item}>{item}</CheckItem>)}
+                </ul>
+              </div>
             ))}
-          </ol>
-        </div>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-gray-100 p-8">
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-blue-800">{c.docsTitle}</h3>
-            <ul className="space-y-3">
-              {c.docs.map((item) => (
-                <li key={item} className="flex items-start">
-                  <Check />
-                  <span className="text-gray-600">{item}</span>
+          <div className="rounded-lg bg-white p-6">
+            <h3 className="heading text-xl text-night">{c.stepsTitle}</h3>
+            <ol className="mt-5 space-y-4">
+              {c.steps.map(([title, text], i) => (
+                <li key={title} className="flex gap-4">
+                  <span className="display flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-night text-base text-white">{i + 1}</span>
+                  <div>
+                    <p className="font-bold text-night">{title}</p>
+                    <p className="text-slate">{text}</p>
+                  </div>
                 </li>
               ))}
-            </ul>
+            </ol>
           </div>
-          <div className="rounded-xl border-l-4 border-amber-500 bg-amber-50 p-6">
-            <h3 className="text-lg font-semibold mb-3 text-amber-800">{c.rulesTitle}</h3>
-            <p className="text-gray-700">{c.rules}</p>
-          </div>
-        </div>
 
-        <div className="flex flex-col items-center gap-3 border-t border-gray-100 p-8 text-center">
-          <p className="text-sm text-gray-500">{c.note}</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link
-              href="/contact/"
-              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-colors"
-            >
-              {c.cta}
-            </Link>
-            <a
-              href="https://wa.me/237694244666"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center border border-green-600 text-green-700 hover:bg-green-50 font-medium py-2 px-5 rounded-lg transition-colors"
-            >
-              {c.whatsapp}
-            </a>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="rounded-lg bg-white p-6">
+              <h3 className="heading text-lg text-night">{c.docsTitle}</h3>
+              <ul className="mt-4 space-y-3 text-slate">
+                {c.docs.map((item) => <CheckItem key={item}>{item}</CheckItem>)}
+              </ul>
+            </div>
+            <div className="rounded-lg border-l-4 border-container bg-amber-50 p-6">
+              <h3 className="heading text-lg text-night">{c.rulesTitle}</h3>
+              <p className="mt-3 text-slate">{c.rules}</p>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm text-slate">{c.note}</p>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href={`/contact/?service=${encodeURIComponent(language === 'fr' ? 'Fret Cameroun → Canada' : 'Freight Cameroon → Canada')}`}>{c.cta}</ButtonLink>
+              <a href={WHATSAPP_CM} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md border-2 border-night px-6 py-3 font-bold text-night transition-colors hover:bg-night hover:text-white">
+                {c.whatsapp}
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,214 +1,233 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Container, PageHero } from '@/components/site';
 
-// Interface pour le type de FAQ
+type Category = 'canada' | 'cargo' | 'currency' | 'visa' | 'consulting' | 'business' | 'it' | 'customs';
+
 interface FAQItem {
-  question: string;
-  answer: string;
-  category: string;
+  category: Category;
+  q: { fr: string; en: string };
+  a: { fr: string; en: string };
 }
 
+const faqs: FAQItem[] = [
+  {
+    category: 'canada',
+    q: { fr: 'Puis-je envoyer des colis du Cameroun vers le Canada ?', en: 'Can I ship parcels from Cameroon to Canada?' },
+    a: {
+      fr: 'Oui. Nous expédions colis, effets personnels et marchandises de Douala et Yaoundé vers Montréal, Toronto et le reste du Canada, par fret maritime (groupage en conteneur) ou par fret aérien. Déposez votre envoi à notre bureau de Douala ou demandez une collecte.',
+      en: 'Yes. We ship parcels, personal effects and goods from Douala and Yaoundé to Montreal, Toronto and the rest of Canada, by sea freight (container consolidation) or air freight. Drop your shipment at our Douala office or ask for a pickup.',
+    },
+  },
+  {
+    category: 'canada',
+    q: { fr: "Comment est calculé le prix d'un envoi vers le Canada ?", en: 'How is the price of a shipment to Canada calculated?' },
+    a: {
+      fr: "En fret aérien, le prix dépend du poids : nous retenons le plus élevé entre le poids réel et le poids volumétrique. En fret maritime, il dépend du volume en mètres cubes. Envoyez-nous le contenu, le poids ou les dimensions et la ville d'arrivée : nous vous répondons avec un devis et la date du prochain départ.",
+      en: 'For air freight, the price depends on weight: we use the higher of actual and volumetric weight. For sea freight, it depends on volume in cubic metres. Send us the contents, weight or dimensions and the arrival city: we reply with a quote and the next departure date.',
+    },
+  },
+  {
+    category: 'canada',
+    q: { fr: 'Quels produits ne peut-on pas envoyer au Canada ?', en: 'What can’t be shipped to Canada?' },
+    a: {
+      fr: "Le Canada contrôle strictement l'entrée des aliments, plantes, semences, viandes, produits laitiers et produits d'origine animale : certains sont interdits, d'autres nécessitent un permis. Les armes, contrefaçons et médicaments sans ordonnance sont refusés. Avant chaque envoi, nous vérifions avec vous ce que vous souhaitez expédier.",
+      en: 'Canada strictly controls food, plants, seeds, meat, dairy and animal products: some are prohibited, others need a permit. Weapons, counterfeit goods and unprescribed medicines are refused. Before each shipment, we check with you what you want to send.',
+    },
+  },
+  {
+    category: 'canada',
+    q: { fr: 'Quels documents faut-il pour expédier vers le Canada ?', en: 'What documents do I need to ship to Canada?' },
+    a: {
+      fr: "Une pièce d'identité de l'expéditeur, les coordonnées complètes du destinataire au Canada et la liste détaillée du contenu avec la valeur de chaque article. Pour des marchandises destinées à la vente, une facture commerciale est nécessaire. Nous préparons la liste de colisage et la déclaration avec vous.",
+      en: "The sender's ID, the recipient's full contact details in Canada and a detailed list of contents with the value of each item. Goods for sale also need a commercial invoice. We prepare the packing list and declaration with you.",
+    },
+  },
+  {
+    category: 'cargo',
+    q: {
+      fr: 'Quels sont les délais moyens pour un transport aérien entre la Chine et l’Afrique ?',
+      en: 'What are the average lead times for air freight between China and Africa?',
+    },
+    a: {
+      fr: 'Les délais moyens varient généralement entre 5 et 10 jours ouvrables, selon la destination et les procédures douanières. Des options express de 3 à 5 jours existent pour les envois urgents.',
+      en: 'Lead times usually range from 5 to 10 business days, depending on the destination and customs procedures. Express options of 3 to 5 days are available for urgent shipments.',
+    },
+  },
+  {
+    category: 'cargo',
+    q: {
+      fr: 'Comment sont calculés les frais de transport pour les marchandises volumineuses ?',
+      en: 'How are shipping costs calculated for bulky goods?',
+    },
+    a: {
+      fr: 'Nous facturons selon le poids volumétrique ou le poids réel, le plus élevé des deux. Formule standard : Longueur × Largeur × Hauteur (cm) / 6000 = poids volumétrique en kg. Contactez-nous pour un devis personnalisé.',
+      en: 'We charge by volumetric weight or actual weight, whichever is higher. Standard formula: Length × Width × Height (cm) / 6000 = volumetric weight in kg. Contact us for a tailored quote.',
+    },
+  },
+  {
+    category: 'currency',
+    q: {
+      fr: 'Quels sont vos taux de change pour le Yuan vers le FCFA ?',
+      en: 'What are your Yuan to FCFA exchange rates?',
+    },
+    a: {
+      fr: 'Nos taux sont mis à jour quotidiennement selon les marchés internationaux, avec des frais de service minimaux. Pour connaître le taux du jour, contactez-nous directement ou consultez notre application mobile qui affiche les taux en temps réel.',
+      en: 'Our rates are updated daily based on international markets, with minimal service fees. For today’s rate, contact us directly or check our mobile app, which shows rates in real time.',
+    },
+  },
+  {
+    category: 'currency',
+    q: {
+      fr: 'Existe-t-il des limites pour les montants de change ?',
+      en: 'Are there limits on exchange amounts?',
+    },
+    a: {
+      fr: 'Pas de limite pour les petits montants. Au-delà de 5 000 USD (ou équivalent), des justificatifs peuvent être demandés conformément aux réglementations financières internationales. Des conditions spéciales s’appliquent aux très grandes transactions.',
+      en: 'There is no limit for small amounts. Above USD 5,000 (or equivalent), supporting documents may be requested in line with international financial regulations. Special conditions apply to very large transactions.',
+    },
+  },
+  {
+    category: 'visa',
+    q: {
+      fr: 'Quels documents faut-il pour un visa étudiant au Canada ?',
+      en: 'Which documents are needed for a Canadian student visa?',
+    },
+    a: {
+      fr: 'Passeport valide, lettre d’acceptation d’un établissement canadien, preuve de moyens financiers, formulaires complétés, photos d’identité, certificat médical dans certains cas, et preuve de votre intention de quitter le Canada à la fin des études. Notre équipe vous guide à chaque étape.',
+      en: 'A valid passport, an acceptance letter from a Canadian institution, proof of funds, completed application forms, ID photos, a medical certificate in some cases, and proof of your intent to leave Canada after your studies. Our team guides you through every step.',
+    },
+  },
+  {
+    category: 'visa',
+    q: {
+      fr: 'Combien de temps prend une demande de visa ?',
+      en: 'How long does a visa application take?',
+    },
+    a: {
+      fr: 'Cela dépend du type de visa et du pays. Comptez en général 2 à 8 semaines pour un visa étudiant ou touristique ; les visas d’affaires sont parfois plus rapides. Nous recommandons de commencer au moins 3 mois avant le départ.',
+      en: 'It depends on the visa type and country. Allow 2 to 8 weeks for a student or tourist visa; business visas are sometimes faster. We recommend starting at least 3 months before departure.',
+    },
+  },
+  {
+    category: 'consulting',
+    q: {
+      fr: 'Comment m’aidez-vous à trouver des fournisseurs fiables en Chine ?',
+      en: 'How do you help me find reliable suppliers in China?',
+    },
+    a: {
+      fr: 'Notre équipe à Foshan dispose d’un vaste réseau de fournisseurs vérifiés. Nous évaluons leur capacité de production, leur qualité et leur fiabilité, organisons des visites d’usines, négocions les prix en votre nom et gérons la communication en chinois.',
+      en: 'Our Foshan team has a broad network of vetted suppliers. We assess their production capacity, quality and reliability, arrange factory visits, negotiate prices on your behalf and handle communication in Chinese.',
+    },
+  },
+  {
+    category: 'business',
+    q: {
+      fr: 'Quelles sont les étapes pour créer une SARL au Cameroun ?',
+      en: 'What are the steps to set up an LLC (SARL) in Cameroon?',
+    },
+    a: {
+      fr: 'Rédaction des statuts, ouverture d’un compte bancaire et dépôt du capital, enregistrement au greffe du tribunal de commerce, obtention du numéro d’identification fiscale, publication d’un avis de constitution dans un journal d’annonces légales et inscription au registre du commerce. Nous vous accompagnons pour une création rapide et conforme.',
+      en: 'Drafting the articles of association, opening a bank account and depositing the share capital, registering with the commercial court registry, obtaining a tax ID, publishing a notice of incorporation in a legal gazette, and registering with the trade register. We support you for a fast, compliant setup.',
+    },
+  },
+  {
+    category: 'it',
+    q: {
+      fr: 'Proposez-vous le développement de sites web ou d’applications ?',
+      en: 'Do you offer website or app development?',
+    },
+    a: {
+      fr: 'Oui : sites web professionnels, applications mobiles et logiciels de gestion, personnalisés selon vos besoins. Nous assurons aussi l’hébergement, la maintenance et le support technique.',
+      en: 'Yes: professional websites, mobile apps and business management software, tailored to your needs. We also provide hosting, maintenance and technical support.',
+    },
+  },
+  {
+    category: 'customs',
+    q: {
+      fr: 'Comment se déroule le dédouanement des marchandises importées ?',
+      en: 'How does customs clearance for imported goods work?',
+    },
+    a: {
+      fr: 'Préparation et dépôt de la déclaration en douane, vérification des documents (facture commerciale, liste de colisage, certificat d’origine…), inspection éventuelle, paiement des droits et taxes, puis mainlevée. Nos experts gèrent chaque étape en limitant délais et coûts.',
+      en: 'Preparing and filing the customs declaration, checking documents (commercial invoice, packing list, certificate of origin…), possible inspection, payment of duties and taxes, then release of goods. Our experts handle every step while keeping delays and costs down.',
+    },
+  },
+];
+
+const copy = {
+  fr: {
+    title: 'Questions fréquentes',
+    intro: 'Délais, tarifs, documents, produits autorisés : les réponses aux questions que nos clients posent le plus souvent.',
+    all: 'Toutes',
+    categories: { canada: 'Fret Cameroun → Canada', cargo: 'Cargo', currency: 'Change', visa: 'Visas', consulting: 'Achats en Chine', business: 'Entreprise', it: 'Informatique', customs: 'Douane' },
+    moreTitle: 'Votre question n’est pas dans la liste ?',
+    moreText: 'Écrivez-nous : nous vous répondons sous 24 h ouvrées.',
+    moreCta: 'Poser ma question',
+  },
+  en: {
+    title: 'Frequent questions',
+    intro: 'Transit times, prices, documents, allowed items: answers to the questions our customers ask most.',
+    all: 'All',
+    categories: { canada: 'Freight Cameroon → Canada', cargo: 'Cargo', currency: 'Currency', visa: 'Visas', consulting: 'Purchasing in China', business: 'Business', it: 'IT', customs: 'Customs' },
+    moreTitle: 'Your question isn’t listed?',
+    moreText: 'Write to us: we reply within one business day.',
+    moreCta: 'Ask my question',
+  },
+};
+
 export default function FAQ() {
-  const { t, language } = useLanguage();
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-
-  // Données des FAQ
-  const faqs: FAQItem[] = [
-    // Fret Cameroun → Canada
-    {
-      question: 'Puis-je envoyer des colis du Cameroun vers le Canada avec Paul World Travel ?',
-      answer: 'Oui. Nous expédions colis, effets personnels et marchandises de Douala et Yaoundé vers Montréal, Toronto et le reste du Canada, par fret maritime (groupage en conteneur) ou par fret aérien. Déposez votre envoi à notre bureau de Douala ou demandez une collecte.',
-      category: 'canada'
-    },
-    {
-      question: 'Comment est calculé le prix d\'un envoi vers le Canada ?',
-      answer: 'En fret aérien, le prix dépend du poids : nous retenons le plus élevé entre le poids réel et le poids volumétrique. En fret maritime, le prix dépend du volume en mètres cubes. Envoyez-nous le contenu, le poids ou les dimensions et la ville d\'arrivée : nous vous répondons avec un devis et la date du prochain départ.',
-      category: 'canada'
-    },
-    {
-      question: 'Quels produits ne peut-on pas envoyer au Canada ?',
-      answer: 'Le Canada contrôle strictement l\'entrée des aliments, plantes, semences, viandes, produits laitiers et produits d\'origine animale : certains sont interdits, d\'autres nécessitent un permis. Les armes, contrefaçons et médicaments sans ordonnance sont refusés. Avant chaque envoi, nous vérifions avec vous la liste de ce que vous souhaitez expédier.',
-      category: 'canada'
-    },
-    {
-      question: 'Quels documents faut-il pour expédier vers le Canada ?',
-      answer: 'Une pièce d\'identité de l\'expéditeur, les coordonnées complètes du destinataire au Canada et la liste détaillée du contenu avec la valeur de chaque article. Pour des marchandises destinées à la vente, une facture commerciale est nécessaire. Nous préparons la liste de colisage et la déclaration avec vous.',
-      category: 'canada'
-    },
-    // Services de cargo
-    {
-      question: 'Quels sont les délais moyens pour un transport aérien entre la Chine et l\'Afrique ?',
-      answer: 'Les délais moyens pour un transport aérien entre la Chine et l\'Afrique varient généralement entre 5 et 10 jours ouvrables, en fonction de la destination précise et des procédures douanières. Nous offrons également des options express avec des délais de 3 à 5 jours pour les envois urgents.',
-      category: 'cargo'
-    },
-    {
-      question: 'Comment sont calculés les frais de transport pour les marchandises volumineuses ?',
-      answer: 'Les frais de transport pour les marchandises volumineuses sont calculés en fonction du poids volumétrique (dimension) ou du poids réel, selon celui qui est le plus élevé. Nous utilisons la formule standard de l\'industrie : Longueur x Largeur x Hauteur (en cm) / 6000 = poids volumétrique en kg. Contactez-nous pour obtenir un devis personnalisé.',
-      category: 'cargo'
-    },
-    // Change de devises
-    {
-      question: 'Quels sont vos taux de change pour le Yuan vers le FCFA ?',
-      answer: 'Nos taux de change sont mis à jour quotidiennement en fonction des marchés internationaux. Nous nous efforçons de proposer les taux les plus compétitifs avec des frais de service minimaux. Pour connaître le taux actuel du Yuan vers le FCFA, veuillez nous contacter directement ou consulter notre application mobile qui affiche les taux en temps réel.',
-      category: 'currency'
-    },
-    {
-      question: 'Existe-t-il des limites pour les montants de change ?',
-      answer: 'Pour les petits montants, il n\'y a généralement pas de limite. Pour les transactions importantes (supérieures à 5000 USD ou équivalent), nous pouvons vous demander de fournir des documents justificatifs conformément aux réglementations financières internationales. Des conditions spéciales peuvent s\'appliquer pour les très grandes transactions.',
-      category: 'currency'
-    },
-    // Visas
-    {
-      question: 'Quels sont les documents nécessaires pour une demande de visa étudiant au Canada ?',
-      answer: 'Pour une demande de visa étudiant au Canada, vous aurez besoin des documents suivants : passeport valide, lettre d\'acceptation d\'un établissement d\'enseignement canadien, preuve de moyens financiers, formulaires de demande complétés, photos d\'identité, certificat médical dans certains cas, et preuve de votre intention de quitter le Canada à la fin de vos études. Notre équipe vous guidera à travers chaque étape du processus.',
-      category: 'visa'
-    },
-    {
-      question: 'Combien de temps prend le processus de demande de visa ?',
-      answer: 'Le délai de traitement varie en fonction du type de visa et du pays de destination. En général, il faut compter entre 2 et 8 semaines pour un visa étudiant ou touristique. Les visas d\'affaires peuvent être traités plus rapidement dans certains cas. Nous recommandons de commencer le processus au moins 3 mois avant votre date de départ prévue.',
-      category: 'visa'
-    },
-    // Conseils et achats
-    {
-      question: 'Comment pouvez-vous m\'aider à trouver des fournisseurs fiables en Chine ?',
-      answer: 'Notre équipe basée à Foshan dispose d\'un vaste réseau de fournisseurs vérifiés dans différents secteurs industriels. Nous effectuons une évaluation rigoureuse des fournisseurs, vérifions leur capacité de production, leur qualité et leur fiabilité. Nous pouvons organiser des visites d\'usines, négocier les prix en votre nom et gérer la communication en chinois. Notre objectif est de vous connecter avec des partenaires commerciaux fiables adaptés à vos besoins spécifiques.',
-      category: 'consulting'
-    },
-    // Création d'entreprise
-    {
-      question: 'Quelles sont les étapes pour créer une SARL au Cameroun ?',
-      answer: 'La création d\'une SARL au Cameroun implique plusieurs étapes : rédaction des statuts de l\'entreprise, ouverture d\'un compte bancaire et dépôt du capital social, enregistrement auprès du greffe du tribunal de commerce, obtention d\'un numéro d\'identification fiscale, publication d\'un avis de constitution dans un journal d\'annonces légales, et inscription au registre du commerce. Notre équipe peut vous accompagner tout au long de ce processus pour assurer une création rapide et conforme à la législation camerounaise.',
-      category: 'business'
-    },
-    // Solutions IT
-    {
-      question: 'Proposez-vous des services de développement de sites web ou d\'applications ?',
-      answer: 'Oui, nous proposons une gamme complète de services informatiques, y compris le développement de sites web professionnels, d\'applications mobiles et de logiciels de gestion d\'entreprise. Nos solutions sont personnalisées pour répondre aux besoins spécifiques de votre entreprise. Nous offrons également des services d\'hébergement, de maintenance et de support technique pour assurer le bon fonctionnement de vos outils numériques.',
-      category: 'it'
-    },
-    // Douane
-    {
-      question: 'Comment se déroule le processus de dédouanement des marchandises importées ?',
-      answer: 'Le processus de dédouanement comprend la préparation et la soumission de la déclaration en douane, la vérification des documents (facture commerciale, liste de colisage, certificat d\'origine, etc.), l\'inspection possible des marchandises, le paiement des droits et taxes d\'importation, et enfin la mainlevée des marchandises. Notre équipe d\'experts en douane s\'occupe de toutes ces étapes pour vous, en veillant à la conformité et en minimisant les délais et les coûts.',
-      category: 'customs'
-    }
-  ];
-
-  // Catégories de FAQ
-  const categories = [
-    { id: 'all', name: t('faq.category_all') },
-    { id: 'cargo', name: t('faq.category_cargo') },
-    { id: 'canada', name: language === 'fr' ? 'Fret Cameroun → Canada' : 'Freight Cameroon → Canada' },
-    { id: 'currency', name: t('faq.category_currency') },
-    { id: 'visa', name: t('faq.category_visa') },
-    { id: 'consulting', name: t('faq.category_consulting') },
-    { id: 'business', name: t('faq.category_business') },
-    { id: 'it', name: t('faq.category_it') },
-    { id: 'customs', name: t('faq.category_customs') }
-  ];
-
-  // Filtrer les FAQs par catégorie
-  const filteredFaqs = activeCategory === 'all' 
-    ? faqs 
-    : faqs.filter(faq => faq.category === activeCategory);
-
-  // Basculer l'affichage de la réponse
-  const toggleAnswer = (index: number) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
+  const { language } = useLanguage();
+  const c = copy[language];
+  const [category, setCategory] = useState<Category | 'all'>('all');
+  const shown = category === 'all' ? faqs : faqs.filter((f) => f.category === category);
+  const filters: (Category | 'all')[] = ['all', ...(Object.keys(c.categories) as Category[])];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
-      <main className="flex-grow">
-        {/* Header Section */}
-        <section className="bg-blue-700 text-white py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-bold mb-4">{t('faq.title')}</h1>
-            <p className="text-xl">{t('faq.subtitle')}</p>
-          </div>
-        </section>
-        
-        {/* FAQ Content */}
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Catégories */}
-            <div className="mb-12 flex flex-wrap justify-center gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  className={`px-4 py-2 rounded-full text-sm font-medium ${
-                    activeCategory === category.id
-                      ? 'bg-blue-700 text-white'
-                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                  }`}
-                  onClick={() => setActiveCategory(category.id)}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-            
-            {/* Questions et réponses */}
-            <div className="space-y-4">
-              {filteredFaqs.map((faq, index) => (
-                <div
-                  key={index}
-                  className="border border-gray-200 rounded-lg overflow-hidden"
-                >
-                  <button
-                    className="w-full flex justify-between items-center p-5 focus:outline-none bg-white hover:bg-gray-50"
-                    onClick={() => toggleAnswer(index)}
-                  >
-                    <span className="text-lg font-medium text-gray-900 text-left">{faq.question}</span>
-                    <svg
-                      className={`w-5 h-5 text-blue-700 transform ${activeIndex === index ? 'rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  
-                  {activeIndex === index && (
-                    <div className="p-5 border-t border-gray-200 bg-gray-50">
-                      <p className="text-gray-700">{faq.answer}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {filteredFaqs.length === 0 && (
-                <div className="text-center py-10">
-                  <p className="text-gray-600">{t('faq.no_questions')}</p>
-                </div>
-              )}
-            </div>
-            
-            {/* Contact pour plus de questions */}
-            <div className="mt-16 text-center bg-blue-50 p-8 rounded-lg shadow-sm">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('faq.more_questions')}</h3>
-              <p className="text-gray-600 mb-6">{t('faq.contact_description')}</p>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-700 hover:bg-blue-800"
+    <>
+      <PageHero title={c.title} intro={c.intro} image="/images/photos/voyage-affaires.jpg" />
+
+      <section className="bg-paper py-16 sm:py-20">
+        <Container className="max-w-4xl">
+          <div className="mb-8 flex flex-wrap gap-2" role="group" aria-label={c.title}>
+            {filters.map((id) => (
+              <button
+                key={id}
+                onClick={() => setCategory(id)}
+                aria-pressed={category === id}
+                className={`rounded-md px-4 py-2 text-sm font-bold transition-colors ${
+                  category === id ? 'bg-night text-white' : 'bg-white text-night hover:bg-rule'
+                }`}
               >
-                {t('nav.contact_us')}
-              </a>
-            </div>
+                {id === 'all' ? c.all : c.categories[id]}
+              </button>
+            ))}
           </div>
-        </section>
-      </main>
-      
-      <Footer />
-    </div>
+
+          <div className="divide-y divide-rule overflow-hidden rounded-lg bg-white">
+            {shown.map((item) => (
+              <details key={item.q.fr} className="group p-6">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-6">
+                  <span className="heading text-lg text-night">{item.q[language]}</span>
+                  <span aria-hidden="true" className="display mt-0.5 text-2xl leading-none text-ocean transition-transform group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-4 max-w-3xl text-slate">{item.a[language]}</p>
+              </details>
+            ))}
+          </div>
+
+          <div className="mt-10 rounded-lg bg-night p-8 text-white">
+            <h2 className="heading text-2xl">{c.moreTitle}</h2>
+            <p className="mt-2 text-blue-100">{c.moreText}</p>
+            <Link href="/contact/" className="mt-5 inline-flex rounded-md bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">
+              {c.moreCta}
+            </Link>
+          </div>
+        </Container>
+      </section>
+    </>
   );
 }

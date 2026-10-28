@@ -1,133 +1,130 @@
 'use client';
 
-import Image from "next/image";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
-import { useLanguage } from "@/contexts/LanguageContext";
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { ButtonLink, Container, EMAIL, PageHero, SectionTitle } from '@/components/site';
+import { offices, hours } from '@/components/offices';
 
-// Leaflet needs `window`, so the map is only rendered in the browser (static export).
+// Leaflet needs `window`, so the map is only rendered in the browser.
 const LocationsMap = dynamic(() => import('@/components/LocationsMap'), { ssr: false });
 
+const copy = {
+  fr: {
+    title: 'Nos bureaux à Douala et à Foshan',
+    intro: 'Notre siège au Cameroun coordonne vos envois et vos démarches ; notre bureau en Chine suit vos achats auprès des fournisseurs.',
+    officeText: {
+      douala: 'Notre bureau principal, à Douala, capitale économique du Cameroun. C’est ici que nous réceptionnons vos envois vers le Canada et que nous suivons le dédouanement de vos marchandises venues de Chine.',
+      foshan: 'Au cœur du Guangdong, l’une des premières régions manufacturières de Chine. Notre équipe y rencontre les fournisseurs, contrôle les produits et regroupe vos commandes avant l’expédition.',
+    },
+    phone: 'Téléphone',
+    email: 'Email',
+    map: 'Ouvrir dans Google Maps',
+    hoursTitle: 'Horaires d’ouverture',
+    reachTitle: 'Où nous expédions',
+    reach: [
+      ['Cameroun', 'Douala et Yaoundé, puis livraison dans tout le pays'],
+      ['Chine', 'Foshan, Guangzhou et toute la province du Guangdong'],
+      ['Canada', 'Montréal, Toronto et livraison partout au Canada'],
+    ],
+    mapTitle: 'Nos deux bureaux sur la carte',
+    cta: 'Demander un devis',
+  },
+  en: {
+    title: 'Our offices in Douala and Foshan',
+    intro: 'Our head office in Cameroon coordinates your shipments and paperwork; our office in China follows your purchases with suppliers.',
+    officeText: {
+      douala: 'Our main office, in Douala, Cameroon’s economic capital. This is where we receive your shipments to Canada and follow the customs clearance of your goods from China.',
+      foshan: 'In the heart of Guangdong, one of China’s leading manufacturing regions. Our team meets suppliers, inspects products and consolidates your orders before shipment.',
+    },
+    phone: 'Phone',
+    email: 'Email',
+    map: 'Open in Google Maps',
+    hoursTitle: 'Opening hours',
+    reachTitle: 'Where we ship',
+    reach: [
+      ['Cameroon', 'Douala and Yaoundé, then delivery across the country'],
+      ['China', 'Foshan, Guangzhou and the whole of Guangdong province'],
+      ['Canada', 'Montreal, Toronto and delivery anywhere in Canada'],
+    ],
+    mapTitle: 'Our two offices on the map',
+    cta: 'Get a quote',
+  },
+};
+
 export default function Locations() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const c = copy[language];
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
-      <main className="flex-grow">
-        {/* Header Section */}
-        <section className="bg-blue-700 text-white py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-bold mb-4">{t('locations.title')}</h1>
-            <p className="text-xl">{t('locations.subtitle')}</p>
-          </div>
-        </section>
-        
-        {/* Locations Content */}
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* China Office */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8 text-gray-900">{t('locations.china_office')}</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="relative h-96">
-                  <Image
-                    src="/images/photos/chine-skyline.jpg"
-                    alt={t('locations.china_office_alt')}
-                    fill
-                    className="object-cover rounded-lg shadow-xl"
-                  />
+    <>
+      <PageHero title={c.title} intro={c.intro} image="/images/photos/chine-skyline.jpg" />
+
+      {offices.map((o, i) => (
+        <section key={o.id} className={`py-16 sm:py-20 ${i % 2 === 0 ? 'bg-white' : 'bg-paper'}`}>
+          <Container className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
+            <div className={`relative h-72 overflow-hidden rounded-lg lg:h-96 ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
+              <Image src={o.image} alt={o.imageAlt[language]} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+            </div>
+            <div>
+              <p className="font-bold text-ocean">{o.role[language]}</p>
+              <h2 className="display mt-2 text-4xl text-night sm:text-5xl">{o.city}</h2>
+              <p className="mt-2 text-lg text-slate">{o.address[language]}</p>
+              <p className="mt-5 text-lg text-slate">{c.officeText[o.id]}</p>
+              <dl className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <dt className="text-sm text-slate">{c.phone}</dt>
+                  {o.phones.map((p) => (
+                    <dd key={p.href}><a href={p.href} className="font-bold text-night hover:text-ocean">{p.label}</a></dd>
+                  ))}
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold mb-4">{t('home.china.foshan')}</h3>
-                  <p className="text-gray-600 mb-6">
-                    {t('locations.china_description')}
-                  </p>
-                  <div className="space-y-4">
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span>{t('locations.china_address')}</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      <span>+8619068451378</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      <span className="text-lg font-bold text-blue-700">paulworld2016@yahoo.com</span>
-                    </div>
-                  </div>
+                  <dt className="text-sm text-slate">{c.email}</dt>
+                  <dd><a href={`mailto:${EMAIL}`} className="font-bold text-night hover:text-ocean">{EMAIL}</a></dd>
                 </div>
-              </div>
+              </dl>
+              <a href={o.map} target="_blank" rel="noopener noreferrer" className="mt-6 inline-block font-bold text-ocean underline-offset-4 hover:underline">
+                {c.map}
+              </a>
             </div>
-            
-            {/* Cameroon Office */}
-            <div>
-              <h2 className="text-3xl font-bold mb-8 text-gray-900">{t('locations.cameroon_office')}</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="order-2 lg:order-1">
-                  <h3 className="text-2xl font-semibold mb-4">{t('home.cameroon.douala_lendi')}</h3>
-                  <p className="text-gray-600 mb-6">
-                    {t('locations.cameroon_description')}
-                  </p>
-                  <div className="space-y-4">
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span>{t('locations.cameroon_address')}</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      <span>+237694244666</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <svg className="w-6 h-6 mr-3 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      <span className="text-lg font-bold text-blue-700">paulworld2016@yahoo.com</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="relative h-96 order-1 lg:order-2">
-                  <Image
-                    src="/images/photos/douala-port.jpg"
-                    alt={t('locations.cameroon_office_alt')}
-                    fill
-                    className="object-cover rounded-lg shadow-xl"
-                  />
-                </div>
+          </Container>
+        </section>
+      ))}
+
+      <section className="bg-night py-16 text-white sm:py-20">
+        <Container>
+          <SectionTitle title={c.reachTitle} light />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {c.reach.map(([country, text]) => (
+              <div key={country} className="border-t-4 border-container pt-5">
+                <p className="display text-3xl">{country}</p>
+                <p className="mt-2 text-blue-100">{text}</p>
               </div>
-            </div>
-            
-            {/* Map Section */}
-            <div className="mt-16">
-              <h2 className="text-3xl font-bold mb-8 text-gray-900 text-center">{t('locations.global_presence')}</h2>
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-gray-600 mb-8 text-center">
-                  {t('locations.global_description')}
-                </p>
-                <div className="relative h-96">
-                  <LocationsMap chinaLabel={t('locations.china_office')} cameroonLabel={t('locations.cameroon_office')} />
-                </div>
-              </div>
+            ))}
+          </div>
+          <ButtonLink href="/contact/" className="mt-10">{c.cta}</ButtonLink>
+        </Container>
+      </section>
+
+      <section className="bg-paper py-16 sm:py-20">
+        <Container className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <SectionTitle title={c.mapTitle} />
+            <div className="rounded-lg bg-white p-6">
+              <p className="heading text-night">{c.hoursTitle}</p>
+              <ul className="mt-2 space-y-1 text-slate">
+                {hours[language].map((h) => <li key={h}>{h}</li>)}
+              </ul>
             </div>
           </div>
-        </section>
-      </main>
-      
-      <Footer />
-    </div>
+          <div className="relative z-0 h-96 overflow-hidden rounded-lg lg:col-span-8">
+            <LocationsMap
+              chinaLabel={language === 'fr' ? 'Bureau de Foshan' : 'Foshan office'}
+              cameroonLabel={language === 'fr' ? 'Siège de Douala' : 'Douala head office'}
+            />
+          </div>
+        </Container>
+      </section>
+    </>
   );
 }
