@@ -104,3 +104,7 @@ Points d'attention
 - Formules et prix (ex. 1 mois / 3 mois, toutes épreuves ou à la carte) ?
 - Dates et horaires des sessions en présentiel à Douala ?
 - Qui produit les questions et les audios au départ ? Combien de tests blancs au lancement ?
+
+## Démonstration du parcours candidat
+
+Le site principal propose un parcours simulé sur `/formation/` : connexion par pseudo, tableau de bord, entraînement des quatre compétences et simulation raccourcie. Il fonctionne sans Supabase ni Brevo et ne doit pas être confondu avec les comptes réels de l’application indépendante. Le détail des outils, du stockage local, des limites et des vérifications se trouve dans [formation-demo.md](formation-demo.md).
