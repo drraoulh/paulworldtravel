@@ -85,3 +85,5 @@ export const EMAIL = 'paulworld2016@yahoo.com';
 export const EMAIL_INFO = 'infos@paulworldtravel.com';
 
 export const FORMATION_URL = '/formation/';
+/** Real training platform (accounts, enrolment, payment follow-up). */
+export const TRAINING_SITE = 'https://formation.paulworldtravel.com';

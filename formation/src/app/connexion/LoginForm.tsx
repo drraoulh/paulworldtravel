@@ -16,7 +16,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ kind: 'error' | 'info'; text: string } | null>(
-    params.get('erreur') === 'lien' ? { kind: 'error', text: 'Ce lien est invalide ou a expiré. Essayez de vous connecter ou demandez un nouveau lien de réinitialisation.' } : params.get('confirme') ? { kind: 'info', text: 'Votre adresse est confirmée. Connectez-vous avec votre mot de passe.' } : null
+    params.get('erreur') === 'lien' ? { kind: 'error', text: 'Si vous venez de confirmer votre adresse, connectez-vous avec votre mot de passe. Sinon, le lien a expiré : demandez-en un nouveau ci-dessous.' } : params.get('confirme') ? { kind: 'info', text: 'Votre adresse est confirmée. Connectez-vous avec votre mot de passe.' } : null
   );
 
   if (!supabase) {
