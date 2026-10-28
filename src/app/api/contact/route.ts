@@ -16,6 +16,8 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const EMAIL_LOGO =
+  '<table role="presentation" style="margin:0 0 20px"><tr><td style="vertical-align:middle"><img src="https://www.paulworldtravel.com/brand/symbole-nav.png" alt="Paul World Travel" width="56" height="46" style="display:block;border:0"></td><td style="vertical-align:middle;padding-left:12px;font-family:Arial,sans-serif;font-size:18px;font-weight:bold;color:#0a2a5e">Paul World Travel</td></tr></table>';
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 
 type FormType = 'contact' | 'quote' | 'testimonial';
@@ -109,7 +111,7 @@ export async function POST(request: Request) {
     )
     .join('');
   const htmlContent =
-    `<div style="font-family:Arial,sans-serif;font-size:14px;color:#111">` +
+    `<div style="font-family:Arial,sans-serif;font-size:14px;color:#111">${EMAIL_LOGO}` +
     `<h2 style="color:#1d4ed8">${TYPE_LABELS[type]}</h2>` +
     `<p>Reçu depuis le site Paul World Travel. Répondez directement à cet email pour écrire à ${escapeHtml(name)}.</p>` +
     `<table style="border-collapse:collapse">${rows}</table></div>`;
@@ -162,7 +164,7 @@ export async function POST(request: Request) {
         replyTo: { email: senderEmail, name: process.env.BREVO_SENDER_NAME || 'PAULWORLD TRAVEL' },
         subject: 'Nous avons bien reçu votre message | We received your message',
         htmlContent:
-          `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">` +
+          `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}` +
           `<p>Bonjour ${firstName},</p>` +
           `<p>Merci pour votre message${fields.service ? ` concernant <strong>${escapeHtml(fields.service)}</strong>` : ''}. ` +
           `Notre équipe vous répond sous 24 h ouvrées. Pour une demande urgente, écrivez-nous sur WhatsApp : +237 6 94 24 46 66.</p>` +

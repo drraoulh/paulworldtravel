@@ -8,6 +8,7 @@ Sujet : `Confirmez votre compte Paul World Travel Formation`
 
 ```html
 <div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726;max-width:560px">
+  <img src="https://www.paulworldtravel.com/brand/symbole-nav.png" alt="Paul World Travel" width="56" height="46" style="display:block;margin-bottom:16px;border:0">
   <h2 style="color:#0a2a5e">Bienvenue dans votre préparation au TCF Canada</h2>
   <p>Merci pour votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email et accéder à votre espace candidat.</p>
   <p><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#f2b705;color:#0a2a5e;font-weight:bold;padding:12px 24px;border-radius:6px;text-decoration:none">Confirmer mon adresse</a></p>
@@ -22,6 +23,7 @@ Sujet : `Choisissez un nouveau mot de passe`
 
 ```html
 <div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726;max-width:560px">
+  <img src="https://www.paulworldtravel.com/brand/symbole-nav.png" alt="Paul World Travel" width="56" height="46" style="display:block;margin-bottom:16px;border:0">
   <h2 style="color:#0a2a5e">Nouveau mot de passe</h2>
   <p>Vous avez demandé à changer le mot de passe de votre espace candidat. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.</p>
   <p><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#f2b705;color:#0a2a5e;font-weight:bold;padding:12px 24px;border-radius:6px;text-decoration:none">Choisir un nouveau mot de passe</a></p>
@@ -35,6 +37,7 @@ Sujet : `Confirmez votre nouvelle adresse email`
 
 ```html
 <div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726;max-width:560px">
+  <img src="https://www.paulworldtravel.com/brand/symbole-nav.png" alt="Paul World Travel" width="56" height="46" style="display:block;margin-bottom:16px;border:0">
   <p>Confirmez le changement d’adresse email de votre espace candidat :</p>
   <p><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#f2b705;color:#0a2a5e;font-weight:bold;padding:12px 24px;border-radius:6px;text-decoration:none">Confirmer ma nouvelle adresse</a></p>
 </div>
