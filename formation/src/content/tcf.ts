@@ -71,3 +71,24 @@ export const nclcTable: { nclc: string; co: string; ce: string; ee: string; eo: 
   { nclc: '5', co: '369 – 397', ce: '375 – 405', ee: '6', eo: '6' },
   { nclc: '4', co: '331 – 368', ce: '342 – 374', ee: '4 – 5', eo: '4 – 5' },
 ];
+
+/*
+ * Official TCF Canada correspondence for the expression tests (note out of 20),
+ * from the France Éducation international candidate manual and the IRCC table.
+ * The AI never picks the NCLC: it is always read from this table.
+ */
+const EXPRESSION_BANDS: { min: number; nclc: string; cecr: string }[] = [
+  { min: 16, nclc: 'NCLC 10 et plus', cecr: 'C1-C2' },
+  { min: 14, nclc: 'NCLC 9', cecr: 'C1' },
+  { min: 12, nclc: 'NCLC 8', cecr: 'B2' },
+  { min: 10, nclc: 'NCLC 7', cecr: 'B2' },
+  { min: 7, nclc: 'NCLC 6', cecr: 'B1' },
+  { min: 6, nclc: 'NCLC 5', cecr: 'B1' },
+  { min: 4, nclc: 'NCLC 4', cecr: 'A2' },
+];
+
+/** NCLC and CEFR level matching an expression note out of 20, per the official table. */
+export function expressionBand(score: number) {
+  const band = EXPRESSION_BANDS.find((b) => Math.floor(score) >= b.min);
+  return band ? { nclc: band.nclc, cecr: band.cecr } : { nclc: 'Inférieur au NCLC 4', cecr: 'Inférieur à A2' };
+}

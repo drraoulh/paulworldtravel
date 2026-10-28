@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'S’entraîner au TCF Canada' };
 
 const modules = [
   { href: '/entrainement/expression-ecrite/', name: 'Expression écrite', text: 'Rédigez une tâche, recevez une note sur 20, vos erreurs expliquées et une version améliorée.', tag: 'Corrigé par l’IA' },
-  { href: '/entrainement/expression-orale/', name: 'Expression orale', text: 'Enregistrez votre réponse au micro : transcription, note sur 20 et réponse modèle.', tag: 'Corrigé par l’IA' },
+  { href: '/entrainement/expression-orale/', name: 'Expression orale', text: 'Répondez au micro, et dialoguez avec un interlocuteur IA pour la tâche 2 : transcription, note sur 20 et modèle.', tag: 'Corrigé par l’IA' },
   { href: '/entrainement/tuteur/', name: 'Tuteur de français', text: 'Posez vos questions de grammaire, de vocabulaire ou de méthode, à toute heure.', tag: 'Disponible 24 h/24' },
   { href: '#comprehension-ecrite', name: 'Compréhension écrite', text: 'Une série gratuite de six questions, avec ou sans chronomètre.', tag: 'Sans compte' },
 ];
