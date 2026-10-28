@@ -70,17 +70,36 @@ Espace formateur et admin
 - Emails (inscription, accès activé, correction disponible) via Brevo, comme le site principal.
 - Code dans un dossier `tcf/` de ce dépôt, ou dans un dépôt séparé (à décider).
 
-## 7. Étapes
+
+## 7. Intelligence artificielle (OpenRouter + Hugging Face)
+
+Les clés restent côté serveur (variables Vercel `OPENROUTER_API_KEY`, `HF_TOKEN`), jamais dans le navigateur. Chaque appel passe par une route API qui vérifie que le candidat a un accès actif et limite le nombre d'appels par jour.
+
+| Fonction | Service | Détail |
+| --- | --- | --- |
+| Pré-correction de l'expression écrite | OpenRouter (modèle de langage) | Note estimée sur 20 selon la grille officielle (tâche, cohérence, lexique, grammaire), fautes surlignées, version corrigée, conseils. Le formateur valide ou ajuste. |
+| Transcription de l'expression orale | Hugging Face (Whisper) | L'enregistrement est transcrit en texte. |
+| Pré-correction de l'expression orale | OpenRouter | À partir de la transcription : note estimée, remarques sur le contenu, le vocabulaire et la grammaire. Le formateur écoute et valide. |
+| Création de contenu (admin) | OpenRouter | Brouillons de textes, questions et sujets par niveau (A1 à C2), relus par l'équipe avant publication. |
+| Audios de compréhension orale | Hugging Face (synthèse vocale) | Génère des dialogues et annonces en français à partir des textes. À compléter par de vrais enregistrements pour un accent naturel. |
+| Tuteur | OpenRouter | Le candidat pose des questions sur une erreur ou une règle de grammaire, dans le contexte de son exercice. |
+
+Points d'attention
+- La note de l'IA est une estimation, affichée comme telle. La note officielle reste celle du formateur.
+- Les productions envoyées à l'IA sont des données personnelles : à mentionner dans les conditions d'utilisation, avec le consentement du candidat.
+- Coût : facturé à l'usage chez OpenRouter. On choisit un modèle bon marché pour le tuteur et un modèle plus précis pour la correction, avec un plafond de dépense.
+- Le modèle utilisé est réglable par variable d'environnement, sans toucher au code.
+
+## 8. Étapes
 
 1. **Vitrine + inscription** : accueil, guide TCF, formules, test de niveau gratuit, inscription, activation manuelle par l'admin.
 2. **Entraînement CO/CE** : banque de questions, séries, tests blancs chronométrés, scores et NCLC.
-3. **Expression écrite et orale** : rédaction, enregistrement audio, file de correction formateur.
+3. **Expression écrite et orale** : rédaction, enregistrement audio, pré-correction par IA, validation par le formateur.
 4. **Cours et suivi** : leçons, tableau de bord détaillé, rappels par email.
 
-## 8. Questions ouvertes
+## 9. Questions ouvertes
 
 - Formules et prix (ex. 1 mois / 3 mois, toutes épreuves ou à la carte) ?
 - Cours en ligne uniquement, ou aussi en présentiel à Douala avec des sessions et dates ?
 - Qui produit les questions et les audios au départ ? Combien de tests blancs au lancement ?
-- Correction des expressions : formateurs seulement, ou pré-correction automatique par IA validée ensuite par un formateur ?
 - Le nom de domaine `paulworldtravel.com` est-il déjà acheté, et chez qui ?
