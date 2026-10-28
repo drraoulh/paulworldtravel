@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { areas, services, servicesByArea, type Area } from '@/content/services';
 import { faqs } from '@/content/faqs';
 import { serviceIcons } from '@/components/serviceIcons';
-import { ButtonLink, Container, EMAIL_INFO, SectionTitle, WHATSAPP_CM, FORMATION_URL } from '@/components/site';
+import { ButtonLink, Container, EMAIL_INFO, SectionTitle, WHATSAPP_CM } from '@/components/site';
 import { offices, hours } from '@/components/offices';
 
 const copy = {
@@ -137,20 +137,6 @@ export default function Home() {
       </section>
 
       {/* Key facts */}
-      <section className="bg-paper py-14 sm:py-20">
-        <Container className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
-          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl">
-            <Image src="/images/photos/canada-toronto.jpg" alt={language === 'fr' ? 'Vue de Toronto au Canada' : 'View of Toronto, Canada'} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-          </div>
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-ocean">Paul World Travel Formation</p>
-            <h2 className="heading mt-4 text-3xl text-night sm:text-4xl">{language === 'fr' ? 'Votre projet Canada commence par le français.' : 'Your Canada journey starts with French.'}</h2>
-            <p className="mt-5 text-lg text-slate">{language === 'fr' ? 'Découvrez notre préparation au TCF Canada, en ligne ou en présentiel à Douala. Test de niveau gratuit, fiches méthode et exercices de compréhension écrite.' : 'Discover our TCF Canada preparation, online or in Douala. Free placement test, study guides and reading comprehension exercises.'}</p>
-            <a href={FORMATION_URL} className="mt-7 inline-flex items-center gap-3 rounded-md bg-container px-6 py-3 font-bold text-night transition-colors hover:bg-container-hover">{language === 'fr' ? 'Accéder au site Formation' : 'Visit the Training website'}<span aria-hidden="true">→</span></a>
-          </div>
-        </Container>
-      </section>
-
       <section className="border-b border-rule bg-white">
         <Container className="grid grid-cols-1 divide-y divide-rule sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           {c.facts.map(([value, text]) => (
