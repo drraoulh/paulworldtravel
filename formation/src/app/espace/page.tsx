@@ -95,6 +95,12 @@ export default async function Espace() {
             </div>
 
             <div className="rounded-2xl border border-rule bg-white p-6">
+              <h3 className="heading text-lg text-night">Vous avez passé le TCF ?</h3>
+              <p className="mt-2 text-slate">Partagez les sujets d’expression écrite que vous avez eus. Nous les reformulons et les publions pour les prochains candidats.</p>
+              <ButtonLink href="/partager-mes-sujets/" variant="dark" className="mt-4">Partager mes sujets</ButtonLink>
+            </div>
+
+            <div className="rounded-2xl border border-rule bg-white p-6">
               <h3 className="heading text-lg text-night">Mes corrections</h3>
               {(submissions ?? []).length === 0 ? (
                 <p className="mt-2 text-slate">Vos productions corrigées apparaîtront ici.</p>

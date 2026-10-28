@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { safeRedirectPath } from '@/lib/redirect';
 import { getSupabase } from '@/lib/supabase/client';
 
@@ -9,7 +9,6 @@ const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3
 
 export default function LoginForm() {
   const supabase = getSupabase();
-  const router = useRouter();
   const params = useSearchParams();
   const [mode, setMode] = useState<'login' | 'reset'>('login');
   const [email, setEmail] = useState('');
@@ -39,8 +38,8 @@ export default function LoginForm() {
         });
       }
       const wanted = params.get('suite') ?? '/espace/';
-      router.replace(safeRedirectPath(wanted));
-      router.refresh();
+      // Full navigation: the server must receive the new session cookie with the request.
+      window.location.assign(safeRedirectPath(wanted));
     } else {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/auth/confirm/?suite=/auth/nouveau-mot-de-passe/`,

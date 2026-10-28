@@ -1,4 +1,6 @@
-import { writingTasks, wordCount } from '@/content/expression';
+import { writingTasks, wordCount, type WritingTask } from '@/content/expression';
+import { parseCombiTaskId, toWritingTask } from '@/lib/combinaisons';
+import { getCombinaison } from '@/lib/combinaisons-server';
 import { checkAccess, errorResponse } from '@/lib/ai/access';
 import { aiConfigured, chat, MODELS, parseJson } from '@/lib/ai/openrouter';
 import { cleanFeedback, writingPrompt } from '@/lib/ai/prompts';
@@ -10,7 +12,13 @@ export async function POST(request: Request) {
   try {
     if (!aiConfigured()) return Response.json({ error: 'La correction automatique n’est pas encore activée.' }, { status: 503 });
     const body = await request.json().catch(() => ({}));
-    const task = writingTasks.find((t) => t.id === body.taskId);
+    let task: WritingTask | undefined = writingTasks.find((t) => t.id === body.taskId);
+    // A task from a published combination of candidates' subjects.
+    const combi = parseCombiTaskId(String(body.taskId ?? ''));
+    if (!task && combi) {
+      const c = await getCombinaison(combi.id);
+      if (c) task = toWritingTask(c, combi.task);
+    }
     const text = String(body.text ?? '').trim().slice(0, 6000);
     const words = wordCount(text);
     if (!task) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });

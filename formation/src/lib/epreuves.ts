@@ -1,6 +1,6 @@
 import { modules, type Module } from '@/content/parcours';
 
-export type Section = 'presentation' | 'methodologie' | 'series' | 'sujets' | 'simulateur' | 'tableau-de-bord';
+export type Section = 'presentation' | 'methodologie' | 'series' | 'sujets' | 'combinaisons' | 'simulateur' | 'tableau-de-bord';
 
 export interface EpreuveConfig {
   slug: string;
@@ -22,6 +22,7 @@ export const epreuveConfigs: EpreuveConfig[] = modules.map((m) => {
       ? [{ key: 'series' as const, label: 'Séries d’entraînement', href: `${b}/series/` }]
       : [
           { key: 'sujets' as const, label: 'Sujets et corrigés', href: `${b}/sujets/` },
+          ...(m.id === 'ee' ? [{ key: 'combinaisons' as const, label: 'Combinaisons des candidats', href: `${b}/combinaisons/` }] : []),
           { key: 'simulateur' as const, label: 'Simulateur IA', href: `${b}/simulateur/` },
         ]),
     { key: 'tableau-de-bord', label: 'Tableau de bord', href: `${b}/tableau-de-bord/` },
