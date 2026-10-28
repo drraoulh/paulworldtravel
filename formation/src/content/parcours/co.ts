@@ -17,7 +17,7 @@ export const co: Module = {
     { title: 'Milieu de l’épreuve (B1-B2)', detail: 'Conversations, messages professionnels, reportages courts. Il faut comprendre l’intention et l’opinion des personnes.' },
     { title: 'Fin de l’épreuve (C1-C2)', detail: 'Interviews, débats, chroniques. Vous devez saisir une nuance, un sous-entendu ou la position exacte d’un intervenant.' },
   ],
-  practice: { href: '/entrainement/comprehension-orale/', label: 'Faire la série d’écoute' },
+  practice: { href: '/epreuve/comprehension-orale/series/', label: 'Faire la série d’écoute' },
   lessons: [
     {
       slug: 'ecoute-unique',

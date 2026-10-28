@@ -17,7 +17,7 @@ export const eo: Module = {
     { title: 'Tâche 2 : exercice en interaction', detail: '5 minutes 30, dont 2 minutes de préparation puis 3 minutes 30 d’échange. Vous devez obtenir des informations dans une situation du quotidien ; l’examinateur joue votre interlocuteur.' },
     { title: 'Tâche 3 : expression d’un point de vue', detail: 'Sans préparation, 4 minutes 30. Vous donnez votre avis sur une question et le défendez de manière continue et convaincante.' },
   ],
-  practice: { href: '/entrainement/expression-orale/', label: 'S’entraîner au micro avec l’IA' },
+  practice: { href: '/epreuve/expression-orale/simulateur/', label: 'S’entraîner au micro avec l’IA' },
   lessons: [
     {
       slug: 'comprendre-l-epreuve-orale',
@@ -124,7 +124,7 @@ export const eo: Module = {
           explanation: 'L’entretien dirigé dure 2 minutes, sans préparation.',
         },
       ],
-      practice: { href: '/entrainement/expression-orale/', label: 'Enregistrer une présentation' },
+      practice: { href: '/epreuve/expression-orale/simulateur/', label: 'Enregistrer une présentation' },
     },
     {
       slug: 'tache-2-interaction',
@@ -193,7 +193,7 @@ export const eo: Module = {
           explanation: 'Réagir puis rebondir avec une nouvelle question rend l’échange naturel.',
         },
       ],
-      practice: { href: '/entrainement/expression-orale/', label: 'Simuler la tâche 2 avec l’interlocuteur IA' },
+      practice: { href: '/epreuve/expression-orale/simulateur/', label: 'Simuler la tâche 2 avec l’interlocuteur IA' },
     },
     {
       slug: 'tache-3-point-de-vue',
@@ -255,7 +255,7 @@ export const eo: Module = {
           explanation: 'La tâche 3 dure 4 minutes 30, sans préparation.',
         },
       ],
-      practice: { href: '/entrainement/expression-orale/', label: 'Enregistrer un point de vue' },
+      practice: { href: '/epreuve/expression-orale/simulateur/', label: 'Enregistrer un point de vue' },
     },
     {
       slug: 'aisance-et-prononciation',

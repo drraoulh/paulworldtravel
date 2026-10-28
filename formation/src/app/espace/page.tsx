@@ -88,8 +88,8 @@ export default async function Espace() {
                   : 'Votre compte vous donne un essai gratuit : deux corrections écrites, une correction orale et quinze questions au tuteur. Votre formule les débloque chaque jour.'}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <ButtonLink href="/entrainement/expression-ecrite/" variant="dark">Expression écrite</ButtonLink>
-                <ButtonLink href="/entrainement/expression-orale/" variant="dark">Expression orale</ButtonLink>
+                <ButtonLink href="/epreuve/expression-ecrite/simulateur/" variant="dark">Expression écrite</ButtonLink>
+                <ButtonLink href="/epreuve/expression-orale/simulateur/" variant="dark">Expression orale</ButtonLink>
                 <ButtonLink href="/entrainement/tuteur/">Tuteur</ButtonLink>
               </div>
             </div>
