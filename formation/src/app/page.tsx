@@ -78,7 +78,7 @@ export default function Home() {
         <Container>
           <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Chaque épreuve a sa méthode</h2>
           <p className="mt-4 max-w-2xl text-slate">Commencez par nos fiches gratuites et six exercices originaux de compréhension écrite.</p>
-          <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/entrainement/" variant="dark">Essayer les exercices</ButtonLink><Link href="/cours/" className="px-5 py-3 font-bold text-ocean hover:underline">Lire les fiches méthode →</Link></div>
+          <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/entrainement/" variant="dark">Essayer les exercices</ButtonLink><Link href="/parcours/" className="px-5 py-3 font-bold text-ocean hover:underline">Voir le parcours de formation</Link></div>
           <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-10 md:grid-cols-2">
             {epreuves.map((e) => (
               <div key={e.id} className="rounded-2xl border border-rule bg-paper p-6 sm:p-8">

@@ -218,7 +218,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
           </div>
           <label className="block">
             <span className="text-sm font-semibold text-night">Vos notes (elles ne sont pas envoyées)</span>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={5} className="mt-2 w-full rounded-xl border border-rule p-3 text-ink focus:border-ocean focus:outline-none" placeholder="Loyer ? Charges ? Quartier ? Date d’entrée ?" />
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={5} className="mt-2 w-full rounded-xl border border-rule p-3 text-ink focus:border-ocean focus:outline-none" placeholder="Prix ? Horaires ? Conditions ? Documents à fournir ?" />
           </label>
         </div>
       )}

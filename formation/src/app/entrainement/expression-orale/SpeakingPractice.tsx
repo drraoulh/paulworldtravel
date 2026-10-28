@@ -21,7 +21,7 @@ export default function SpeakingPractice() {
       <fieldset>
         <legend className="heading mb-3 text-lg text-night">Choisissez une tâche</legend>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          {speakingTasks.map((t) => (
+          {[...speakingTasks].sort((a, b) => a.task - b.task).map((t) => (
             <label key={t.id} className={`cursor-pointer rounded-2xl border-2 bg-white p-4 ${t.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'} ${busy ? 'pointer-events-none opacity-60' : ''}`}>
               <input type="radio" name="task" className="sr-only" checked={t.id === task.id} disabled={busy} onChange={() => setTask(t)} />
               <span className="block text-sm font-bold text-ocean">{t.title}</span>

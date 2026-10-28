@@ -31,6 +31,15 @@ export const writingTasks: WritingTask[] = [
     minutes: 10,
   },
   {
+    id: 'ee1-voisin',
+    task: 1,
+    title: 'Tâche 1 : un message',
+    prompt: 'Vous organisez une petite fête chez vous samedi soir. Écrivez un message à vos voisins pour les prévenir, vous excuser à l’avance pour le bruit et leur laisser un moyen de vous joindre.',
+    minWords: 60,
+    maxWords: 120,
+    minutes: 10,
+  },
+  {
     id: 'ee2-evenement',
     task: 2,
     title: 'Tâche 2 : un article',
@@ -44,6 +53,15 @@ export const writingTasks: WritingTask[] = [
     task: 2,
     title: 'Tâche 2 : un récit',
     prompt: 'Sur un forum consacré à l’expatriation, racontez votre première expérience dans un pays ou une ville que vous ne connaissiez pas : ce qui vous a surpris, ce qui a été difficile et ce que vous en retenez.',
+    minWords: 120,
+    maxWords: 150,
+    minutes: 20,
+  },
+  {
+    id: 'ee2-benevolat',
+    task: 2,
+    title: 'Tâche 2 : un compte rendu',
+    prompt: 'Vous avez participé comme bénévole à une journée de solidarité (collecte de vêtements, nettoyage d’un parc, aide aux personnes âgées…). Rédigez un article pour le bulletin de votre association : racontez la journée et dites ce que cette expérience vous a apporté.',
     minWords: 120,
     maxWords: 150,
     minutes: 20,
@@ -69,6 +87,19 @@ export const writingTasks: WritingTask[] = [
     documents: [
       'Document 1 : « Les écrans sont des outils d’apprentissage : vidéos éducatives, applications de langue, recherches pour l’école. Les interdire, c’est priver les enfants d’une ressource. »',
       'Document 2 : « Trop d’écran nuit au sommeil, à la concentration et aux relations familiales. Les enfants ont besoin de jouer dehors et de parler avec les autres. »',
+    ],
+    minWords: 120,
+    maxWords: 180,
+    minutes: 30,
+  },
+  {
+    id: 'ee3-etudiants',
+    task: 3,
+    title: 'Tâche 3 : un texte argumenté',
+    prompt: 'Le site d’information de votre ville ouvre un débat : les étudiants devraient-ils travailler pendant leurs études ? Présentez les deux opinions ci-dessous, puis donnez la vôtre avec des arguments.',
+    documents: [
+      'Document 1 : « Un petit emploi apprend aux jeunes à gérer leur temps et leur argent. C’est aussi une première expérience professionnelle qui compte sur un CV. »',
+      'Document 2 : « Un étudiant qui travaille vingt heures par semaine dort moins, révise moins et risque d’échouer. Les études doivent rester la priorité. »',
     ],
     minWords: 120,
     maxWords: 180,
@@ -133,6 +164,38 @@ export const speakingTasks: SpeakingTask[] = [
     title: 'Tâche 3 : exprimer un point de vue',
     prompt: '« Dans les grandes villes, il faudrait interdire les voitures dans le centre. » Qu’en pensez-vous ? Donnez votre avis et justifiez-le avec des exemples.',
     tips: ['Annoncez clairement votre position.', 'Donnez au moins deux arguments illustrés, puis une nuance.'],
+    seconds: 270,
+    mode: 'monologue',
+  },
+  {
+    id: 'eo2-sport',
+    task: 2,
+    title: 'Tâche 2 : obtenir des informations',
+    prompt: 'Vous venez d’arriver à Montréal et vous voulez vous inscrire dans un centre sportif. Vous parlez avec l’employé de l’accueil : posez-lui des questions sur les activités, les horaires, les tarifs, l’inscription et l’équipement.',
+    tips: [
+      'Pendant les 2 minutes de préparation, notez les questions à poser.',
+      'Présentez votre situation : nouvel arrivant, disponibilités, budget.',
+      'Variez les questions et demandez des précisions (réductions, essai gratuit…).',
+    ],
+    seconds: 210,
+    mode: 'interaction',
+    prepSeconds: 120,
+    partner: {
+      role: 'l’employé de l’accueil du centre sportif',
+      opening: 'Bonjour, bienvenue au centre sportif du quartier ! Je peux vous aider ?',
+      facts:
+        'Ouvert de 6 h à 22 h en semaine, de 8 h à 18 h la fin de semaine. Activités : piscine, salle de musculation, cours collectifs (yoga, zumba, natation pour adultes). ' +
+        'Abonnement mensuel 45 $, annuel 420 $ ; tarif réduit de 20 % pour les étudiants et les nouveaux arrivants de moins d’un an, sur présentation d’un justificatif. ' +
+        'Inscription à l’accueil avec une pièce d’identité et une photo ; un premier cours d’essai gratuit. Cadenas pour le casier à apporter ou à acheter 8 $. ' +
+        'Bonnet de bain obligatoire à la piscine. Cours collectifs sur réservation en ligne, 48 heures à l’avance.',
+    },
+  },
+  {
+    id: 'eo3-reseaux',
+    task: 3,
+    title: 'Tâche 3 : exprimer un point de vue',
+    prompt: '« Les réseaux sociaux nous rapprochent de nos proches, même à des milliers de kilomètres. » Êtes-vous d’accord ? Donnez votre avis et justifiez-le avec des exemples.',
+    tips: ['Pensez à votre propre expérience : famille au pays, amis à l’étranger.', 'Présentez aussi une limite : temps passé, isolement, fausses informations.'],
     seconds: 270,
     mode: 'monologue',
   },
