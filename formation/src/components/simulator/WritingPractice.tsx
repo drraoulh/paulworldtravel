@@ -7,12 +7,16 @@ import FeedbackView from '@/components/ai/FeedbackView';
 import Quota from '@/components/ai/Quota';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
+import { isCombinaison, parseCombiTaskId, toWritingTask, type Combinaison } from '@/lib/combinaisons';
+import { getSupabase } from '@/lib/supabase/client';
 
 const DRAFT_KEY = 'pwt-ee-draft';
 
 export default function WritingPractice() {
   const signedIn = useSignedIn();
   const [task, setTask] = useState<WritingTask>(writingTasks[0]);
+  // Task from a candidates' combination, shown above the regular subjects.
+  const [extra, setExtra] = useState<WritingTask | null>(null);
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -30,9 +34,23 @@ export default function WritingPractice() {
     const savedText = typeof saved?.text === 'string' ? saved.text : '';
     const asked = writingTasks.find((x) => x.id === new URLSearchParams(window.location.search).get('sujet'));
     const chosen = asked ?? savedTask;
-    if (!chosen) return;
-    setTask(chosen);
-    setText(chosen.id === savedTask?.id ? savedText : '');
+    if (chosen) {
+      setTask(chosen);
+      setText(chosen.id === savedTask?.id ? savedText : '');
+    }
+    // A task of a candidates' combination: loaded from the published list.
+    const combi = parseCombiTaskId(new URLSearchParams(window.location.search).get('sujet') ?? '');
+    const supabase = getSupabase();
+    if (combi && supabase) {
+      supabase.from('question_drafts').select('id, theme, created_at, content').eq('id', combi.id).eq('status', 'approved').maybeSingle()
+        .then(({ data }: { data: Combinaison | null }) => {
+          if (!data || !isCombinaison(data.content)) return;
+          const t = toWritingTask(data, combi.task);
+          setExtra(t);
+          setTask(t);
+          setText(savedTask === undefined && saved?.taskId === t.id ? savedText : '');
+        });
+    }
   }, []);
   useEffect(() => {
     try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ taskId: task.id, text })); } catch { /* ignore */ }
@@ -59,6 +77,13 @@ export default function WritingPractice() {
     <div className="space-y-8">
       <fieldset>
         <legend className="heading mb-3 text-lg text-night">Choisissez un sujet</legend>
+        {extra && (
+          <label className={`mb-5 block cursor-pointer rounded-2xl border-2 bg-white p-4 ${extra.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'}`}>
+            <input type="radio" name="task" className="sr-only" checked={extra.id === task.id} onChange={() => { setTask(extra); setFeedback(null); }} />
+            <span className="block text-sm font-bold text-night">Combinaison des candidats : {extra.title}</span>
+            <span className="mt-1 line-clamp-2 block text-sm text-slate">{extra.prompt}</span>
+          </label>
+        )}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {([1, 2, 3] as const).map((n) => (
             <div key={n} className="space-y-3">
