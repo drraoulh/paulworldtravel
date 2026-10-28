@@ -10,9 +10,13 @@ function frenchVoices() {
 }
 
 /** Reads the lines one after the other, two voices when available. Calls onEnd after the last line. */
+// Each new reading (or a stop) invalidates the callbacks of the previous one.
+let generation = 0;
+
 export function speakLines(lines: { voice: 'a' | 'b'; text: string }[], onEnd: () => void) {
   const synth = window.speechSynthesis;
   synth.cancel();
+  const mine = ++generation;
   const voices = frenchVoices();
   const queue = lines.map((line) => {
     const u = new SpeechSynthesisUtterance(line.text);
@@ -24,11 +28,18 @@ export function speakLines(lines: { voice: 'a' | 'b'; text: string }[], onEnd: (
     u.rate = 0.95;
     return u;
   });
-  queue[queue.length - 1].onend = onEnd;
+  // Some browsers never fire "end" (or fail silently): fall back on an estimate of the reading time.
+  let ended = false;
+  const end = () => { if (!ended && mine === generation) { ended = true; clearTimeout(fallback); onEnd(); } };
+  const chars = lines.reduce((n, l) => n + l.text.length, 0);
+  const fallback = setTimeout(end, 3000 + chars * 90);
+  const last = queue[queue.length - 1];
+  last.onend = end;
+  queue.forEach((u) => { u.onerror = end; });
   queue.forEach((u) => synth.speak(u));
 }
 
-export const stopSpeaking = () => { if (speechSupported()) window.speechSynthesis.cancel(); };
+export const stopSpeaking = () => { generation++; if (speechSupported()) window.speechSynthesis.cancel(); };
 
 /** Some browsers load their voices asynchronously. */
 export const warmUpVoices = () => { if (speechSupported()) window.speechSynthesis.getVoices(); };
