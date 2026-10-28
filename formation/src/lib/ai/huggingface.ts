@@ -43,5 +43,13 @@ async function viaOpenRouter(audio: ArrayBuffer, contentType: string) {
 }
 
 export async function transcribe(audio: ArrayBuffer, contentType: string) {
-  return process.env.HF_TOKEN ? viaHuggingFace(audio, contentType) : viaOpenRouter(audio, contentType);
+  if (!process.env.HF_TOKEN) return viaOpenRouter(audio, contentType);
+  try {
+    return await viaHuggingFace(audio, contentType);
+  } catch (e) {
+    // No credit left, model loading, outage: fall back on OpenRouter when it is set up.
+    if (!aiConfigured()) throw e;
+    console.error('Hugging Face transcription failed, using OpenRouter', e);
+    return viaOpenRouter(audio, contentType);
+  }
 }
