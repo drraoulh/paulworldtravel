@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ButtonLink, CheckItem, Container, PageHero } from "@/components/site";
+import { ButtonLink, CheckItem, Container, PageHero, TRAINING_SITE } from "@/components/site";
 import { formules } from "../../../formation/src/content/offers";
 import SkillCards from "@/components/formation/SkillCards";
 
@@ -110,9 +110,12 @@ export default function FormationPreview() {
                 <p className="mt-2 text-sm text-slate">
                   {f.schedule ?? "Calendrier communiqué par votre conseiller"}
                 </p>
-                <ButtonLink href="/contact/" className="mt-6">
-                  Parler à un conseiller
+                <ButtonLink href={`${TRAINING_SITE}/inscription/?formule=${f.id}`} className="mt-6">
+                  M’inscrire à cette formule
                 </ButtonLink>
+                <a href="/contact/" className="mt-3 text-center text-sm font-semibold text-ocean hover:underline">
+                  Parler à un conseiller
+                </a>
               </article>
             ))}
           </div>
@@ -129,9 +132,10 @@ export default function FormationPreview() {
               découvrir le rythme.
             </p>
           </div>
-          <ButtonLink href="/formation/connexion/">
-            Entrer dans la démo
-          </ButtonLink>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <ButtonLink href="/formation/connexion/">Entrer dans la démo</ButtonLink>
+            <ButtonLink href={`${TRAINING_SITE}/inscription/`} variant="outline">Créer mon compte candidat</ButtonLink>
+          </div>
         </Container>
       </section>
     </>
