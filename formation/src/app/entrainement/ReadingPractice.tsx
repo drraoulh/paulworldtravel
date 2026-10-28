@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { readingQuestions as questions } from '@/content/reading';
-import { gradeAnswers, PRACTICE_DURATION_SECONDS, remainingSeconds, type PracticeMode } from '@/lib/practice';
+import { readingQuestions as questions } from '../../content/reading';
+import { gradeAnswers, PRACTICE_DURATION_SECONDS, remainingSeconds, type PracticeMode } from '../../lib/practice';
 
 export default function ReadingPractice() {
   const [mode, setMode] = useState<PracticeMode | null>(null);

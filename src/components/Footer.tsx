@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { services } from '@/content/services';
-import { Container, EMAIL, EMAIL_INFO, WHATSAPP_CM } from './site';
+import { Container, EMAIL, EMAIL_INFO, WHATSAPP_CM, FORMATION_URL } from './site';
 
 const copy = {
   fr: {
@@ -13,6 +13,7 @@ const copy = {
     services: 'Services',
     company: 'Paul World Travel',
     companyLinks: [
+      [FORMATION_URL, 'Formation · TCF Canada'],
       ['/about/', 'Qui sommes-nous'],
       ['/locations/', 'Nos bureaux'],
       ['/faq/', 'Questions fréquentes'],
@@ -30,6 +31,7 @@ const copy = {
     services: 'Services',
     company: 'Paul World Travel',
     companyLinks: [
+      [FORMATION_URL, 'Training · TCF Canada'],
       ['/about/', 'About us'],
       ['/locations/', 'Our offices'],
       ['/faq/', 'Frequent questions'],

@@ -7,11 +7,11 @@ import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { areas, servicesByArea, type Area } from '@/content/services';
 import { serviceIcons } from './serviceIcons';
-import { Container } from './site';
+import { Container, FORMATION_URL } from './site';
 
 const labels = {
-  fr: { home: 'Accueil', services: 'Services', allServices: 'Voir tous les services', locations: 'Nos bureaux', about: 'Qui sommes-nous', faq: 'Questions', quote: 'Demander un devis', menu: 'Menu', other: 'English' },
-  en: { home: 'Home', services: 'Services', allServices: 'See all services', locations: 'Our offices', about: 'About us', faq: 'Questions', quote: 'Get a quote', menu: 'Menu', other: 'Français' },
+  fr: { home: 'Accueil', formation: 'Formation', services: 'Services', allServices: 'Voir tous les services', locations: 'Nos bureaux', about: 'Qui sommes-nous', faq: 'Questions', quote: 'Demander un devis', menu: 'Menu', other: 'English' },
+  en: { home: 'Home', formation: 'Training', services: 'Services', allServices: 'See all services', locations: 'Our offices', about: 'About us', faq: 'Questions', quote: 'Get a quote', menu: 'Menu', other: 'Français' },
 };
 
 const order: Area[] = ['transport', 'trade', 'paperwork', 'digital'];
@@ -43,6 +43,7 @@ const Navbar = () => {
   }, []);
 
   const links = [
+    { href: FORMATION_URL, label: l.formation },
     { href: '/locations/', label: l.locations },
     { href: '/about/', label: l.about },
     { href: '/faq/', label: l.faq },
@@ -60,7 +61,7 @@ const Navbar = () => {
           <span className="heading text-lg sm:text-xl">Paul World Travel</span>
         </Link>
 
-        <div className="hidden items-center gap-7 lg:flex">
+        <div className="hidden items-center gap-4 xl:gap-7 lg:flex">
           <Link href="/" className={linkCls('/')}>{l.home}</Link>
           <div ref={panelRef} className="relative">
             <button
