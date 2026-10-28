@@ -2,14 +2,21 @@
 
 const URL = 'https://openrouter.ai/api/v1/chat/completions';
 
+/*
+ * Defaults favour low cost. For more precise corrections, set
+ * OPENROUTER_MODEL_GRADING=anthropic/claude-sonnet-5.5 in Vercel (about 3x the price).
+ */
 export const MODELS = {
-  /** Precise model for grading productions. */
-  grading: () => process.env.OPENROUTER_MODEL_GRADING || 'anthropic/claude-sonnet-5.5',
-  /** Fast, inexpensive model for the tutor and content drafts. */
-  fast: () => process.env.OPENROUTER_MODEL_FAST || 'anthropic/claude-haiku-5.5',
+  /** Grading of written and spoken productions. */
+  grading: () => process.env.OPENROUTER_MODEL_GRADING || 'google/gemini-3.8-flash',
+  /** Tutor and content drafts. */
+  fast: () => process.env.OPENROUTER_MODEL_FAST || 'google/gemini-3.5-flash-lite',
+  /** Speech-to-text (model must accept audio input). */
+  audio: () => process.env.OPENROUTER_MODEL_AUDIO || 'google/gemini-3.8-flash',
 };
 
-export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
+type Part = { type: 'text'; text: string } | { type: 'input_audio'; input_audio: { data: string; format: string } };
+export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string | Part[] };
 
 export const aiConfigured = () => Boolean(process.env.OPENROUTER_API_KEY);
 

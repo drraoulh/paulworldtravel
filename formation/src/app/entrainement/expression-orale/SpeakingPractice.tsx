@@ -7,6 +7,7 @@ import FeedbackView from '@/components/ai/FeedbackView';
 import Quota from '@/components/ai/Quota';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
+import { toMp3 } from '@/components/ai/toMp3';
 
 type Phase = 'idle' | 'recording' | 'recorded' | 'sending';
 
@@ -79,10 +80,13 @@ export default function SpeakingPractice() {
     setPhase('sending');
     setError('');
     try {
+      // Convert to MP3: smaller upload, and a format the transcription accepts.
+      let file: Blob = audio.blob;
+      try { file = await toMp3(audio.blob); } catch { /* fall back to the original recording */ }
       const form = new FormData();
       form.append('taskId', task.id);
       form.append('seconds', String(audio.seconds));
-      form.append('audio', audio.blob, `reponse.${audio.blob.type.includes('mp4') ? 'mp4' : 'webm'}`);
+      form.append('audio', file, file.type === 'audio/mpeg' ? 'reponse.mp3' : 'reponse.m4a');
       const res = await fetch('/api/ai/speaking/', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'La correction a échoué.');
