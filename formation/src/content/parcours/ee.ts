@@ -17,7 +17,7 @@ export const ee: Module = {
     { title: 'Tâche 2 : le récit ou compte rendu', detail: 'Un article, un courrier ou une note pour plusieurs destinataires, qui raconte une expérience. 120 à 150 mots. Conseil : 20 minutes.' },
     { title: 'Tâche 3 : comparer deux points de vue', detail: 'Un texte qui présente les deux opinions de deux documents (40 à 60 mots), puis la vôtre (80 à 120 mots). 120 à 180 mots au total. Conseil : 30 minutes.' },
   ],
-  practice: { href: '/entrainement/expression-ecrite/', label: 'Rédiger et faire corriger par l’IA' },
+  practice: { href: '/epreuve/expression-ecrite/simulateur/', label: 'Rédiger et faire corriger par l’IA' },
   lessons: [
     {
       slug: 'organiser-l-heure',

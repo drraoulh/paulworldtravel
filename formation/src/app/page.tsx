@@ -1,3 +1,4 @@
+import { epreuveConfigs } from '@/lib/epreuves';
 import Link from 'next/link';
 import Image from 'next/image';
 import ExamTimeline from '@/components/ExamTimeline';
@@ -74,24 +75,32 @@ export default function Home() {
       </section>
 
       {/* The four épreuves */}
-      <section className="bg-white py-16 sm:py-20">
+      <section id="epreuves" className="scroll-mt-20 bg-white py-16 sm:py-20">
         <Container>
-          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Chaque épreuve a sa méthode</h2>
-          <p className="mt-4 max-w-2xl text-slate">Commencez par nos fiches gratuites et six exercices originaux de compréhension écrite.</p>
-          <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/entrainement/" variant="dark">Essayer les exercices</ButtonLink><Link href="/parcours/" className="px-5 py-3 font-bold text-ocean hover:underline">Voir le parcours de formation</Link></div>
-          <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-10 md:grid-cols-2">
-            {epreuves.map((e) => (
-              <div key={e.id} className="rounded-2xl border border-rule bg-paper p-6 sm:p-8">
-                <p className="eyebrow mb-4 text-ocean">{e.short}</p>
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h3 className="heading text-xl text-night">{e.name}</h3>
-                  <span className="text-sm font-semibold text-slate">{e.minutes} min, {e.scale.toLowerCase()}</span>
-                </div>
-                <p className="mt-3 text-slate">{e.what}</p>
-                <p className="mt-3"><span className="font-semibold text-night">Notre préparation : </span>{e.how}</p>
-              </div>
-            ))}
+          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Les quatre épreuves du TCF Canada</h2>
+          <p className="mt-4 max-w-2xl text-slate">Pour chaque épreuve : la méthode en leçons courtes, des séries ou des sujets corrigés, un simulateur et votre tableau de bord.</p>
+          <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
+            {epreuveConfigs.map((e) => {
+              const info = epreuves.find((x) => x.id === e.module.id)!;
+              return (
+                <Link key={e.slug} href={`/epreuve/${e.slug}/`} className="group flex flex-col rounded-2xl border border-rule bg-paper p-6 transition-colors hover:border-ocean sm:p-8">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 className="heading text-xl text-night group-hover:text-ocean">{info.name}</h3>
+                    <span className="text-sm font-semibold text-slate">{info.format}, {info.minutes} min</span>
+                  </div>
+                  <p className="mt-3 flex-1 text-slate">{info.what}</p>
+                  <span className="mt-5 font-bold text-ocean">Commencer</span>
+                </Link>
+              );
+            })}
           </div>
+          <Link href="/examen-blanc/" className="mt-4 flex flex-col gap-2 rounded-2xl bg-night p-6 text-white transition-colors hover:bg-ocean sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <span>
+              <span className="heading block text-xl">Examen blanc</span>
+              <span className="mt-1 block text-blue-100">Compréhension orale, compréhension écrite et expression écrite enchaînées, avec les durées officielles.</span>
+            </span>
+            <span className="font-bold text-container">Passer l’examen blanc</span>
+          </Link>
         </Container>
       </section>
 

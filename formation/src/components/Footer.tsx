@@ -18,6 +18,7 @@ export default function Footer() {
           <ul className="space-y-2.5">
             <li><Link href="/tcf-canada/" className="hover:text-white">Le TCF Canada</Link></li>
             <li><Link href="/parcours/" className="hover:text-white">Parcours de formation</Link></li>
+            <li><Link href="/examen-blanc/" className="hover:text-white">Examen blanc</Link></li>
             <li><Link href="/formules/" className="hover:text-white">Formules</Link></li>
             <li><Link href="/test-de-niveau/" className="hover:text-white">Test de niveau gratuit</Link></li>
             <li><Link href="/inscription/" className="hover:text-white">Inscription</Link></li>

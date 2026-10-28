@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { speakingTasks, type SpeakingTask } from '@/content/expression';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
@@ -15,6 +15,12 @@ export default function SpeakingPractice() {
   const signedIn = useSignedIn();
   const [task, setTask] = useState<SpeakingTask>(speakingTasks[0]);
   const [busy, setBusy] = useState(false);
+
+  // A subject chosen from the "Sujets et corrigés" page.
+  useEffect(() => {
+    const asked = speakingTasks.find((t) => t.id === new URLSearchParams(window.location.search).get('sujet'));
+    if (asked) setTask(asked);
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -35,7 +41,7 @@ export default function SpeakingPractice() {
       <div className="rounded-2xl border border-rule bg-white p-6 sm:p-8">
         <p className="text-lg text-ink">{task.prompt}</p>
         <ul className="mt-4 space-y-1 text-sm text-slate">{task.tips.map((t) => <li key={t}>• {t}</li>)}</ul>
-        {signedIn === false && <div className="mt-6"><SignInPrompt next="/entrainement/expression-orale/" /></div>}
+        {signedIn === false && <div className="mt-6"><SignInPrompt next="/epreuve/expression-orale/simulateur/" /></div>}
         {signedIn && (task.mode === 'interaction'
           ? <InteractionPractice key={task.id} task={task} onBusy={setBusy} />
           : <MonologuePractice key={task.id} task={task} onBusy={setBusy} />)}

@@ -21,13 +21,18 @@ export default function WritingPractice() {
   const words = wordCount(text);
   const inRange = words >= task.minWords && words <= task.maxWords;
 
-  // Keep the draft if the page is closed by accident.
+  // Keep the draft if the page is closed by accident. A subject chosen from the
+  // "Sujets et corrigés" page (?sujet=…) wins over the saved draft.
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? 'null');
-      const t = writingTasks.find((x) => x.id === saved?.taskId);
-      if (t && typeof saved.text === 'string') { setTask(t); setText(saved.text); }
-    } catch { /* Draft is optional. */ }
+    let saved: { taskId?: string; text?: unknown } | null = null;
+    try { saved = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? 'null'); } catch { /* Draft is optional. */ }
+    const savedTask = writingTasks.find((x) => x.id === saved?.taskId);
+    const savedText = typeof saved?.text === 'string' ? saved.text : '';
+    const asked = writingTasks.find((x) => x.id === new URLSearchParams(window.location.search).get('sujet'));
+    const chosen = asked ?? savedTask;
+    if (!chosen) return;
+    setTask(chosen);
+    setText(chosen.id === savedTask?.id ? savedText : '');
   }, []);
   useEffect(() => {
     try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ taskId: task.id, text })); } catch { /* ignore */ }
@@ -54,13 +59,17 @@ export default function WritingPractice() {
     <div className="space-y-8">
       <fieldset>
         <legend className="heading mb-3 text-lg text-night">Choisissez un sujet</legend>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {writingTasks.map((t) => (
-            <label key={t.id} className={`cursor-pointer rounded-2xl border-2 bg-white p-4 ${t.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'}`}>
-              <input type="radio" name="task" className="sr-only" checked={t.id === task.id} onChange={() => { setTask(t); setFeedback(null); }} />
-              <span className="block text-sm font-bold text-ocean">{t.title}</span>
-              <span className="mt-1 line-clamp-3 block text-sm text-slate">{t.prompt}</span>
-            </label>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {([1, 2, 3] as const).map((n) => (
+            <div key={n} className="space-y-3">
+              <p className="text-sm font-bold text-night">Tâche {n}</p>
+              {writingTasks.filter((t) => t.task === n).map((t) => (
+                <label key={t.id} className={`block cursor-pointer rounded-2xl border-2 bg-white p-4 ${t.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'}`}>
+                  <input type="radio" name="task" className="sr-only" checked={t.id === task.id} onChange={() => { setTask(t); setFeedback(null); }} />
+                  <span className="line-clamp-3 block text-sm text-slate">{t.prompt}</span>
+                </label>
+              ))}
+            </div>
           ))}
         </div>
       </fieldset>
@@ -80,7 +89,7 @@ export default function WritingPractice() {
           <Quota remaining={quota.remaining} plan={quota.plan} unit="correction" />
         </div>
         {signedIn === false ? (
-          <div className="mt-6"><SignInPrompt next="/entrainement/expression-ecrite/" /></div>
+          <div className="mt-6"><SignInPrompt next="/epreuve/expression-ecrite/simulateur/" /></div>
         ) : (
           <button onClick={submit} disabled={busy || words < 20 || signedIn === null} className="mt-6 inline-flex items-center justify-center rounded-xl bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
             {busy ? 'Correction en cours (30 s environ)…' : 'Faire corriger mon texte'}

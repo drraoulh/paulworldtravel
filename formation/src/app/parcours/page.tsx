@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 const steps = [
   { title: 'Évaluez votre niveau', text: 'Quinze questions gratuites, environ dix minutes, pour savoir d’où vous partez et ce qu’il faut travailler en priorité.', href: '/test-de-niveau/', cta: 'Passer le test' },
   { title: 'Apprenez la méthode', text: `${lessonCount} leçons courtes, une épreuve à la fois, avec des modèles commentés et un quiz pour valider chaque leçon.`, href: '#modules', cta: 'Voir les modules' },
-  { title: 'Entraînez-vous', text: 'Séries de lecture et d’écoute chronométrées, rédactions et oraux corrigés par l’IA, tuteur disponible à toute heure.', href: '/entrainement/', cta: 'S’entraîner' },
-  { title: 'Passez en conditions réelles', text: 'Refaites les séries chronométrées, puis faites relire vos productions par votre formateur, en ligne ou à Douala.', href: '/formules/', cta: 'Voir les formules' },
+  { title: 'Entraînez-vous', text: 'Séries de 39 questions en lecture et en écoute, rédactions et oraux corrigés par l’IA, tuteur disponible à toute heure.', href: '/epreuve/comprehension-ecrite/series/', cta: 'Commencer une série' },
+  { title: 'Passez l’examen blanc', text: 'Compréhension orale, compréhension écrite et expression écrite enchaînées et chronométrées, comme le jour J.', href: '/examen-blanc/', cta: 'Passer l’examen blanc' },
 ];
 
 export default function Parcours() {
@@ -45,7 +45,7 @@ export default function Parcours() {
           <p className="mt-3 max-w-2xl text-slate">Un module par épreuve, dans l’ordre du jour de l’examen. Chaque leçon se lit en moins de 12 minutes.</p>
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {modules.map((m) => (
-              <Link key={m.id} href={`/parcours/${m.slug}/`} className="group flex flex-col rounded-2xl border border-rule bg-white p-6 transition-colors hover:border-ocean sm:p-8">
+              <Link key={m.id} href={`/epreuve/${m.slug}/`} className="group flex flex-col rounded-2xl border border-rule bg-white p-6 transition-colors hover:border-ocean sm:p-8">
                 <h3 className="heading text-2xl text-night group-hover:text-ocean">{m.name}</h3>
                 <p className="mt-1 text-sm font-semibold text-ocean">{m.facts.slice(0, 2).map((f) => f.value).join(', ')}</p>
                 <p className="mt-3 flex-1 text-slate">{m.intro}</p>

@@ -17,7 +17,7 @@ export const ce: Module = {
     { title: 'Milieu de l’épreuve (B1-B2)', detail: 'Courriels, lettres, articles informatifs. Il faut comprendre l’objectif du texte et les relations entre les idées.' },
     { title: 'Fin de l’épreuve (C1-C2)', detail: 'Textes d’opinion, éditoriaux, extraits littéraires ou spécialisés. Les questions portent sur la thèse, l’implicite et la nuance.' },
   ],
-  practice: { href: '/entrainement/#comprehension-ecrite', label: 'Faire la série de lecture' },
+  practice: { href: '/epreuve/comprehension-ecrite/series/', label: 'Faire la série de lecture' },
   lessons: [
     {
       slug: 'gerer-60-minutes',
