@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Container } from '@/components/ui';
+import AdminNav from '@/components/admin/AdminNav';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { effectiveStatus, formatDate, formuleName, statusLabel, statusTone, type Enrollment, type Profile } from '@/lib/labels';
@@ -54,6 +55,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     <>
       <header className="bg-night text-white">
         <Container className="py-10 sm:py-14">
+          <AdminNav current="/admin/" />
           <h1 className="display text-3xl sm:text-4xl">Inscriptions</h1>
           <nav className="mt-6 flex flex-wrap gap-2" aria-label="Filtrer par statut">
             {filters.map(([key, label]) => (
