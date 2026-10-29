@@ -1,8 +1,10 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ButtonLink, Container, PageHero, SectionTitle } from '@/components/site';
+import { offices } from '@/components/offices';
 
 const copy = {
   fr: {
@@ -11,7 +13,7 @@ const copy = {
       'Paul World Travel accompagne particuliers et entreprises dans leurs échanges internationaux : transport, achats, change, visas, création d’entreprise et informatique.',
     storyTitle: 'Notre histoire',
     story: [
-      'Paul World Travel a été fondée avec pour mission de faciliter les échanges commerciaux et culturels entre l’Afrique, la Chine et l’Amérique du Nord. Notre siège social est situé à Douala, au Cameroun, avec une présence à Foshan, en Chine.',
+      'Paul World Travel a été fondée avec pour mission de faciliter les échanges commerciaux et culturels entre l’Afrique, la Chine et l’Amérique du Nord. Notre siège social est situé à Douala, au Cameroun ; nous avons aussi des bureaux à Yaoundé, à Guangzhou en Chine, et au Canada, à Toronto et à Montréal.',
       'Au fil des années, nous avons construit un réseau de partenaires et de clients qui nous permet d’offrir des solutions sur mesure pour le fret aérien et maritime, l’échange de devises et l’assistance aux achats en Chine. Nous expédions désormais aussi du Cameroun vers le Canada.',
       'Notre équipe multiculturelle s’appuie sur une connaissance du terrain dans chaque pays et sur une vision globale des affaires internationales.',
     ],
@@ -22,6 +24,8 @@ const copy = {
       { title: 'Nos valeurs', desc: 'Intégrité, transparence et engagement envers la satisfaction de nos clients.' },
       { title: 'Notre vision', desc: 'Devenir le partenaire de référence des entreprises qui commercent entre l’Afrique, la Chine et l’Amérique du Nord.' },
     ],
+    officesTitle: 'Où nous trouver',
+    officesLink: 'Adresses, horaires et carte',
     ctaTitle: 'Parlons de votre projet',
     ctaText: 'Une question, un devis ou un accompagnement : notre équipe vous répond rapidement.',
     ctaPrimary: 'Nous contacter',
@@ -33,7 +37,7 @@ const copy = {
       'Paul World Travel helps individuals and businesses trade internationally: shipping, purchasing, currency exchange, visas, business creation and IT.',
     storyTitle: 'Our story',
     story: [
-      'Paul World Travel was founded to facilitate trade and cultural exchange between Africa, China and North America. Our head office is in Douala, Cameroon, with a presence in Foshan, China.',
+      'Paul World Travel was founded to facilitate trade and cultural exchange between Africa, China and North America. Our head office is in Douala, Cameroon; we also have offices in Yaoundé, in Guangzhou in China, and in Canada, in Toronto and Montreal.',
       'Over the years we have built a network of partners and clients that lets us offer tailored solutions for air and sea freight, currency exchange and purchasing assistance in China. We now also ship from Cameroon to Canada.',
       'Our multicultural team combines on-the-ground knowledge in each country with a global view of international business.',
     ],
@@ -44,6 +48,8 @@ const copy = {
       { title: 'Our values', desc: 'Integrity, transparency and a commitment to our clients’ satisfaction.' },
       { title: 'Our vision', desc: 'To become the go-to partner for businesses trading between Africa, China and North America.' },
     ],
+    officesTitle: 'Where to find us',
+    officesLink: 'Addresses, opening hours and map',
     ctaTitle: 'Let’s talk about your project',
     ctaText: 'A question, a quote or support: our team gets back to you quickly.',
     ctaPrimary: 'Contact us',
@@ -84,6 +90,22 @@ export default function About() {
               </div>
             ))}
           </div>
+        </Container>
+      </section>
+
+      <section className="bg-white py-16 sm:py-24">
+        <Container>
+          <SectionTitle title={c.officesTitle} />
+          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {offices.map((o) => (
+              <li key={o.id} className="border-t-4 border-ocean pt-5">
+                <p className="text-sm font-bold text-ocean">{o.role[language]}</p>
+                <p className="display mt-1 text-2xl text-night">{o.name[language]}</p>
+                <p className="mt-2 text-slate">{o.address[language]}</p>
+              </li>
+            ))}
+          </ul>
+          <Link href="/locations/" className="mt-8 inline-block font-bold text-ocean underline-offset-4 hover:underline">{c.officesLink}</Link>
         </Container>
       </section>
 

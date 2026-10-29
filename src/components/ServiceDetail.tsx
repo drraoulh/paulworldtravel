@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { areas, services, type Service } from '@/content/services';
 import { faqs } from '@/content/faqs';
-import { ButtonLink, CheckItem, Container, EMAIL_INFO, WHATSAPP_CM } from './site';
+import { ButtonLink, CheckItem, Container, WHATSAPP_CM } from './site';
 
 const labels = {
   fr: {
     services: 'Services',
+    breadcrumb: 'Fil d’Ariane',
     quote: 'Demander un devis',
     whatsapp: 'Écrire sur WhatsApp',
     offer: 'Ce que nous proposons',
@@ -17,11 +18,10 @@ const labels = {
     faq: 'Questions fréquentes',
     allFaq: 'Toutes les questions',
     related: 'Nos autres services',
-    ctaTitle: 'Parlons de votre projet',
-    ctaText: 'Décrivez votre besoin : nous vous répondons sous 24 h ouvrées, par email ou sur WhatsApp.',
   },
   en: {
     services: 'Services',
+    breadcrumb: 'Breadcrumb',
     quote: 'Get a quote',
     whatsapp: 'Message us on WhatsApp',
     offer: 'What we offer',
@@ -29,8 +29,6 @@ const labels = {
     faq: 'Frequent questions',
     allFaq: 'All questions',
     related: 'Our other services',
-    ctaTitle: 'Let’s talk about your project',
-    ctaText: 'Tell us what you need: we reply within one business day, by email or on WhatsApp.',
   },
 };
 
@@ -48,7 +46,7 @@ export default function ServiceDetail({ service }: { service: Service }) {
       <header className="bg-night text-white">
         <Container className="grid grid-cols-1 items-center gap-10 py-12 sm:py-16 lg:grid-cols-12 lg:py-20">
           <div className="lg:col-span-7">
-            <nav aria-label="Fil d'Ariane" className="text-sm text-blue-200">
+            <nav aria-label={l.breadcrumb} className="text-sm text-blue-200">
               <Link href="/services/" className="hover:text-white">{l.services}</Link>
               <span aria-hidden="true"> / </span>
               <span>{areas[service.area][language].name}</span>
@@ -124,7 +122,6 @@ export default function ServiceDetail({ service }: { service: Service }) {
               </li>
             ))}
           </ol>
-          <ButtonLink href={quoteHref} className="mt-10">{l.quote}</ButtonLink>
         </Container>
       </section>
 
@@ -150,7 +147,7 @@ export default function ServiceDetail({ service }: { service: Service }) {
       )}
 
       {/* Other services */}
-      <section className="bg-white py-16 sm:py-20">
+      <section className={`py-16 sm:py-20 ${questions.length > 0 ? 'bg-white' : 'bg-paper'}`}>
         <Container>
           <h2 className="heading mb-8 text-3xl text-night">{l.related}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -162,19 +159,6 @@ export default function ServiceDetail({ service }: { service: Service }) {
                 <span className="font-bold text-night group-hover:text-ocean">{o[language].name}</span>
               </Link>
             ))}
-          </div>
-        </Container>
-      </section>
-
-      <section className="bg-night py-16 text-white sm:py-20">
-        <Container className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-2xl">
-            <h2 className="display text-3xl sm:text-4xl">{l.ctaTitle}</h2>
-            <p className="mt-4 text-lg text-blue-100">{l.ctaText}</p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href={quoteHref}>{l.quote}</ButtonLink>
-            <ButtonLink href={`mailto:${EMAIL_INFO}`} variant="outline">{EMAIL_INFO}</ButtonLink>
           </div>
         </Container>
       </section>

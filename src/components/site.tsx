@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { phones, type Office } from './offices';
 import type { ReactNode } from 'react';
 
 // Shared building blocks for every page.
@@ -79,8 +80,26 @@ export function CheckItem({ children, light = false }: { children: ReactNode; li
   );
 }
 
-export const WHATSAPP_CM = 'https://wa.me/237694244666';
-export const WHATSAPP_CN = 'https://wa.me/8619068451378';
+export const WHATSAPP_CM = phones.cameroonWhatsapp.whatsapp;
+export const WHATSAPP_CN = phones.china.whatsapp;
 export const EMAIL = 'paulworld2016@yahoo.com';
 export const EMAIL_INFO = 'infos@paulworldtravel.com';
+
+/** Google Maps links of an office: one per city it covers. */
+export function MapLinks({ office, lang, className = '' }: { office: Office; lang: 'fr' | 'en'; className?: string }) {
+  const single = office.maps.length === 1;
+  const label = (city: string) =>
+    single ? (lang === 'fr' ? 'Voir sur la carte' : 'View on the map') : lang === 'fr' ? `${city} sur la carte` : `${city} on the map`;
+  return (
+    <ul className={`flex flex-wrap gap-x-5 gap-y-1 ${className}`}>
+      {office.maps.map((m) => (
+        <li key={m.href}>
+          <a href={m.href} target="_blank" rel="noopener noreferrer" className="font-bold text-ocean underline-offset-4 hover:underline">
+            {label(m.city)}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
 

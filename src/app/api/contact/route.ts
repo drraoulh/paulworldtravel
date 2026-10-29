@@ -169,7 +169,7 @@ export async function POST(request: Request) {
           `<p>Merci pour votre message${fields.service ? ` concernant <strong>${escapeHtml(fields.service)}</strong>` : ''}. ` +
           `Notre équipe vous répond sous 24 h ouvrées. Pour une demande urgente, écrivez-nous sur WhatsApp : +237 6 94 24 46 66.</p>` +
           `<p style="color:#4a5872">Thank you for your message. Our team will reply within one business day.</p>` +
-          `<p>Paul World Travel<br>Lendi, entrée Commissaire, Douala</p></div>`,
+          `<p>Paul World Travel<br>Bonabo, entrée garage, Douala, Cameroun</p></div>`,
         tags: ['site-web', 'accuse-reception'],
       }),
     });

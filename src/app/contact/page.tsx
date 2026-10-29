@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { sendForm, SendFormResult } from '@/services/sendForm';
-import { Container, EMAIL, EMAIL_INFO, PageHero, WHATSAPP_CM, WHATSAPP_CN } from '@/components/site';
+import { ButtonLink, Container, EMAIL, EMAIL_INFO, PageHero, WHATSAPP_CM, WHATSAPP_CN } from '@/components/site';
 import { contactOptions } from '@/content/services';
-import { offices, hours } from '@/components/offices';
+import { offices, officeLabel, hours } from '@/components/offices';
 
 const copy = {
   fr: {
@@ -28,8 +28,10 @@ const copy = {
     failedA: "La demande n'a pas pu être envoyée. Écrivez-nous à ",
     failedB: ' ou sur ',
     quickTitle: 'Une réponse rapide',
+    quickText: 'Écrivez-nous directement sur WhatsApp ou par email.',
     whatsappCm: 'WhatsApp Cameroun',
     whatsappCn: 'WhatsApp Chine',
+    officesTitle: 'Nos bureaux',
     hoursTitle: 'Horaires',
   },
   en: {
@@ -51,8 +53,10 @@ const copy = {
     failedA: 'The request could not be sent. Email us at ',
     failedB: ' or message us on ',
     quickTitle: 'A quick answer',
+    quickText: 'Message us directly on WhatsApp or by email.',
     whatsappCm: 'WhatsApp Cameroon',
     whatsappCn: 'WhatsApp China',
+    officesTitle: 'Our offices',
     hoursTitle: 'Opening hours',
   },
 };
@@ -156,32 +160,38 @@ export default function Contact() {
           <aside className="space-y-6 lg:col-span-5">
             <div className="rounded-lg bg-night p-6 text-white sm:p-8">
               <h2 className="heading text-xl">{c.quickTitle}</h2>
-              <ul className="mt-4 space-y-3">
-                <li><a href={WHATSAPP_CM} target="_blank" rel="noopener noreferrer" className="font-bold text-container hover:text-container-hover">{c.whatsappCm} : +237 6 94 24 46 66</a></li>
-                <li><a href={WHATSAPP_CN} target="_blank" rel="noopener noreferrer" className="font-bold text-container hover:text-container-hover">{c.whatsappCn} : +86 190 6845 1378</a></li>
-                <li><a href={`mailto:${EMAIL_INFO}`} className="text-blue-100 hover:text-white">{EMAIL_INFO}</a></li>
-                <li><a href={`mailto:${EMAIL}`} className="text-blue-100 hover:text-white">{EMAIL}</a></li>
+              <p className="mt-2 text-blue-100">{c.quickText}</p>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+                <ButtonLink href={WHATSAPP_CM} variant="light">{c.whatsappCm}</ButtonLink>
+                <ButtonLink href={WHATSAPP_CN} variant="outline">{c.whatsappCn}</ButtonLink>
+              </div>
+              <ul className="mt-5 space-y-1">
+                <li><a href={`mailto:${EMAIL_INFO}`} className="break-all text-blue-100 hover:text-white">{EMAIL_INFO}</a></li>
+                <li><a href={`mailto:${EMAIL}`} className="break-all text-blue-100 hover:text-white">{EMAIL}</a></li>
               </ul>
             </div>
 
-            {offices.map((o) => (
-              <div key={o.id} className="rounded-lg bg-white p-6 sm:p-8">
-                <p className="text-sm font-bold text-ocean">{o.role[language]}</p>
-                <p className="display mt-1 text-2xl text-night">{o.city}</p>
-                <p className="mt-2 text-slate">{o.address[language]}</p>
-                <ul className="mt-3 space-y-1">
-                  {o.phones.map((p) => (
-                    <li key={p.href}><a href={p.href} className="font-semibold text-night hover:text-ocean">{p.label}</a></li>
-                  ))}
+            <div className="rounded-lg bg-white p-6 sm:p-8">
+              <h2 className="heading text-xl text-night">{c.officesTitle}</h2>
+              <ul className="mt-4 divide-y divide-rule">
+                {offices.map((o) => (
+                  <li key={o.id} className="py-4 first:pt-0 last:pb-0">
+                    <p className="font-bold text-night">{officeLabel(o, language)}</p>
+                    <p className="text-slate">{o.address[language]}</p>
+                    <ul className="mt-1 flex flex-wrap gap-x-4">
+                      {o.phones.map((p) => (
+                        <li key={p.href}><a href={p.href} className="whitespace-nowrap font-semibold text-ocean hover:underline">{p.label}</a></li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-6 border-t border-rule pt-5">
+                <p className="heading text-night">{c.hoursTitle}</p>
+                <ul className="mt-2 space-y-1 text-slate">
+                  {hours[language].map((h) => <li key={h}>{h}</li>)}
                 </ul>
               </div>
-            ))}
-
-            <div className="rounded-lg bg-white p-6 sm:p-8">
-              <p className="heading text-night">{c.hoursTitle}</p>
-              <ul className="mt-2 space-y-1 text-slate">
-                {hours[language].map((h) => <li key={h}>{h}</li>)}
-              </ul>
             </div>
           </aside>
         </Container>
