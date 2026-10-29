@@ -14,7 +14,7 @@ export default function Connexion() {
         <div className="relative hidden min-h-[580px] overflow-hidden rounded-[2rem] bg-night lg:block">
           <Image src="/images/toronto.jpg" alt="Toronto, au Canada" fill sizes="480px" className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-night via-night/20 to-transparent" />
-          <div className="absolute bottom-10 left-8 right-8 text-white"><h1 className="display text-4xl">Chaque séance vous rapproche de votre projet.</h1><p className="mt-5 leading-relaxed text-blue-100">Retrouvez votre inscription, votre formule et vos résultats de test de niveau.</p></div>
+          <div className="absolute bottom-10 left-8 right-8 text-white"><p className="display text-4xl">Chaque séance vous rapproche de votre projet.</p><p className="mt-5 leading-relaxed text-blue-100">Retrouvez votre inscription, votre formule et vos résultats de test de niveau.</p></div>
         </div>
         <div className="rounded-2xl border border-rule bg-white p-6 shadow-sm sm:p-8">
         <Suspense>

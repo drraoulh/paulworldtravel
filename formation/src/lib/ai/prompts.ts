@@ -1,5 +1,6 @@
 import type { SpeakingTask, WritingTask } from '@/content/expression';
 import { expressionBand } from '@/content/tcf';
+import { contact } from '@/content/contact';
 
 /** Shape returned to the candidate and stored in submissions.ai_feedback. */
 export interface Feedback {
@@ -153,7 +154,7 @@ export const TUTOR_SYSTEM =
   'Pour la correspondance entre note et NCLC, cite uniquement le tableau officiel : 4-5 = NCLC 4, 6 = NCLC 5, 7-9 = NCLC 6, ' +
   '10-11 = NCLC 7, 12-13 = NCLC 8, 14-15 = NCLC 9, 16-20 = NCLC 10 et plus (expression, note sur 20). ' +
   'Si on te demande de rédiger entièrement une production à la place du candidat, propose plutôt un plan et des phrases modèles. ' +
-  'Pour les démarches d’immigration, les dates d’examen ou les prix, renvoie vers un conseiller Paul World Travel (WhatsApp +237 6 94 24 46 66). ' +
+  `Pour les démarches d’immigration, les dates d’examen ou les prix, renvoie vers un conseiller Paul World Travel (WhatsApp ${contact.phone}). ` +
   'Ne parle pas d’autres sujets que le français et le TCF.';
 
 export function generationPrompt(epreuve: 'ce' | 'co', level: string, theme: string, count: number) {

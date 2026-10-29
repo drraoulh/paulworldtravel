@@ -40,7 +40,7 @@ export default async function MethodologiePage({ params }: Props) {
             </li>
           ))}
         </ol>
-        <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
+        <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-2xl bg-white p-6">
             <ProgressBar ids={ids} />
             <ButtonLink href={`/epreuve/${e.slug}/methodologie/${m.lessons[0].slug}/`} variant="dark" className="mt-5 w-full">Commencer la première leçon</ButtonLink>

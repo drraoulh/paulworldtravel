@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { contact } from '@/content/contact';
 import { formules } from '@/content/offers';
 
 /*
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
         `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}<p>Bonjour ${escapeHtml(f.firstName)},</p>` +
         `<p>Nous avons bien reçu votre inscription à la formule <strong>${escapeHtml(formule.name)}</strong>.</p>` +
         `<p>Un conseiller vous contacte sous 24 h ouvrées avec le tarif, le calendrier et les moyens de paiement.</p>` +
-        `<p>À très bientôt,<br>Paul World Travel Formation<br>WhatsApp : +237 6 94 24 46 66</p></div>`,
+        `<p>À très bientôt,<br>Paul World Travel Formation<br>WhatsApp : ${contact.phone}</p></div>`,
       tags: ['formation', 'confirmation-tcf'],
     });
   } catch (error) {

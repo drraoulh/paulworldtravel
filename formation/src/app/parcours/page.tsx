@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
-import { ButtonLink, Container } from '@/components/ui';
+import Link from 'next/link';
+import { Container } from '@/components/ui';
 import CourseHome from '@/components/parcours/CourseHome';
+import { inPersonPlaces } from '@/content/contact';
 import { weeklyPlan } from '@/content/parcours';
 import { course, courseMinutes } from '@/content/parcours/course';
 
@@ -27,13 +29,10 @@ export default function Parcours() {
               </li>
             ))}
           </ol>
-          <div className="mt-12 flex flex-col items-start gap-4 rounded-2xl bg-night p-8 text-white sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="heading text-xl">Préférez-vous être accompagné ?</p>
-              <p className="mt-1 text-blue-100">Nos formateurs suivent ce parcours avec vous, en ligne ou en présentiel à Douala.</p>
-            </div>
-            <ButtonLink href="/formules/">Voir les formules</ButtonLink>
-          </div>
+          <p className="mt-10 max-w-2xl text-slate">
+            Vous préférez être accompagné ? Nos formateurs suivent ce parcours avec vous, en ligne ou {inPersonPlaces}.{' '}
+            <Link href="/formules/" className="font-bold text-ocean hover:underline">Voir les formules</Link>
+          </p>
         </Container>
       </section>
     </>

@@ -19,7 +19,12 @@ export default function LoginForm() {
   );
 
   if (!supabase) {
-    return <p className="rounded-lg bg-white p-6 sm:p-10">L’espace candidat sera bientôt disponible.</p>;
+    return (
+      <div>
+        <h1 className="heading text-2xl text-night">Connexion</h1>
+        <p className="mt-3 text-slate">L’espace candidat sera bientôt disponible.</p>
+      </div>
+    );
   }
 
   const submit = async (e: FormEvent) => {
@@ -54,8 +59,8 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={submit} className="rounded-lg bg-white p-6 sm:p-10">
-      <h2 className="heading text-2xl text-night">{mode === 'login' ? 'Connexion' : 'Mot de passe oublié'}</h2>
+    <form onSubmit={submit}>
+      <h1 className="heading text-2xl text-night">{mode === 'login' ? 'Connexion' : 'Mot de passe oublié'}</h1>
       <label className="mt-6 block">
         <span className="font-semibold text-night">Email</span>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={inputCls} />

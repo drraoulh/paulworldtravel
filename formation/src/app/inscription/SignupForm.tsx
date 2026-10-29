@@ -2,7 +2,8 @@
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { contact, formules, objectifs } from '@/content/offers';
+import { contact } from '@/content/contact';
+import { formules, objectifs } from '@/content/offers';
 import { getSupabase } from '@/lib/supabase/client';
 
 const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'Je ne sais pas'];
