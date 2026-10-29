@@ -13,8 +13,8 @@ export const faqs: FAQItem[] = [
     category: 'canada',
     q: { fr: 'Puis-je envoyer des colis du Cameroun vers le Canada ?', en: 'Can I ship parcels from Cameroon to Canada?' },
     a: {
-      fr: 'Oui. Nous expédions colis, effets personnels et marchandises de Douala et Yaoundé vers Montréal, Toronto et le reste du Canada, par fret maritime (groupage en conteneur) ou par fret aérien. Déposez votre envoi à notre bureau de Douala ou demandez une collecte.',
-      en: 'Yes. We ship parcels, personal effects and goods from Douala and Yaoundé to Montreal, Toronto and the rest of Canada, by sea freight (container consolidation) or air freight. Drop your shipment at our Douala office or ask for a pickup.',
+      fr: 'Oui. Nous expédions colis, effets personnels et marchandises de Douala et Yaoundé vers Montréal, Toronto et le reste du Canada, par fret maritime (groupage en conteneur) ou par fret aérien. Déposez votre envoi à nos bureaux de Douala ou de Yaoundé, ou demandez une collecte.',
+      en: 'Yes. We ship parcels, personal effects and goods from Douala and Yaoundé to Montreal, Toronto and the rest of Canada, by sea freight (container consolidation) or air freight. Drop your shipment at our Douala or Yaoundé office, or ask for a pickup.',
     },
   },
   {
@@ -114,8 +114,8 @@ export const faqs: FAQItem[] = [
       en: 'How do you help me find reliable suppliers in China?',
     },
     a: {
-      fr: 'Notre équipe à Foshan dispose d’un vaste réseau de fournisseurs vérifiés. Nous évaluons leur capacité de production, leur qualité et leur fiabilité, organisons des visites d’usines, négocions les prix en votre nom et gérons la communication en chinois.',
-      en: 'Our Foshan team has a broad network of vetted suppliers. We assess their production capacity, quality and reliability, arrange factory visits, negotiate prices on your behalf and handle communication in Chinese.',
+      fr: 'Notre équipe à Guangzhou dispose d’un vaste réseau de fournisseurs vérifiés dans toute la province du Guangdong. Nous évaluons leur capacité de production, leur qualité et leur fiabilité, organisons des visites d’usines, négocions les prix en votre nom et gérons la communication en chinois.',
+      en: 'Our Guangzhou team has a broad network of vetted suppliers across Guangdong province. We assess their production capacity, quality and reliability, arrange factory visits, negotiate prices on your behalf and handle communication in Chinese.',
     },
   },
   {

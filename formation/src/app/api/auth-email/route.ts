@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
+import { emailSignature } from '@/content/contact';
 import { escapeHtml, sendEmail } from '@/lib/brevo';
 
 /*
@@ -68,7 +69,7 @@ function layout(title: string, intro: string, button: string, href: string, foot
     `<h2 style="color:#0a2a5e;margin:0 0 12px">${title}</h2><p>${intro}</p>` +
     `<p style="margin:24px 0"><a href="${href}" style="display:inline-block;background:#f2b705;color:#0a2a5e;font-weight:bold;padding:12px 24px;border-radius:6px;text-decoration:none">${button}</a></p>` +
     `<p style="color:#4a5872;font-size:13px">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>${href}</p>` +
-    `<p style="color:#4a5872;font-size:13px">${footer}<br>Paul World Travel Formation, Lendi, Douala · WhatsApp +237 6 94 24 46 66</p></div>`
+    `<p style="color:#4a5872;font-size:13px">${footer}<br>${emailSignature}</p></div>`
   );
 }
 

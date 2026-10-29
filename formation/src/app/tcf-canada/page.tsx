@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
-import { epreuves, nclcTable } from '@/content/tcf';
+import { epreuves, nclcTable, totalMinutes } from '@/content/tcf';
+import { epreuveById } from '@/lib/epreuves';
 
 export const metadata: Metadata = {
   title: 'Le TCF Canada : épreuves, scores et NCLC',
@@ -25,36 +27,25 @@ export default function TcfCanada() {
       <section className="bg-white py-16 sm:py-20">
         <Container>
           <h2 className="heading text-3xl text-night sm:text-4xl">Les quatre épreuves</h2>
-          <div className="mt-8 overflow-x-auto rounded-lg border border-rule">
-            <table className="w-full min-w-[40rem] text-left">
-              <thead className="bg-paper text-sm text-slate">
-                <tr>
-                  <th scope="col" className="px-5 py-3 font-semibold">Épreuve</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Durée</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Format</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Résultat</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-rule">
-                {epreuves.map((e) => (
-                  <tr key={e.id}>
-                    <th scope="row" className="px-5 py-4 font-semibold text-night">{e.name}</th>
-                    <td className="px-5 py-4">{e.minutes} min</td>
-                    <td className="px-5 py-4">{e.format}</td>
-                    <td className="px-5 py-4">{e.scale}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2">
-            {epreuves.map((e) => (
-              <div key={e.id}>
-                <h3 className="heading text-xl text-night">{e.name}</h3>
-                <p className="mt-2 text-slate">{e.what}</p>
-              </div>
+          <p className="mt-4 max-w-3xl text-lg text-slate">Dans l’ordre du jour de l’examen, pour une durée totale de {totalMinutes} minutes.</p>
+          <ol className="mt-10 border-t border-night">
+            {epreuves.map((e, i) => (
+              <li key={e.id} className="grid gap-x-10 gap-y-4 border-b border-rule py-8 md:grid-cols-[3rem_1fr_19rem]">
+                <span aria-hidden="true" className="display text-4xl text-night">{i + 1}</span>
+                <div>
+                  <h3 className="heading text-2xl text-night">
+                    <Link href={`/epreuve/${epreuveById(e.id).slug}/`} className="hover:text-ocean">{e.name}</Link>
+                  </h3>
+                  <p className="mt-2 max-w-xl text-ink">{e.what}</p>
+                </div>
+                <dl className="grid grid-cols-[6rem_1fr] gap-y-1.5 text-sm">
+                  <dt className="text-slate">Durée</dt><dd className="font-semibold text-night">{e.minutes} minutes</dd>
+                  <dt className="text-slate">Format</dt><dd className="font-semibold text-night">{e.format}</dd>
+                  <dt className="text-slate">Résultat</dt><dd className="font-semibold text-night">{e.scale}</dd>
+                </dl>
+              </li>
             ))}
-          </div>
+          </ol>
         </Container>
       </section>
 

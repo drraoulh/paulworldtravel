@@ -77,8 +77,12 @@ npm run dev
 
 ## Implantations
 
-- Foshan, Guangdong (Chine)
-- Douala, Lendi (Cameroun)
+- Douala, Bonabo, entrée garage (Cameroun) : siège
+- Yaoundé, non loin du Lycée bilingue d'Essos (Cameroun)
+- Guangzhou, province du Guangdong (Chine)
+- Toronto et Montréal (Canada)
+
+La liste des bureaux et des numéros est dans `src/components/offices.ts`.
 
 ## Contact
 

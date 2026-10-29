@@ -3,28 +3,27 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { areas, services, servicesByArea, type Area } from '@/content/services';
+import { services } from '@/content/services';
 import { faqs } from '@/content/faqs';
 import { serviceIcons } from '@/components/serviceIcons';
-import { ButtonLink, Container, EMAIL_INFO, SectionTitle, WHATSAPP_CM } from '@/components/site';
-import { offices, hours } from '@/components/offices';
+import { ButtonLink, Container, MapLinks, SectionTitle, WHATSAPP_CM } from '@/components/site';
+import { offices } from '@/components/offices';
 
 const copy = {
   fr: {
     heroLines: ['Expédier, acheter,', 'changer, voyager.'],
     heroText:
       'Paul World Travel accompagne particuliers et entreprises entre le Cameroun, la Chine et le Canada : vos marchandises, vos achats, vos paiements, vos visas et votre entreprise, avec une seule équipe.',
-    heroCta: 'Voir tous les services',
-    heroContact: 'Nous contacter',
+    heroQuote: 'Demander un devis',
+    heroWhatsapp: 'Écrire sur WhatsApp',
+    heroNote: 'Réponse sous 24 h ouvrées, en français ou en anglais.',
     pickerTitle: 'Que souhaitez-vous faire ?',
+    pickerAll: 'Voir tous les services',
     facts: [
       ['8 services', 'Du transport aux démarches administratives'],
-      ['2 bureaux', 'Douala au Cameroun, Foshan en Chine'],
+      ['4 bureaux', 'Douala, Yaoundé, Guangzhou, Toronto et Montréal'],
       ['3 pays', 'Cameroun, Chine et Canada'],
     ],
-    areasTitle: 'Tout ce que nous faisons pour vous',
-    areasIntro: 'Prenez un seul service ou combinez-les : achat en Chine, paiement en Yuan, transport et dédouanement, nous suivons tout le parcours.',
-    more: 'Voir le service',
     howTitle: 'Comment nous travaillons',
     how: [
       ['Vous nous expliquez votre projet', 'Par le formulaire, par email ou sur WhatsApp, en français ou en anglais.'],
@@ -32,32 +31,26 @@ const copy = {
       ['Nous nous occupons de tout', 'Achats, documents, transport, dossiers : un conseiller suit votre demande.'],
       ['Vous êtes informé à chaque étape', 'Jusqu’à la livraison, la décision ou le lancement de votre activité.'],
     ],
-    officesTitle: 'Deux bureaux, une seule équipe',
-    officesIntro: 'Rendez-nous visite ou appelez-nous dans les deux pays.',
-    map: 'Voir sur la carte',
-    hoursTitle: 'Horaires',
+    officesTitle: 'Quatre bureaux, une seule équipe',
+    officesIntro: 'Au Cameroun, en Chine et au Canada : passez nous voir ou appelez le bureau le plus proche.',
+    officesAll: 'Adresses, horaires et carte',
     faqTitle: 'Questions fréquentes',
     faqAll: 'Toutes les questions',
-    ctaTitle: 'Un projet entre le Cameroun, la Chine et le Canada ?',
-    ctaText: 'Décrivez votre besoin en quelques lignes : nous vous répondons sous 24 h ouvrées.',
-    ctaQuote: 'Demander un devis',
-    ctaWhatsapp: 'Écrire sur WhatsApp',
   },
   en: {
     heroLines: ['Ship, buy,', 'exchange, travel.'],
     heroText:
       'Paul World Travel helps individuals and businesses between Cameroon, China and Canada: your goods, purchases, payments, visas and company, with one team.',
-    heroCta: 'See all services',
-    heroContact: 'Contact us',
+    heroQuote: 'Get a quote',
+    heroWhatsapp: 'Message us on WhatsApp',
+    heroNote: 'We reply within one business day, in French or English.',
     pickerTitle: 'What would you like to do?',
+    pickerAll: 'See all services',
     facts: [
       ['8 services', 'From shipping to paperwork'],
-      ['2 offices', 'Douala in Cameroon, Foshan in China'],
+      ['4 offices', 'Douala, Yaoundé, Guangzhou, Toronto and Montreal'],
       ['3 countries', 'Cameroon, China and Canada'],
     ],
-    areasTitle: 'Everything we do for you',
-    areasIntro: 'Use one service or combine them: buying in China, paying in Yuan, shipping and customs, we follow the whole journey.',
-    more: 'See the service',
     howTitle: 'How we work',
     how: [
       ['You tell us about your project', 'Through the form, by email or on WhatsApp, in French or English.'],
@@ -65,21 +58,14 @@ const copy = {
       ['We handle everything', 'Purchases, paperwork, transport, applications: one advisor follows your request.'],
       ['You are kept informed', 'Until delivery, the decision or the launch of your business.'],
     ],
-    officesTitle: 'Two offices, one team',
-    officesIntro: 'Visit or call us in either country.',
-    map: 'View on the map',
-    hoursTitle: 'Opening hours',
+    officesTitle: 'Four offices, one team',
+    officesIntro: 'In Cameroon, China and Canada: visit us or call the office nearest to you.',
+    officesAll: 'Addresses, opening hours and map',
     faqTitle: 'Frequent questions',
     faqAll: 'All questions',
-    ctaTitle: 'A project between Cameroon, China and Canada?',
-    ctaText: 'Describe what you need in a few lines: we reply within one business day.',
-    ctaQuote: 'Get a quote',
-    ctaWhatsapp: 'Message us on WhatsApp',
   },
 };
 
-const order: Area[] = ['transport', 'trade', 'paperwork', 'digital'];
-const lgCols: Record<number, string> = { 1: 'lg:grid-cols-1', 2: 'lg:grid-cols-2', 3: 'lg:grid-cols-3' };
 // A spread of questions across services for the home page.
 const homeQuestions = ['canada', 'cargo', 'currency', 'visa']
   .map((cat) => faqs.find((f) => f.category === cat))
@@ -95,16 +81,17 @@ export default function Home() {
       <section className="relative isolate overflow-hidden bg-night text-white">
         <div aria-hidden="true" className="absolute -right-40 -top-40 -z-10 h-[36rem] w-[36rem] rounded-full bg-ocean/40 blur-3xl" />
         <div aria-hidden="true" className="absolute -bottom-52 left-1/4 -z-10 h-[28rem] w-[28rem] rounded-full bg-sky/20 blur-3xl" />
-        <Container className="grid grid-cols-1 items-center gap-12 py-16 sm:py-20 lg:grid-cols-12 lg:py-24">
+        <Container className="grid grid-cols-1 items-center gap-12 py-14 sm:py-20 lg:grid-cols-12 lg:py-24">
           <div className="lg:col-span-6">
             <h1 className="display hero-title text-[2.5rem] sm:text-6xl xl:text-[4.25rem]">
               {c.heroLines.map((line) => <span key={line} className="block">{line}</span>)}
             </h1>
             <p className="mt-8 max-w-xl text-lg text-blue-100 sm:text-xl">{c.heroText}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/services/">{c.heroCta}</ButtonLink>
-              <ButtonLink href="/contact/" variant="outline">{c.heroContact}</ButtonLink>
+              <ButtonLink href="/contact/">{c.heroQuote}</ButtonLink>
+              <ButtonLink href={WHATSAPP_CM} variant="outline">{c.heroWhatsapp}</ButtonLink>
             </div>
+            <p className="mt-4 text-sm text-blue-200">{c.heroNote}</p>
           </div>
 
           <div className="lg:col-span-6">
@@ -131,6 +118,9 @@ export default function Home() {
                   );
                 })}
               </ul>
+              <Link href="/services/" className="mt-4 inline-block px-1 font-bold text-ocean underline-offset-4 hover:underline">
+                {c.pickerAll}
+              </Link>
             </div>
           </div>
         </Container>
@@ -148,43 +138,11 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* Services by area */}
+      {/* How we work */}
       <section className="bg-paper py-16 sm:py-24">
         <Container>
-          <SectionTitle title={c.areasTitle} intro={c.areasIntro} />
-          <div className="space-y-14">
-            {order.map((area) => (
-              <div key={area} className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                <div className="lg:col-span-3">
-                  <h3 className="heading text-2xl text-night">{areas[area][language].name}</h3>
-                  <p className="mt-2 text-slate">{areas[area][language].text}</p>
-                </div>
-                <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-9 ${lgCols[servicesByArea(area).length]}`}>
-                  {servicesByArea(area).map((s) => (
-                    <Link
-                      key={s.slug}
-                      href={`/services/${s.slug}/`}
-                      className={`group relative isolate flex min-h-60 flex-col justify-end overflow-hidden rounded-lg p-5 text-white ${servicesByArea(area).length === 1 ? 'sm:col-span-2 lg:col-span-1' : ''}`}
-                    >
-                      <Image src={s.image} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="-z-20 object-cover transition-transform duration-500 group-hover:scale-105" />
-                      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-night via-night/65 to-night/10" />
-                      <h4 className="heading text-xl">{s[language].name}</h4>
-                      <p className="mt-1 text-sm text-blue-100">{s[language].summary}</p>
-                      <span className="mt-3 text-sm font-bold text-container">{c.more}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* How we work */}
-      <section className="bg-white py-16 sm:py-24">
-        <Container>
           <SectionTitle title={c.howTitle} />
-          <ol className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          <ol className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {c.how.map(([title, text], i) => (
               <li key={title} className="border-t-4 border-ocean pt-5">
                 <span className="display text-4xl text-sky">{i + 1}</span>
@@ -197,43 +155,38 @@ export default function Home() {
       </section>
 
       {/* Offices */}
-      <section className="bg-paper py-16 sm:py-24">
+      <section className="bg-white py-16 sm:py-24">
         <Container>
           <SectionTitle title={c.officesTitle} intro={c.officesIntro} />
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {offices.map((o) => (
-              <article key={o.id} className="grid grid-cols-1 overflow-hidden rounded-lg bg-white sm:grid-cols-2">
-                <div className="relative h-52 sm:h-full">
+              <article key={o.id} className="flex flex-col overflow-hidden rounded-lg border border-rule bg-white">
+                <div className="relative h-40">
                   <Image src={o.image} alt={o.imageAlt[language]} fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
                 </div>
-                <div className="p-6">
+                <div className="flex flex-1 flex-col p-5">
                   <p className="text-sm font-bold text-ocean">{o.role[language]}</p>
-                  <h3 className="display mt-1 text-3xl text-night">{o.city}</h3>
-                  <p className="mt-3 text-slate">{o.address[language]}</p>
+                  <h3 className="display mt-1 text-2xl text-night">{o.name[language]}</h3>
+                  <p className="mt-2 text-slate">{o.address[language]}</p>
                   <ul className="mt-3 space-y-1">
                     {o.phones.map((p) => (
                       <li key={p.href}><a href={p.href} className="font-semibold text-night hover:text-ocean">{p.label}</a></li>
                     ))}
                   </ul>
-                  <a href={o.map} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block font-bold text-ocean underline-offset-4 hover:underline">{c.map}</a>
+                  <MapLinks office={o} lang={language} className="mt-auto pt-4" />
                 </div>
               </article>
             ))}
           </div>
-          <div className="mt-6 rounded-lg bg-white p-6">
-            <p className="heading text-night">{c.hoursTitle}</p>
-            <ul className="mt-2 grid grid-cols-1 gap-1 text-slate sm:grid-cols-3">
-              {hours[language].map((h) => <li key={h}>{h}</li>)}
-            </ul>
-          </div>
+          <Link href="/locations/" className="mt-8 inline-block font-bold text-ocean underline-offset-4 hover:underline">{c.officesAll}</Link>
         </Container>
       </section>
 
       {/* A few questions */}
-      <section className="bg-white py-16 sm:py-24">
+      <section className="bg-paper py-16 sm:py-24">
         <Container className="max-w-4xl">
           <SectionTitle title={c.faqTitle} />
-          <div className="divide-y divide-rule overflow-hidden rounded-lg border border-rule">
+          <div className="divide-y divide-rule overflow-hidden rounded-lg border border-rule bg-white">
             {homeQuestions.map((item) => (
               <details key={item.q.fr} className="group p-6">
                 <summary className="flex cursor-pointer list-none items-start justify-between gap-6">
@@ -245,24 +198,6 @@ export default function Home() {
             ))}
           </div>
           <Link href="/faq/" className="mt-6 inline-block font-bold text-ocean underline-offset-4 hover:underline">{c.faqAll}</Link>
-        </Container>
-      </section>
-
-      {/* Closing call to action */}
-      <section className="bg-night py-16 text-white sm:py-20">
-        <Container className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-2xl">
-            <h2 className="display text-3xl sm:text-5xl">{c.ctaTitle}</h2>
-            <p className="mt-4 text-lg text-blue-100">{c.ctaText}</p>
-            <ul className="mt-4 space-y-1 text-blue-100">
-              <li><a href={`mailto:${EMAIL_INFO}`} className="hover:text-white">{EMAIL_INFO}</a></li>
-              <li><a href="tel:+237694244666" className="hover:text-white">+237 6 94 24 46 66</a></li>
-            </ul>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/contact/">{c.ctaQuote}</ButtonLink>
-            <ButtonLink href={WHATSAPP_CM} variant="outline">{c.ctaWhatsapp}</ButtonLink>
-          </div>
         </Container>
       </section>
     </>

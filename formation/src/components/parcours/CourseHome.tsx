@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { CourseItem, CourseModule, ItemKind } from '@/content/parcours/course';
+import { useSignedIn } from '@/components/ai/useSignedIn';
 import { markDone, percent, setWeeklyGoal, useCourse } from './useCourse';
 
 export const KIND_LABEL: Record<ItemKind, string> = {
@@ -63,6 +64,7 @@ function weekDays() {
 
 export default function CourseHome({ course, totalMinutes }: { course: CourseModule[]; totalMinutes: number }) {
   const { ready, isDone, last, goal, days } = useCourse();
+  const signedIn = useSignedIn();
   const items = course.flatMap((m) => m.items);
   const doneCount = items.filter((it) => isDone(it.id)).length;
   const pct = percent(items, isDone);
@@ -83,8 +85,7 @@ export default function CourseHome({ course, totalMinutes }: { course: CourseMod
       <section className="border-b border-rule bg-white">
         <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1fr_24rem] lg:items-end lg:px-8">
           <div>
-            <p className="text-sm font-bold text-ocean">Parcours de formation</p>
-            <h1 className="display mt-2 max-w-2xl text-[2.3rem] text-night sm:text-[3.1rem]">Préparation complète au TCF Canada</h1>
+            <h1 className="display max-w-2xl text-[2.3rem] text-night sm:text-[3.1rem]">Préparation complète au TCF Canada</h1>
             <p className="mt-4 max-w-2xl text-lg text-slate">
               {course.length} modules, {items.length} éléments, environ {Math.round(totalMinutes / 60)} heures. Avancez à votre rythme : chaque leçon, série et simulation terminée fait progresser votre barre.
             </p>
@@ -163,7 +164,7 @@ export default function CourseHome({ course, totalMinutes }: { course: CourseMod
             })}
           </div>
 
-          <aside className="space-y-4 lg:sticky lg:top-32 lg:self-start">
+          <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl bg-white p-6">
               <h2 className="heading text-lg text-night">Objectif de la semaine</h2>
               <p className="mt-1 text-sm text-slate">{activeThisWeek} jour{activeThisWeek > 1 ? 's' : ''} d’étude sur {goal} cette semaine.</p>
@@ -209,7 +210,9 @@ export default function CourseHome({ course, totalMinutes }: { course: CourseMod
             </div>
 
             <div className="rounded-2xl bg-white p-6 text-sm text-slate">
-              Une question pendant le parcours ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean hover:underline">Demandez au tuteur IA</Link>. Votre progression est enregistrée sur cet appareil.
+              Une question pendant le parcours ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean hover:underline">Demandez au tuteur IA</Link>.{' '}
+              {signedIn === true && 'Votre progression est enregistrée sur votre compte.'}
+              {signedIn === false && <><Link href="/connexion/?suite=/parcours/" className="font-semibold text-ocean hover:underline">Connectez-vous</Link> pour retrouver votre progression sur tous vos appareils.</>}
             </div>
           </aside>
         </div>

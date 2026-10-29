@@ -106,7 +106,7 @@ export default function WritingPractice() {
       </fieldset>
 
       <div className="rounded-2xl border border-rule bg-white p-6 sm:p-8">
-        <p className="text-sm font-bold text-ocean">{task.title} · {task.minWords} à {task.maxWords} mots · environ {task.minutes} min</p>
+        <p className="text-sm font-bold text-ocean">{task.title}, {task.minWords} à {task.maxWords} mots, environ {task.minutes} min</p>
         <p className="mt-3 text-lg text-ink">{task.prompt}</p>
         {task.documents && (
           <div className="mt-4 space-y-2">{task.documents.map((d) => <blockquote key={d} className="border-l-4 border-sky bg-paper p-4 text-sm">{d}</blockquote>)}</div>

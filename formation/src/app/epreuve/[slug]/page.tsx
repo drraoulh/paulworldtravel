@@ -36,7 +36,12 @@ export default async function EpreuvePage({ params }: Props) {
   ];
 
   return (
-    <EpreuveShell epreuve={e} active="presentation" intro={m.intro}>
+    <EpreuveShell
+      epreuve={e}
+      active="presentation"
+      intro={m.intro}
+      action={<ButtonLink href={`/epreuve/${e.slug}/methodologie/${m.lessons[0].slug}/`}>Commencer par la première leçon</ButtonLink>}
+    >
       <Container className="space-y-14">
         <div>
           <h2 className="heading text-2xl text-night">Format de l’épreuve</h2>
@@ -63,7 +68,7 @@ export default async function EpreuvePage({ params }: Props) {
         </div>
 
         <div>
-          <h2 className="heading text-2xl text-night">Votre programme pour cette épreuve</h2>
+          <h2 className="heading text-2xl text-night">Ce que vous trouvez dans cette épreuve</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {blocks.map((b) => (
               <Link key={b.href} href={b.href} className="group rounded-2xl border border-rule bg-white p-6 transition-colors hover:border-ocean">
@@ -71,17 +76,6 @@ export default async function EpreuvePage({ params }: Props) {
                 <p className="mt-2 text-slate">{b.text}</p>
               </Link>
             ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-start gap-4 rounded-2xl bg-night p-8 text-white sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="heading text-xl">Prêt à vous tester ?</p>
-            <p className="mt-1 text-blue-100">Commencez par la méthode, puis passez à la pratique.</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href={`/epreuve/${e.slug}/methodologie/`}>Lire la méthode</ButtonLink>
-            <ButtonLink href={blocks[1].href} variant="outline">{e.kind === 'comprehension' ? 'Commencer une série' : 'Voir les sujets'}</ButtonLink>
           </div>
         </div>
       </Container>

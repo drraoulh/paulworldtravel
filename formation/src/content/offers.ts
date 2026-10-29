@@ -1,4 +1,6 @@
-// Training formats, contacts and upcoming languages.
+// Training formats and upcoming languages. Offices and phones live in ./contact.
+import { inPersonPlaces } from './contact';
+
 // Prices and calendars are not set yet: fill `price` and `schedule` when they are decided.
 
 export interface Formule {
@@ -29,8 +31,8 @@ export const formules: Formule[] = [
   },
   {
     id: 'presentiel',
-    name: 'En présentiel à Douala',
-    where: 'Au siège de Paul World Travel, Lendi',
+    name: 'En présentiel',
+    where: `En salle, ${inPersonPlaces}`,
     summary: 'Cours en salle avec un formateur, en groupe réduit.',
     includes: [
       'Cours en salle en groupe réduit',
@@ -45,7 +47,7 @@ export const formules: Formule[] = [
   {
     id: 'hybride',
     name: 'Hybride',
-    where: 'En salle à Douala et en ligne',
+    where: 'En salle à Douala ou à Yaoundé, et en ligne',
     summary: 'Les cours en salle, plus l’entraînement en ligne entre les séances.',
     includes: [
       'Tout le présentiel',
@@ -64,12 +66,3 @@ export const autresLangues = [
   { name: 'Allemand', exams: 'Goethe-Zertifikat' },
   { name: 'Italien', exams: 'CILS, CELI' },
 ];
-
-export const contact = {
-  whatsapp: 'https://wa.me/237694244666',
-  phone: '+237 6 94 24 46 66',
-  phoneHref: 'tel:+237694244666',
-  email: 'infos@paulworldtravel.com',
-  address: 'Lendi, entrée Commissaire, Douala',
-  mainSite: 'https://paulworldtravel.com',
-};

@@ -4,12 +4,17 @@ import type { ReactNode } from 'react';
 import { Container } from '@/components/ui';
 import { EPREUVE_IMAGES, type EpreuveConfig, type Section } from '@/lib/epreuves';
 
-/** Header and section tabs shared by every page of an épreuve. */
-export default function EpreuveShell({ epreuve, active, title, intro, children }: {
+/**
+ * Title and section tabs shared by every page of an épreuve.
+ * The site header lists the épreuves; these tabs list the sections of this one, so they never repeat each other.
+ */
+export default function EpreuveShell({ epreuve, active, title, intro, action, children }: {
   epreuve: EpreuveConfig;
   active: Section;
   title?: string;
   intro?: ReactNode;
+  /** The one main action of the page, under the intro. */
+  action?: ReactNode;
   children: ReactNode;
 }) {
   const m = epreuve.module;
@@ -21,11 +26,10 @@ export default function EpreuveShell({ epreuve, active, title, intro, children }
         <Container className="pt-10 sm:pt-14">
           <div className={`grid gap-8 ${isHome ? 'lg:grid-cols-[1.4fr_1fr] lg:items-center lg:gap-14' : 'lg:grid-cols-[1fr_16rem] lg:items-end'}`}>
           <div>
-          {active !== 'presentation' && (
-            <Link href={`/epreuve/${epreuve.slug}/`} className="text-sm font-bold text-ocean hover:underline">{m.name}</Link>
-          )}
-          <h1 className="display mt-2 max-w-3xl text-[2.3rem] text-night sm:text-[3.1rem]">{title ?? m.name}</h1>
+          {active !== 'presentation' && <p className="text-sm font-semibold text-slate">{m.name}</p>}
+          <h1 className="display mt-1 max-w-3xl text-[2.3rem] text-night sm:text-[3.1rem]">{title ?? m.name}</h1>
           {intro && <p className="mt-4 max-w-2xl text-lg text-slate">{intro}</p>}
+          {action && <div className="mt-7">{action}</div>}
           </div>
           <div className={`relative overflow-hidden rounded-2xl bg-paper ${isHome ? 'aspect-[16/10] lg:aspect-[5/4]' : 'hidden aspect-[4/3] lg:block'}`}>
             <Image src={img.src} alt={img.alt} fill priority sizes={isHome ? '(min-width: 1024px) 40vw, 100vw' : '16rem'} className="object-cover" />

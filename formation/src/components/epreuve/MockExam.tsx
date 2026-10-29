@@ -43,7 +43,7 @@ export default function MockExam({ series }: { series: number[] }) {
   const ceSeries = getSeries('ce', serie)!;
 
   return (
-    <div ref={top} className="scroll-mt-28">
+    <div ref={top} className="scroll-mt-24">
       {phase === 'intro' && (
         <div className="space-y-6">
           <div className="rounded-2xl bg-white p-6 sm:p-8">
@@ -145,7 +145,7 @@ function MockWriting({ subjects, texts, setTexts, onFinish }: {
   return (
     <section className="space-y-4">
       <p className="font-semibold text-night">Épreuve 3 sur 3 : expression écrite</p>
-      <div className="sticky top-16 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur lg:top-[6.9rem]">
+      <div className="sticky top-[4.5rem] z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur">
         <div className="flex gap-1" role="tablist">
           {subjects.map((s, i) => (
             <button key={s.id} role="tab" aria-selected={tab === i} onClick={() => setTab(i)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${tab === i ? 'bg-night text-white' : 'bg-paper text-slate hover:text-night'}`}>

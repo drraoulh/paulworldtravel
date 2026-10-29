@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Analytics } from '@vercel/analytics/next';
+import ProgressSync from '@/components/parcours/progressSync';
 
 // Literata: a typeface designed for long reading (titles and lessons).
 // Atkinson Hyperlegible Next: designed for legibility (interface, answers, numbers).
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     template: '%s | Paul World Travel Formation',
   },
   description:
-    'Préparez le TCF Canada en ligne ou en présentiel à Douala : cours, tests blancs chronométrés, corrections par des formateurs et suivi jusqu’au NCLC visé.',
+    'Préparez le TCF Canada en ligne ou en présentiel à Douala et à Yaoundé : cours, tests blancs chronométrés, corrections par des formateurs et suivi jusqu’au NCLC visé.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Footer />
         </div>
         <Analytics />
+        <ProgressSync />
       </body>
     </html>
   );
