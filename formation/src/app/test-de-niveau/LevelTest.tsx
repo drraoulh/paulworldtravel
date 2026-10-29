@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { estimateLevel, levelAdvice, questions } from '@/content/levelTest';
 import { getSupabase } from '@/lib/supabase/client';
+import { markDone } from '@/components/parcours/useCourse';
 
 export default function LevelTest() {
   const [index, setIndex] = useState(0);
@@ -47,7 +48,7 @@ export default function LevelTest() {
     if (!checked) return setChecked(true);
     setChecked(false);
     if (index + 1 < questions.length) setIndex(index + 1);
-    else setDone(true);
+    else { setDone(true); markDone('test-niveau'); }
   };
   const restart = () => {
     setAnswers(questions.map(() => null));

@@ -7,6 +7,7 @@ import FeedbackView from '@/components/ai/FeedbackView';
 import Quota from '@/components/ai/Quota';
 import { toMp3 } from '@/components/ai/toMp3';
 import { fmt, MIC_ERROR, useRecorder } from '@/components/ai/useRecorder';
+import { markDone } from '@/components/parcours/useCourse';
 
 type Phase = 'idle' | 'recording' | 'recorded' | 'sending';
 
@@ -67,6 +68,7 @@ export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'La correction a échoué.');
       setResult({ transcript: data.transcript, feedback: data.feedback });
+      markDone(`eo/simulation-${task.task}`);
       setQuota({ remaining: data.remaining, plan: data.plan });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La correction a échoué.');

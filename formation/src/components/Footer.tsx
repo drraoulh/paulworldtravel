@@ -4,7 +4,7 @@ import { Container } from './ui';
 
 export default function Footer() {
   return (
-    <footer className="bg-night-deep text-blue-100">
+    <footer className="bg-night-deep text-blue-100 print:hidden">
       <Container className="grid grid-cols-1 gap-10 py-14 md:grid-cols-3">
         <div>
           <p className="heading text-lg text-white">Paul World Travel Formation</p>
