@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { CourseItem, CourseModule, ItemKind } from '@/content/parcours/course';
+import { useSignedIn } from '@/components/ai/useSignedIn';
 import { markDone, percent, setWeeklyGoal, useCourse } from './useCourse';
 
 export const KIND_LABEL: Record<ItemKind, string> = {
@@ -63,6 +64,7 @@ function weekDays() {
 
 export default function CourseHome({ course, totalMinutes }: { course: CourseModule[]; totalMinutes: number }) {
   const { ready, isDone, last, goal, days } = useCourse();
+  const signedIn = useSignedIn();
   const items = course.flatMap((m) => m.items);
   const doneCount = items.filter((it) => isDone(it.id)).length;
   const pct = percent(items, isDone);
@@ -209,7 +211,9 @@ export default function CourseHome({ course, totalMinutes }: { course: CourseMod
             </div>
 
             <div className="rounded-2xl bg-white p-6 text-sm text-slate">
-              Une question pendant le parcours ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean hover:underline">Demandez au tuteur IA</Link>. Votre progression est enregistrée sur cet appareil.
+              Une question pendant le parcours ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean hover:underline">Demandez au tuteur IA</Link>.{' '}
+              {signedIn === true && 'Votre progression est enregistrée sur votre compte.'}
+              {signedIn === false && <><Link href="/connexion/?suite=/parcours/" className="font-semibold text-ocean hover:underline">Connectez-vous</Link> pour retrouver votre progression sur tous vos appareils.</>}
             </div>
           </aside>
         </div>
