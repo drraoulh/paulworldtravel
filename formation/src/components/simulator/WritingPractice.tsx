@@ -7,6 +7,7 @@ import FeedbackView from '@/components/ai/FeedbackView';
 import Quota from '@/components/ai/Quota';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
+import { markDone } from '@/components/parcours/useCourse';
 import { getSessionCombinaison } from '@/content/combinaisons-sessions';
 import { isCombinaison, parseCombiTaskId, toWritingTask, type Combinaison } from '@/lib/combinaisons';
 import { getSupabase } from '@/lib/supabase/client';
@@ -69,6 +70,7 @@ export default function WritingPractice() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'La correction a échoué.');
       setFeedback(data.feedback);
+      markDone(`ee/simulation-${task.task}`);
       setQuota({ remaining: data.remaining, plan: data.plan });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La correction a échoué.');

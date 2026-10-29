@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ButtonLink, Container } from '@/components/ui';
-import EpreuveShell from '@/components/epreuve/EpreuveShell';
+import { Container } from '@/components/ui';
 import LessonQuiz from '@/components/parcours/LessonQuiz';
-import { DoneButton, LessonMark } from '@/components/parcours/Progress';
+import { ModuleOutline, ModuleProgress, NextBar, TrackVisit } from '@/components/parcours/Player';
 import { getLesson, lessonId } from '@/content/parcours';
+import { locateItem } from '@/content/parcours/course';
 import { epreuveConfigs, getEpreuve } from '@/lib/epreuves';
 
 type Props = { params: Promise<{ slug: string; lecon: string }> };
@@ -24,19 +24,39 @@ export default async function LessonPage({ params }: Props) {
   const e = getEpreuve(slug);
   const found = getLesson(slug, lecon);
   if (!e || !found) notFound();
-  const { module: m, lesson, index, prev, next } = found;
+  const { module: m, lesson, index } = found;
   const id = lessonId(m, lesson);
   const practice = lesson.practice ?? m.practice;
-  const href = (s: string) => `/epreuve/${e.slug}/methodologie/${s}/`;
+  const place = locateItem(id)!;
+  const href = `/epreuve/${e.slug}/methodologie/${lesson.slug}/`;
 
   return (
-    <EpreuveShell
-      epreuve={e}
-      active="methodologie"
-      title={lesson.title}
-      intro={<>Leçon {index + 1} sur {m.lessons.length}, {lesson.minutes} min de lecture. Objectif : {lesson.goal}</>}
-    >
-      <Container className="grid gap-10 lg:grid-cols-[1fr_18rem]">
+    <>
+      <TrackVisit item={{ id, href, title: lesson.title }} />
+      <div className="border-b border-rule bg-white">
+        <Container className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <nav aria-label="Fil d’Ariane" className="flex flex-wrap items-center gap-x-2 text-sm text-slate">
+            <Link href="/parcours/" className="font-semibold text-ocean hover:underline">Parcours</Link>
+            <span aria-hidden="true">/</span>
+            <span>Module {place.module.number} : {place.module.title}</span>
+            <span aria-hidden="true">/</span>
+            <span className="text-night">Leçon {index + 1}</span>
+          </nav>
+          <ModuleProgress items={place.module.items} />
+        </Container>
+      </div>
+      <section className="bg-paper py-8 sm:py-12">
+      <Container className="grid gap-8 lg:grid-cols-[19rem_1fr]">
+        <aside className="order-2 lg:order-1 lg:sticky lg:top-32 lg:max-h-[calc(100vh-9rem)] lg:self-start lg:overflow-y-auto">
+          <ModuleOutline title={place.module.title} number={place.module.number} items={place.module.items} currentId={id} />
+        </aside>
+
+        <div className="order-1 min-w-0 lg:order-2">
+        <header className="mb-8 max-w-[44rem]">
+          <p className="text-sm font-semibold text-ocean">Leçon {index + 1} sur {m.lessons.length}, {lesson.minutes} min de lecture</p>
+          <h1 className="display mt-2 text-[2rem] text-night sm:text-[2.6rem]">{lesson.title}</h1>
+          <p className="mt-3 text-lg text-slate">Objectif : {lesson.goal}</p>
+        </header>
         <article className="min-w-0 max-w-[44rem] space-y-10">
           {lesson.sections.map((s) => (
             <section key={s.heading}>
@@ -77,39 +97,16 @@ export default async function LessonPage({ params }: Props) {
             <div className="mt-6"><LessonQuiz questions={lesson.quiz} lessonId={id} /></div>
           </section>
 
-          <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-white p-6">
-            <DoneButton id={id} />
-            <Link href={practice.href} className="font-bold text-ocean hover:underline">{practice.label}</Link>
-          </div>
+          <p className="rounded-2xl bg-white p-6 text-slate">
+            Pour aller plus loin : <Link href={practice.href} className="font-bold text-ocean hover:underline">{practice.label}</Link>
+          </p>
 
-          <nav aria-label="Leçons" className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-            {prev ? <Link href={href(prev.slug)} className="font-semibold text-ocean hover:underline">Leçon précédente : {prev.title}</Link> : <span />}
-            {next
-              ? <ButtonLink href={href(next.slug)} variant="dark">Leçon suivante : {next.title}</ButtonLink>
-              : <ButtonLink href={practice.href} variant="dark">Méthode terminée : passer à la pratique</ButtonLink>}
-          </nav>
+          <NextBar id={id} next={place.next} />
         </article>
 
-        <aside className="hidden lg:block lg:sticky lg:top-32 lg:self-start">
-          <div className="rounded-2xl bg-white p-5">
-            <p className="font-semibold text-night">Méthodologie</p>
-            <ol className="mt-4 space-y-1">
-              {m.lessons.map((l) => (
-                <li key={l.slug}>
-                  <Link
-                    href={href(l.slug)}
-                    aria-current={l.slug === lesson.slug ? 'page' : undefined}
-                    className={`flex items-start gap-3 rounded-lg px-2 py-2 text-sm ${l.slug === lesson.slug ? 'bg-paper font-semibold text-night' : 'text-slate hover:text-ocean'}`}
-                  >
-                    <LessonMark id={lessonId(m, l)} />
-                    <span>{l.title}</span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </aside>
+        </div>
       </Container>
-    </EpreuveShell>
+      </section>
+    </>
   );
 }

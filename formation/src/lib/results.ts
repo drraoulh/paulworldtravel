@@ -20,6 +20,8 @@ export function readResults(): Store {
 
 function write(store: Store) {
   try { localStorage.setItem(KEY, JSON.stringify(store)); } catch { /* storage is optional */ }
+  // Lets the learning path update its progress.
+  window.dispatchEvent(new Event('pwt-parcours-change'));
 }
 
 export const seriesKey = (epreuve: 'ce' | 'co', number: number) => `${epreuve}-${number}`;

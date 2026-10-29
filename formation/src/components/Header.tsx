@@ -31,7 +31,7 @@ export default function Header() {
     `whitespace-nowrap text-[0.94rem] transition-colors ${active(href) ? 'marked font-bold text-night' : 'text-slate hover:text-night'}`;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-rule bg-white/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 border-b border-rule bg-white/95 backdrop-blur print:hidden">
       <Container className="flex h-16 items-center justify-between gap-6">
         <Link href="/" className="flex items-center gap-3">
           <Image src="/brand/symbole-nav.png" alt="" width={160} height={131} priority className="h-9 w-auto" />
