@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
+import CourseProgressCard from '@/components/parcours/CourseProgressCard';
 import { contact } from '@/content/offers';
+import { courseItems } from '@/content/parcours/course';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { effectiveStatus, formatDate, formuleName, statusLabel, statusTone, type Enrollment, type Profile } from '@/lib/labels';
@@ -126,6 +128,7 @@ export default async function Espace() {
           </div>
 
           <aside className="space-y-6 lg:col-span-4">
+            <CourseProgressCard ids={courseItems.map((it) => it.id)} />
             <div className="rounded-lg bg-white p-6">
               <h2 className="heading text-lg text-night">Test de niveau</h2>
               {results && results.length > 0 ? (
