@@ -16,6 +16,14 @@
   --ink: #0e1726;
   --slate: #4a5872;
   --rule: #dbe3ee;
+  /* Height of the sticky header, reused for anchors and the mobile drawer. */
+  --header-h: 4rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 4.5rem;
+  }
 }
 
 @theme inline {
@@ -34,6 +42,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
 }
 
 body {

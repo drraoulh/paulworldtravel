@@ -61,7 +61,7 @@ export const services: Service[] = [
       title: 'Cargo maritime et aérien de la Chine vers l’Afrique',
       summary: 'Conteneur complet, groupage ou fret aérien, avec dédouanement et livraison à Douala et Yaoundé.',
       intro:
-        'Nous organisons le transport de vos marchandises depuis l’usine en Chine jusqu’à votre entrepôt ou votre point de vente au Cameroun. Notre bureau de Foshan réceptionne et contrôle les produits, notre équipe de Douala suit le dédouanement et la livraison.',
+        'Nous organisons le transport de vos marchandises depuis l’usine en Chine jusqu’à votre entrepôt ou votre point de vente au Cameroun. Notre bureau de Guangzhou réceptionne et contrôle les produits, notre équipe de Douala suit le dédouanement et la livraison.',
       highlights: ['Conteneur complet ou groupage', 'Fret aérien pour l’urgent', 'Livraison porte à porte'],
       groups: [
         {
@@ -91,7 +91,7 @@ export const services: Service[] = [
       ],
       steps: [
         ['Devis', 'Vous nous indiquez la marchandise, le volume et la ville de livraison.'],
-        ['Réception à Foshan', 'Vos fournisseurs livrent notre bureau, nous contrôlons et emballons.'],
+        ['Réception à Guangzhou', 'Vos fournisseurs livrent notre bureau, nous contrôlons et emballons.'],
         ['Transport', 'Départ par bateau ou par avion, avec les documents d’exportation.'],
         ['Dédouanement et livraison', 'Passage en douane au Cameroun puis livraison à votre adresse.'],
       ],
@@ -103,7 +103,7 @@ export const services: Service[] = [
       title: 'Sea and air cargo from China to Africa',
       summary: 'Full container, consolidation or air freight, with customs clearance and delivery to Douala and Yaoundé.',
       intro:
-        'We organise the transport of your goods from the factory in China to your warehouse or shop in Cameroon. Our Foshan office receives and inspects the products; our Douala team handles customs clearance and delivery.',
+        'We organise the transport of your goods from the factory in China to your warehouse or shop in Cameroon. Our Guangzhou office receives and inspects the products; our Douala team handles customs clearance and delivery.',
       highlights: ['Full container or consolidation', 'Air freight for urgent goods', 'Door-to-door delivery'],
       groups: [
         {
@@ -133,7 +133,7 @@ export const services: Service[] = [
       ],
       steps: [
         ['Quote', 'Tell us the goods, the volume and the delivery city.'],
-        ['Receiving in Foshan', 'Your suppliers deliver to our office; we inspect and pack.'],
+        ['Receiving in Guangzhou', 'Your suppliers deliver to our office; we inspect and pack.'],
         ['Transport', 'Departure by sea or air, with the export paperwork.'],
         ['Customs and delivery', 'Customs clearance in Cameroon, then delivery to your address.'],
       ],
@@ -327,9 +327,9 @@ export const services: Service[] = [
       name: 'Achats en Chine',
       action: 'Acheter en Chine',
       title: 'Achetez en Chine auprès de fournisseurs vérifiés',
-      summary: 'Recherche de fournisseurs, négociation, contrôle qualité et regroupement de vos commandes à Foshan.',
+      summary: 'Recherche de fournisseurs, négociation, contrôle qualité et regroupement de vos commandes à Guangzhou.',
       intro:
-        'Depuis notre bureau de Foshan, au cœur du Guangdong, nous trouvons les fournisseurs adaptés à votre projet, négocions les prix et contrôlons vos produits avant leur expédition.',
+        'Depuis notre bureau de Guangzhou, nous puisons dans notre réseau de fournisseurs du Guangdong pour trouver les usines adaptées à votre projet, négocions les prix et contrôlons vos produits avant leur expédition.',
       highlights: ['Fournisseurs vérifiés', 'Contrôle qualité sur place', 'Commandes regroupées'],
       groups: [
         {
@@ -338,7 +338,7 @@ export const services: Service[] = [
             { title: 'Recherche de fournisseurs', desc: 'Usines et grossistes sélectionnés selon votre cahier des charges.' },
             { title: 'Négociation', desc: 'Prix, quantités minimales et délais de production.' },
             { title: 'Contrôle qualité', desc: 'Inspection des produits avant expédition.' },
-            { title: 'Regroupement', desc: 'Plusieurs fournisseurs, un seul envoi depuis Foshan.' },
+            { title: 'Regroupement', desc: 'Plusieurs fournisseurs, un seul envoi depuis Guangzhou.' },
           ],
         },
         {
@@ -354,7 +354,7 @@ export const services: Service[] = [
         ['Votre besoin', 'Produit, quantité, budget et délai.'],
         ['Sélection', 'Nous vous proposons des fournisseurs et des échantillons.'],
         ['Commande et paiement', 'Nous passons commande et payons le fournisseur en Yuan.'],
-        ['Contrôle et expédition', 'Inspection à Foshan puis départ vers votre pays.'],
+        ['Contrôle et expédition', 'Inspection à Guangzhou puis départ vers votre pays.'],
       ],
       contactOption: 'Achats et sourcing en Chine',
     },
@@ -362,9 +362,9 @@ export const services: Service[] = [
       name: 'Purchasing in China',
       action: 'Buy in China',
       title: 'Buy in China from vetted suppliers',
-      summary: 'Supplier search, negotiation, quality control and consolidation of your orders in Foshan.',
+      summary: 'Supplier search, negotiation, quality control and consolidation of your orders in Guangzhou.',
       intro:
-        'From our Foshan office, in the heart of Guangdong, we find the right suppliers for your project, negotiate prices and inspect your products before shipment.',
+        'From our Guangzhou office, we draw on our supplier network across Guangdong to find the right factories for your project, negotiate prices and inspect your products before shipment.',
       highlights: ['Vetted suppliers', 'On-site quality control', 'Consolidated orders'],
       groups: [
         {
@@ -373,7 +373,7 @@ export const services: Service[] = [
             { title: 'Supplier search', desc: 'Factories and wholesalers chosen to match your requirements.' },
             { title: 'Negotiation', desc: 'Prices, minimum quantities and production times.' },
             { title: 'Quality control', desc: 'Product inspection before shipment.' },
-            { title: 'Consolidation', desc: 'Several suppliers, one shipment from Foshan.' },
+            { title: 'Consolidation', desc: 'Several suppliers, one shipment from Guangzhou.' },
           ],
         },
         {
@@ -389,7 +389,7 @@ export const services: Service[] = [
         ['Your need', 'Product, quantity, budget and timing.'],
         ['Selection', 'We suggest suppliers and samples.'],
         ['Order and payment', 'We place the order and pay the supplier in Yuan.'],
-        ['Inspection and shipping', 'Checks in Foshan, then departure to your country.'],
+        ['Inspection and shipping', 'Checks in Guangzhou, then departure to your country.'],
       ],
       contactOption: 'Purchasing and sourcing in China',
     },
