@@ -47,7 +47,7 @@ export default async function LessonPage({ params }: Props) {
       </div>
       <section className="bg-paper py-8 sm:py-12">
       <Container className="grid gap-8 lg:grid-cols-[19rem_1fr]">
-        <aside className="order-2 lg:order-1 lg:sticky lg:top-32 lg:max-h-[calc(100vh-9rem)] lg:self-start lg:overflow-y-auto">
+        <aside className="order-2 lg:order-1 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
           <ModuleOutline title={place.module.title} number={place.module.number} items={place.module.items} currentId={id} />
         </aside>
 

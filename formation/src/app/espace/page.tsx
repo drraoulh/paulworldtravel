@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
 import CourseProgressCard from '@/components/parcours/CourseProgressCard';
-import { contact } from '@/content/offers';
+import { contact } from '@/content/contact';
 import { courseItems } from '@/content/parcours/course';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/config';
@@ -39,7 +39,7 @@ export default async function Espace() {
           <div className="flex gap-3">
             {isStaff && <ButtonLink href="/admin/">Espace admin</ButtonLink>}
             <form action={signOut}>
-              <button className="rounded-md border-2 border-white/70 px-5 py-2.5 font-bold hover:bg-white hover:text-night">Me déconnecter</button>
+              <button className="rounded-full border border-white/50 px-6 py-3.5 font-bold transition-colors hover:bg-white hover:text-night">Me déconnecter</button>
             </form>
           </div>
         </Container>
@@ -111,7 +111,7 @@ export default async function Espace() {
                   {(submissions ?? []).map((s) => (
                     <li key={s.id} className="flex flex-col gap-1 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                       <div>
-                        <p className="font-semibold text-night">{s.kind === 'ee' ? 'Expression écrite' : 'Expression orale'} · {formatDate(s.created_at)}</p>
+                        <p className="font-semibold text-night">{s.kind === 'ee' ? 'Expression écrite' : 'Expression orale'}, {formatDate(s.created_at)}</p>
                         <p className="line-clamp-1 text-sm text-slate">{s.task_prompt}</p>
                         {s.trainer_comment && <p className="mt-1 text-sm"><span className="font-semibold">Votre formateur : </span>{s.trainer_comment}</p>}
                       </div>

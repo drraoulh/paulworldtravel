@@ -6,6 +6,7 @@ import { supabaseConfigured } from '@/lib/supabase/config';
 import { isValidEndDate } from '@/lib/practice';
 import { createClient } from '@/lib/supabase/server';
 import { escapeHtml, sendEmail } from '@/lib/brevo';
+import { contact } from '@/content/contact';
 import { formatDate, formuleName } from '@/lib/labels';
 
 // Every change goes through the signed-in admin's session: row level security
@@ -58,7 +59,7 @@ export async function activateEnrollment(formData: FormData) {
           `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}<p>Bonjour ${escapeHtml(candidate.first_name ?? '')},</p>` +
           `<p>Votre paiement est bien reçu : votre formule <strong>${escapeHtml(formuleName(enrollment.formule))}</strong> est active jusqu’au ${formatDate(enrollment.ends_at)}.</p>` +
           `<p>Connectez-vous à votre espace pour suivre votre préparation : https://formation.paulworldtravel.com/espace/</p>` +
-          `<p>Bonne préparation,<br>Paul World Travel Formation<br>WhatsApp : +237 6 94 24 46 66</p></div>`,
+          `<p>Bonne préparation,<br>Paul World Travel Formation<br>WhatsApp : ${contact.phone}</p></div>`,
         tags: ['formation', 'activation'],
       });
     } catch (e) {

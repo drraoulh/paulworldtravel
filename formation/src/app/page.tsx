@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import LevelScale from '@/components/LevelScale';
-import { ButtonLink, Check, Container } from '@/components/ui';
-import { contact, formules } from '@/content/offers';
+import { ButtonLink, Container } from '@/components/ui';
+import { formules } from '@/content/offers';
 import { lessonCount } from '@/content/parcours';
 import { epreuves } from '@/content/tcf';
 import { EPREUVE_IMAGES, epreuveConfigs } from '@/lib/epreuves';
@@ -25,7 +25,7 @@ export default function Home() {
           <div className="max-w-3xl">
             <h1 className="display text-[2.6rem] text-night sm:text-6xl lg:text-[4.2rem]">Le TCF Canada, une épreuve à la fois.</h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate sm:text-xl">
-              Méthode, séries corrigées, simulateurs et examen blanc pour atteindre le NCLC dont votre dossier a besoin. En ligne ou à Douala.
+              Méthode, séries corrigées, simulateurs et examen blanc pour atteindre le NCLC dont votre dossier a besoin. En ligne, ou en salle à Douala et à Yaoundé.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
               <ButtonLink href="/test-de-niveau/">Évaluer mon niveau gratuitement</ButtonLink>
@@ -135,7 +135,7 @@ export default function Home() {
       {/* Formules */}
       <section className="border-t border-rule bg-paper py-16 sm:py-24">
         <Container>
-          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Avec un formateur, en ligne ou à Douala</h2>
+          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Avec un formateur, en ligne ou en salle</h2>
           <p className="mt-4 max-w-2xl text-lg text-slate">La plateforme accompagne nos cours. Le programme est le même ; vous choisissez le cadre.</p>
           <div className="mt-10 grid gap-10 md:grid-cols-3">
             {[enLigne, presentiel, hybride].filter(Boolean).map((f) => (
@@ -145,24 +145,11 @@ export default function Home() {
                 </div>
                 <h3 className="heading text-2xl text-night">{f.name}</h3>
                 <p className="mt-1 text-slate">{f.where}</p>
-                <ul className="mt-5 space-y-2.5 text-ink">{f.includes.slice(0, 4).map((item) => <Check key={item}>{item}</Check>)}</ul>
-                <Link href={`/inscription/?formule=${f.id}`} className="mt-5 inline-block font-bold text-ocean hover:underline">Choisir cette formule</Link>
+                <p className="mt-3 text-ink">{f.summary}</p>
               </div>
             ))}
           </div>
-        </Container>
-      </section>
-
-      <section className="bg-white py-16 sm:py-20">
-        <Container className="flex flex-col gap-8 border-t border-night pt-10 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <h2 className="display text-4xl text-night sm:text-5xl">Commencez par votre niveau.</h2>
-            <p className="mt-4 text-lg text-slate">Quinze questions, une dizaine de minutes, un résultat immédiat. Ensuite, nous vous conseillons par où commencer.</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/test-de-niveau/">Faire le test de niveau</ButtonLink>
-            <ButtonLink href={contact.whatsapp} variant="dark">Écrire sur WhatsApp</ButtonLink>
-          </div>
+          <ButtonLink href="/formules/" variant="dark" className="mt-10">Comparer les formules</ButtonLink>
         </Container>
       </section>
     </>

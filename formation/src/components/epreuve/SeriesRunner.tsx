@@ -148,7 +148,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   if (done) {
     const g = grade(questions, answers);
     return (
-      <div ref={top} className="scroll-mt-28 space-y-6">
+      <div ref={top} className="scroll-mt-24 space-y-6">
         <div className="rounded-2xl bg-night p-6 text-white sm:p-8">
           <p className="text-sm text-blue-200">Résultat, série {number}</p>
           <p className="display mt-1 text-5xl text-container">{g.score}<span className="text-2xl text-blue-200"> / {questions.length}</span></p>
@@ -254,9 +254,9 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   );
 
   return (
-    <div ref={top} className="scroll-mt-28">
+    <div ref={top} className="scroll-mt-24">
       {/* Small screens: question number and timer stay visible. */}
-      <div className="sticky top-16 z-10 mb-4 flex items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur lg:hidden">
+      <div className="sticky top-[4.5rem] z-10 mb-4 flex items-center justify-between gap-3 rounded-2xl bg-white/95 px-5 py-3 shadow-sm backdrop-blur lg:hidden">
         <span className="font-semibold text-night">Question {index + 1} / {questions.length}</span>
         {exam
           ? <span className={`font-mono text-lg ${left < 300 ? 'text-maple' : 'text-night'}`} aria-label="Temps restant">{fmt(left)}</span>
@@ -264,7 +264,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[18rem_1fr] lg:items-start">
-        <aside className="order-2 space-y-4 lg:sticky lg:top-32 lg:order-1">
+        <aside className="order-2 space-y-4 lg:sticky lg:top-24 lg:order-1">
           <div className="hidden rounded-2xl bg-night p-5 text-white lg:block">
             {exam ? (
               <>

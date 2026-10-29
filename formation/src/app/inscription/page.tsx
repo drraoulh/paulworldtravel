@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import { Container, PageHeader } from '@/components/ui';
-import { contact } from '@/content/offers';
+import { contact } from '@/content/contact';
 import SignupForm from './SignupForm';
 
 export const metadata: Metadata = {
   title: 'Inscription à la préparation au TCF Canada',
-  description: 'Inscrivez-vous à la préparation au TCF Canada, en ligne ou en présentiel à Douala.',
+  description: 'Inscrivez-vous à la préparation au TCF Canada, en ligne ou en présentiel à Douala et à Yaoundé.',
 };
 
 export default function Inscription() {
@@ -32,7 +32,7 @@ export default function Inscription() {
             <ul className="mt-4 space-y-3">
               <li><a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="font-bold text-ocean hover:underline">WhatsApp {contact.phone}</a></li>
               <li><a href={`mailto:${contact.email}`} className="text-ocean hover:underline">{contact.email}</a></li>
-              <li className="text-slate">{contact.address}</li>
+              <li><a href={contact.phone2Href} className="text-ocean hover:underline">{contact.phone2}</a></li>
             </ul>
               </div>
             </div>

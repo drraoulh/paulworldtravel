@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: '%s | Paul World Travel Formation',
   },
   description:
-    'Préparez le TCF Canada en ligne ou en présentiel à Douala : cours, tests blancs chronométrés, corrections par des formateurs et suivi jusqu’au NCLC visé.',
+    'Préparez le TCF Canada en ligne ou en présentiel à Douala et à Yaoundé : cours, tests blancs chronométrés, corrections par des formateurs et suivi jusqu’au NCLC visé.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

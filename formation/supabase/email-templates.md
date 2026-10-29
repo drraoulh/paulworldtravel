@@ -13,7 +13,7 @@ Sujet : `Confirmez votre compte Paul World Travel Formation`
   <p>Merci pour votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email et accéder à votre espace candidat.</p>
   <p><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#f2b705;color:#0a2a5e;font-weight:bold;padding:12px 24px;border-radius:6px;text-decoration:none">Confirmer mon adresse</a></p>
   <p>Un conseiller vous contacte ensuite pour le tarif, le calendrier et le paiement.</p>
-  <p style="color:#4a5872;font-size:13px">Si vous n’êtes pas à l’origine de cette inscription, ignorez cet email.<br>Paul World Travel Formation, Lendi, Douala · WhatsApp +237 6 94 24 46 66</p>
+  <p style="color:#4a5872;font-size:13px">Si vous n’êtes pas à l’origine de cette inscription, ignorez cet email.<br>Paul World Travel Formation, Douala (Bonabo) et Yaoundé (Essos). WhatsApp +237 6 94 24 46 66, téléphone +237 6 96 96 46 76</p>
 </div>
 ```
 

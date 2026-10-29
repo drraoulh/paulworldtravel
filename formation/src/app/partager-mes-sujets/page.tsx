@@ -22,7 +22,7 @@ export default async function PartagerPage() {
       />
       <section className="bg-paper py-12 sm:py-16">
         <Container className="max-w-3xl">
-          {signedIn ? <ReportForm /> : <SignInPrompt next="/partager-mes-sujets/" title="Connectez-vous pour partager vos sujets" text="Un compte gratuit nous permet d’éviter les envois en double et de vous remercier. Votre nom n’est jamais publié." />}
+          {signedIn ? <ReportForm /> : <SignInPrompt next="/partager-mes-sujets/" title="Connectez-vous pour partager vos sujets" text="Un compte gratuit nous permet d’éviter les envois en double et de vous remercier." />}
           <p className="mt-6 text-sm text-slate">
             Votre nom n’est jamais publié. Les sujets sont réécrits avant publication : seuls le type de tâche et le thème sont conservés.
           </p>
