@@ -3,7 +3,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { contact } from '@/content/contact';
-import { formatFcfa, packs, objectifs } from '@/content/offers';
+import { formatPrice, isZone, packs, objectifs, zones, type Zone } from '@/content/offers';
 import { getSupabase } from '@/lib/supabase/client';
 
 const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'Je ne sais pas'];
@@ -15,6 +15,7 @@ const empty = {
   phone: '',
   city: '',
   formule: '',
+  zone: 'cm' as Zone,
   level: '',
   goal: '',
   examDate: '',
@@ -38,10 +39,12 @@ export default function SignupForm() {
   // Prefill from the packs page (?formule=) and the level test (?niveau=).
   useEffect(() => {
     const formule = params.get('formule');
+    const zone = params.get('zone');
     const niveau = params.get('niveau');
     setForm((f) => ({
       ...f,
       formule: packs.some((x) => x.id === formule) ? formule! : f.formule,
+      zone: isZone(zone) ? zone : f.zone,
       level: niveau && levels.includes(niveau) ? niveau : f.level,
     }));
   }, [params]);
@@ -173,7 +176,13 @@ export default function SignupForm() {
           <span className="font-semibold text-night">Pack</span>
           <select name="formule" value={form.formule} onChange={set} required className={inputCls}>
             <option value="" disabled>Choisir</option>
-            {packs.map((f) => <option key={f.id} value={f.id}>{f.name}, {formatFcfa(f.price)}, {f.months} mois</option>)}
+            {packs.map((f) => <option key={f.id} value={f.id}>{f.name}, {formatPrice(f, form.zone)}, {f.months} mois</option>)}
+          </select>
+        </label>
+        <label className="block">
+          <span className="font-semibold text-night">Vous payez depuis</span>
+          <select name="zone" value={form.zone} onChange={set} className={inputCls}>
+            {zones.map((z) => <option key={z.id} value={z.id}>{z.label}</option>)}
           </select>
         </label>
         <label className="block">
