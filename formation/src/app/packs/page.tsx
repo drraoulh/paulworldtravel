@@ -1,15 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ButtonLink, Check, Container, PageHeader } from '@/components/ui';
-import { formatFcfa, packs } from '@/content/offers';
+import { headers } from 'next/headers';
+import { ButtonLink, Container, PageHeader } from '@/components/ui';
+import PackGrid from '@/components/packs/PackGrid';
+import { isZone, zoneForCountry } from '@/content/offers';
 import { contact } from '@/content/contact';
 
 export const metadata: Metadata = {
   title: 'Packs de préparation au TCF Canada',
-  description: 'Quatre packs pour préparer le TCF Canada : Essentiel, Silver, Gold et Platinum, de 15 000 à 150 000 FCFA.',
+  description: 'Quatre packs pour préparer le TCF Canada : Essentiel, Silver, Gold et Platinum, avec des prix pour le Cameroun, le Canada et les autres pays.',
 };
 
-export default function Packs() {
+type Props = { searchParams: Promise<{ zone?: string }> };
+
+export default async function Packs({ searchParams }: Props) {
+  const asked = (await searchParams).zone;
+  // Prices follow the visitor's country (Vercel geolocation), unless a zone was chosen.
+  const zone = isZone(asked) ? asked : zoneForCountry((await headers()).get('x-vercel-ip-country'));
   return (
     <>
       <PageHeader
@@ -19,25 +26,7 @@ export default function Packs() {
 
       <section className="bg-paper py-14 sm:py-20">
         <Container>
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {packs.map((p) => (
-              <article key={p.id} className={`relative flex flex-col rounded-2xl bg-white p-6 ${p.featured ? 'ring-2 ring-ocean' : 'border border-rule'}`}>
-                {p.featured && <span className="absolute -top-3 left-6 rounded-full bg-ocean px-3 py-1 text-xs font-bold text-white">Le plus choisi</span>}
-                <h2 className="heading text-2xl text-night">{p.name}</h2>
-                <p className="mt-1 text-slate">{p.tagline}</p>
-                <p className="mt-6">
-                  <span className="display whitespace-nowrap text-[2rem] text-night">{formatFcfa(p.price)}</span>
-                </p>
-                <p className="text-sm text-slate">pour {p.months} mois d’accès</p>
-                <ul className="mt-6 flex-1 space-y-3 text-[0.95rem]">
-                  {p.includes.map((item) => <Check key={item}>{item}</Check>)}
-                </ul>
-                <ButtonLink href={`/inscription/?formule=${p.id}`} variant={p.featured ? 'primary' : 'dark'} className="mt-8 w-full">
-                  Choisir {p.name}
-                </ButtonLink>
-              </article>
-            ))}
-          </div>
+          <PackGrid initialZone={zone} />
           <p className="mt-8 text-slate">
             Pas encore décidé ? Créez un compte gratuit : il comprend deux corrections écrites, une correction orale et quinze questions au tuteur pour essayer.{' '}
             <Link href="/test-de-niveau/" className="font-semibold text-ocean hover:underline">Commencer par le test de niveau</Link>
@@ -50,7 +39,7 @@ export default function Packs() {
           <div>
             <h2 className="heading text-3xl text-night">Paiement et accès</h2>
             <p className="mt-4 text-lg text-slate">
-              Inscrivez-vous en choisissant votre pack. Un conseiller vous contacte sous 24 h ouvrées pour le paiement, par Mobile Money (MTN ou Orange) ou dans nos bureaux de Douala et de Yaoundé. Votre accès est activé dès réception, pour la durée du pack.
+              Inscrivez-vous en choisissant votre pack. Un conseiller vous contacte sous 24 h ouvrées pour le paiement : par Mobile Money (MTN ou Orange) ou dans nos bureaux de Douala et de Yaoundé au Cameroun, et à distance depuis le Canada et les autres pays, selon les moyens que le conseiller vous indique. Votre accès est activé dès réception, pour la durée du pack.
             </p>
             <p className="mt-4 text-slate">Le paiement en ligne directement sur le site arrive bientôt.</p>
           </div>

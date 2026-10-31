@@ -2,7 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import LevelScale from '@/components/LevelScale';
 import { ButtonLink, Container } from '@/components/ui';
-import { formatFcfa, packs } from '@/content/offers';
+import { headers } from 'next/headers';
+import { formatPrice, packs, zoneForCountry } from '@/content/offers';
 import { lessonCount } from '@/content/parcours';
 import { epreuves } from '@/content/tcf';
 import { EPREUVE_IMAGES, epreuveConfigs } from '@/lib/epreuves';
@@ -14,7 +15,9 @@ const nclc7 = [
   ['10', 'en expression orale, sur 20'],
 ];
 
-export default function Home() {
+export default async function Home() {
+  // Pack prices follow the visitor's country (Vercel geolocation).
+  const zone = zoneForCountry((await headers()).get('x-vercel-ip-country'));
   return (
     <>
       {/* Hero: the level scale is the one memorable element. */}
@@ -141,12 +144,12 @@ export default function Home() {
               <li key={p.id} className={`rounded-2xl bg-white p-6 ${p.featured ? 'ring-2 ring-ocean' : 'border border-rule'}`}>
                 <h3 className="heading text-2xl text-night">{p.name}</h3>
                 <p className="mt-1 text-slate">{p.tagline}</p>
-                <p className="display mt-5 whitespace-nowrap text-3xl text-night">{formatFcfa(p.price)}</p>
+                <p className="display mt-5 whitespace-nowrap text-3xl text-night">{formatPrice(p, zone)}</p>
                 <p className="text-sm text-slate">{p.months} mois d’accès</p>
               </li>
             ))}
           </ul>
-          <ButtonLink href="/packs/" variant="dark" className="mt-10">Comparer les packs</ButtonLink>
+          <ButtonLink href={`/packs/?zone=${zone}`} variant="dark" className="mt-10">Comparer les packs</ButtonLink>
         </Container>
       </section>
     </>

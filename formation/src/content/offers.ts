@@ -2,18 +2,37 @@
 import { inPersonPlaces } from './contact';
 
 /*
- * The four packs. Prices in FCFA. The AI allowances below are enforced by
+ * The four packs, priced per zone. The AI allowances below are enforced by
  * src/lib/ai/access.ts (per day, while the pack is active).
  */
 export type PackId = 'essentiel' | 'silver' | 'gold' | 'platinum';
 
+/** Price zones: Cameroon and Central Africa in FCFA, Canada in CAD, elsewhere in USD. */
+export type Zone = 'cm' | 'ca' | 'intl';
+
+export const zones: { id: Zone; label: string; currency: 'XAF' | 'CAD' | 'USD' }[] = [
+  { id: 'cm', label: 'Cameroun et Afrique centrale', currency: 'XAF' },
+  { id: 'ca', label: 'Canada', currency: 'CAD' },
+  { id: 'intl', label: 'Autres pays', currency: 'USD' },
+];
+
+const CEMAC = ['CM', 'GA', 'CG', 'TD', 'CF', 'GQ'];
+
+/** Zone from a two-letter country code (for example Vercel's x-vercel-ip-country header). */
+export const zoneForCountry = (country: string | null | undefined): Zone =>
+  !country ? 'cm' : country.toUpperCase() === 'CA' ? 'ca' : CEMAC.includes(country.toUpperCase()) ? 'cm' : 'intl';
+
+export const isZone = (z: unknown): z is Zone => z === 'cm' || z === 'ca' || z === 'intl';
+
 export interface Pack {
   id: PackId;
   name: string;
-  price: number;
+  prices: Record<Zone, number>;
   months: number;
   tagline: string;
   includes: string[];
+  /** Replaces `includes` outside Cameroon, where classes in our offices are not practical. */
+  includesAbroad?: string[];
   /** Daily AI allowance while the pack is active. */
   ai: { writing: number; speaking: number; tutor: number };
   featured?: boolean;
@@ -23,7 +42,7 @@ export const packs: Pack[] = [
   {
     id: 'essentiel',
     name: 'Essentiel',
-    price: 15000,
+    prices: { cm: 15000, ca: 32.99, intl: 24.99 },
     months: 1,
     tagline: 'Pour s’entraîner seul, à son rythme.',
     ai: { writing: 2, speaking: 1, tutor: 20 },
@@ -39,7 +58,7 @@ export const packs: Pack[] = [
   {
     id: 'silver',
     name: 'Silver',
-    price: 35000,
+    prices: { cm: 27500, ca: 59.99, intl: 44.99 },
     months: 2,
     tagline: 'Plus de temps et plus de corrections.',
     ai: { writing: 5, speaking: 3, tutor: 60 },
@@ -54,7 +73,7 @@ export const packs: Pack[] = [
   {
     id: 'gold',
     name: 'Gold',
-    price: 75000,
+    prices: { cm: 75000, ca: 189, intl: 139.99 },
     months: 3,
     tagline: 'L’accompagnement d’un formateur, en ligne.',
     ai: { writing: 8, speaking: 5, tutor: 100 },
@@ -71,14 +90,22 @@ export const packs: Pack[] = [
   {
     id: 'platinum',
     name: 'Platinum',
-    price: 150000,
+    prices: { cm: 135000, ca: 309, intl: 229.99 },
     months: 3,
-    tagline: 'La préparation complète, en salle et en ligne.',
+    tagline: 'La préparation complète, avec un formateur.',
     ai: { writing: 12, speaking: 8, tutor: 150 },
     includes: [
       'Tout le pack Gold',
       `Cours en salle, ${inPersonPlaces}`,
       'Simulations d’expression orale face à un examinateur',
+      '2 séances de coaching individuel',
+      'Aide à l’inscription au TCF Canada',
+      'Corrections par l’IA : 12 écrites et 8 orales par jour',
+    ],
+    includesAbroad: [
+      'Tout le pack Gold',
+      '4 cours individuels en visio avec un formateur',
+      'Simulations d’expression orale face à un examinateur, en visio',
       '2 séances de coaching individuel',
       'Aide à l’inscription au TCF Canada',
       'Corrections par l’IA : 12 écrites et 8 orales par jour',
@@ -91,7 +118,17 @@ const legacyNames: Record<string, string> = { 'en-ligne': 'En ligne', presentiel
 
 export const packName = (id: string) => packs.find((p) => p.id === id)?.name ?? legacyNames[id] ?? id;
 
-export const formatFcfa = (n: number) => `${n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ')} FCFA`;
+const nbsp = (t: string) => t.replace(/\u202f|\u00a0/g, ' ');
+
+/** Price of a pack in a zone, formatted for display. */
+export function formatPrice(pack: Pack, zone: Zone) {
+  const n = pack.prices[zone];
+  if (zone === 'cm') return `${nbsp(n.toLocaleString('fr-FR'))} FCFA`;
+  const amount = nbsp(n.toLocaleString('fr-FR', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }));
+  return `${amount} ${zone === 'ca' ? '$ CA' : '$ US'}`;
+}
+
+export const packIncludes = (pack: Pack, zone: Zone) => (zone !== 'cm' && pack.includesAbroad) || pack.includes;
 
 export const objectifs = ['NCLC 4', 'NCLC 5', 'NCLC 6', 'NCLC 7', 'NCLC 8', 'NCLC 9', 'NCLC 10 et plus', 'Je ne sais pas encore'];
 
