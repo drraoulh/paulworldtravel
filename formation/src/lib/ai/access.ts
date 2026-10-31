@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { effectiveStatus } from '@/lib/enrollment';
+import { packs } from '@/content/offers';
 
 export type Feature = 'writing' | 'speaking' | 'tutor' | 'generate';
 export type Plan = 'trial' | 'active' | 'staff';
@@ -39,23 +40,29 @@ export async function checkAccess(feature: Feature) {
 
   const [{ data: profile }, { data: enrollments }] = await Promise.all([
     admin.from('profiles').select('role, first_name').eq('id', user.id).single(),
-    admin.from('enrollments').select('status, starts_at, ends_at').eq('user_id', user.id),
+    admin.from('enrollments').select('formule, status, starts_at, ends_at').eq('user_id', user.id),
   ]);
   const staff = profile?.role === 'admin' || profile?.role === 'trainer';
-  const active = (enrollments ?? []).some((e) => effectiveStatus(e) === 'active');
+  const activeRows = (enrollments ?? []).filter((e) => effectiveStatus(e) === 'active');
+  const active = activeRows.length > 0;
+  // The best active pack sets the daily allowance; older formules keep the default one.
+  const packLimits = activeRows
+    .map((e) => packs.find((p) => p.id === e.formule)?.ai)
+    .filter(Boolean)
+    .sort((a, b) => b!.writing - a!.writing)[0];
   const plan: Plan = staff ? 'staff' : active ? 'active' : 'trial';
   if (feature === 'generate' && profile?.role !== 'admin') throw new AccessError(403, 'Réservé aux administrateurs.');
 
   let query = admin.from('ai_usage').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('feature', feature);
   if (plan !== 'trial') query = query.gte('created_at', new Date(Date.now() - 86_400_000).toISOString());
   const { count } = await query;
-  const limit = LIMITS[plan][feature];
+  const limit = plan === 'active' && packLimits && feature !== 'generate' ? packLimits[feature] : LIMITS[plan][feature];
   const used = count ?? 0;
   if (used >= limit) {
     throw new AccessError(
       429,
       plan === 'trial'
-        ? `Votre essai gratuit est terminé (${limit} ${FEATURE_LABEL[feature]}). Activez votre formule pour continuer.`
+        ? `Votre essai gratuit est terminé (${limit} ${FEATURE_LABEL[feature]}). Choisissez un pack pour continuer.`
         : `Limite atteinte pour aujourd’hui (${limit} ${FEATURE_LABEL[feature]}). Revenez demain.`
     );
   }

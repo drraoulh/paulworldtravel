@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { contact } from '@/content/contact';
-import { formules } from '@/content/offers';
+import { formatFcfa, packs } from '@/content/offers';
 
 /*
  * Sends a sign-up to the team by email (Brevo), with the candidate in reply-to,
@@ -28,7 +28,7 @@ const LABELS: Record<string, string> = {
   email: 'Email',
   phone: 'Téléphone / WhatsApp',
   city: 'Ville et pays',
-  formule: 'Formule',
+  formule: 'Pack',
   level: 'Niveau actuel',
   goal: 'NCLC visé',
   examDate: 'Date d’examen prévue',
@@ -63,11 +63,11 @@ export async function POST(request: Request) {
     const value = body[key] == null ? '' : String(body[key]).trim().slice(0, MAX);
     if (value) f[key] = value;
   }
-  const formule = formules.find((x) => x.id === f.formule);
+  const formule = packs.find((x) => x.id === f.formule);
   if (!f.firstName || !f.lastName || !f.phone || !formule || !isEmail(f.email ?? '')) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 422 });
   }
-  f.formule = formule.name;
+  f.formule = `${formule.name} (${formatFcfa(formule.price)}, ${formule.months} mois)`;
 
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
@@ -106,8 +106,8 @@ export async function POST(request: Request) {
       subject: 'Votre inscription à la préparation au TCF Canada',
       htmlContent:
         `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}<p>Bonjour ${escapeHtml(f.firstName)},</p>` +
-        `<p>Nous avons bien reçu votre inscription à la formule <strong>${escapeHtml(formule.name)}</strong>.</p>` +
-        `<p>Un conseiller vous contacte sous 24 h ouvrées avec le tarif, le calendrier et les moyens de paiement.</p>` +
+        `<p>Nous avons bien reçu votre inscription au pack <strong>${escapeHtml(formule.name)}</strong> (${formatFcfa(formule.price)}, ${formule.months} mois).</p>` +
+        `<p>Un conseiller vous contacte sous 24 h ouvrées pour le paiement, par Mobile Money ou dans nos bureaux. Votre accès est activé dès réception.</p>` +
         `<p>À très bientôt,<br>Paul World Travel Formation<br>WhatsApp : ${contact.phone}</p></div>`,
       tags: ['formation', 'confirmation-tcf'],
     });

@@ -1,63 +1,97 @@
-// Training formats and upcoming languages. Offices and phones live in ./contact.
+// Packs and upcoming languages. Offices and phones live in ./contact.
 import { inPersonPlaces } from './contact';
 
-// Prices and calendars are not set yet: fill `price` and `schedule` when they are decided.
+/*
+ * The four packs. Prices in FCFA. The AI allowances below are enforced by
+ * src/lib/ai/access.ts (per day, while the pack is active).
+ */
+export type PackId = 'essentiel' | 'silver' | 'gold' | 'platinum';
 
-export interface Formule {
-  id: 'en-ligne' | 'presentiel' | 'hybride';
+export interface Pack {
+  id: PackId;
   name: string;
-  where: string;
-  summary: string;
+  price: number;
+  months: number;
+  tagline: string;
   includes: string[];
-  price: string | null;
-  schedule: string | null;
+  /** Daily AI allowance while the pack is active. */
+  ai: { writing: number; speaking: number; tutor: number };
+  featured?: boolean;
 }
 
-export const formules: Formule[] = [
+export const packs: Pack[] = [
   {
-    id: 'en-ligne',
-    name: 'En ligne',
-    where: 'Depuis chez vous, partout dans le monde',
-    summary: 'Cours en visio en petit groupe et entraînement à votre rythme.',
+    id: 'essentiel',
+    name: 'Essentiel',
+    price: 15000,
+    months: 1,
+    tagline: 'Pour s’entraîner seul, à son rythme.',
+    ai: { writing: 2, speaking: 1, tutor: 20 },
     includes: [
-      'Cours en direct en visio, rediffusion disponible',
-      'Séries d’exercices sur les 4 épreuves',
-      'Tests blancs complets chronométrés',
-      'Rédactions et enregistrements corrigés par un formateur',
-      'Suivi sur WhatsApp',
+      'Tout le parcours : 20 leçons de méthode et leurs quiz',
+      'Toutes les séries chronométrées d’écoute et de lecture',
+      'Combinaisons d’expression écrite avec corrigés',
+      'Examen blanc et tableau de bord',
+      'Corrections par l’IA : 2 écrites et 1 orale par jour',
+      'Tuteur IA : 20 questions par jour',
     ],
-    price: null,
-    schedule: null,
   },
   {
-    id: 'presentiel',
-    name: 'En présentiel',
-    where: `En salle, ${inPersonPlaces}`,
-    summary: 'Cours en salle avec un formateur, en groupe réduit.',
+    id: 'silver',
+    name: 'Silver',
+    price: 35000,
+    months: 2,
+    tagline: 'Plus de temps et plus de corrections.',
+    ai: { writing: 5, speaking: 3, tutor: 60 },
     includes: [
-      'Cours en salle en groupe réduit',
+      'Tout le pack Essentiel, pendant 2 mois',
+      'Corrections par l’IA : 5 écrites et 3 orales par jour',
+      'Tuteur IA : 60 questions par jour',
+      '2 productions relues et notées par un formateur',
+      'Attestation de parcours',
+    ],
+  },
+  {
+    id: 'gold',
+    name: 'Gold',
+    price: 75000,
+    months: 3,
+    tagline: 'L’accompagnement d’un formateur, en ligne.',
+    ai: { writing: 8, speaking: 5, tutor: 100 },
+    featured: true,
+    includes: [
+      'Tout le pack Silver, pendant 3 mois',
+      'Un cours en direct par semaine, en visio et en petit groupe',
+      '8 productions relues et notées par un formateur',
+      'Un examen blanc corrigé par un formateur',
+      'Suivi personnalisé sur WhatsApp',
+      'Corrections par l’IA : 8 écrites et 5 orales par jour',
+    ],
+  },
+  {
+    id: 'platinum',
+    name: 'Platinum',
+    price: 150000,
+    months: 3,
+    tagline: 'La préparation complète, en salle et en ligne.',
+    ai: { writing: 12, speaking: 8, tutor: 150 },
+    includes: [
+      'Tout le pack Gold',
+      `Cours en salle, ${inPersonPlaces}`,
       'Simulations d’expression orale face à un examinateur',
-      'Tests blancs en conditions réelles',
-      'Supports de cours imprimés',
-      'Suivi individuel de la progression',
+      '2 séances de coaching individuel',
+      'Aide à l’inscription au TCF Canada',
+      'Corrections par l’IA : 12 écrites et 8 orales par jour',
     ],
-    price: null,
-    schedule: null,
-  },
-  {
-    id: 'hybride',
-    name: 'Hybride',
-    where: 'En salle à Douala ou à Yaoundé, et en ligne',
-    summary: 'Les cours en salle, plus l’entraînement en ligne entre les séances.',
-    includes: [
-      'Tout le présentiel',
-      'Tout l’entraînement en ligne',
-      'Séances de rattrapage en visio',
-    ],
-    price: null,
-    schedule: null,
   },
 ];
+
+/** Formules sold before the packs, still shown for existing enrollments. */
+const legacyNames: Record<string, string> = { 'en-ligne': 'En ligne', presentiel: 'En présentiel', hybride: 'Hybride' };
+
+export const packName = (id: string) => packs.find((p) => p.id === id)?.name ?? legacyNames[id] ?? id;
+
+export const formatFcfa = (n: number) => `${n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ')} FCFA`;
 
 export const objectifs = ['NCLC 4', 'NCLC 5', 'NCLC 6', 'NCLC 7', 'NCLC 8', 'NCLC 9', 'NCLC 10 et plus', 'Je ne sais pas encore'];
 

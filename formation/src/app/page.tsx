@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import LevelScale from '@/components/LevelScale';
 import { ButtonLink, Container } from '@/components/ui';
-import { formules } from '@/content/offers';
+import { formatFcfa, packs } from '@/content/offers';
 import { lessonCount } from '@/content/parcours';
 import { epreuves } from '@/content/tcf';
 import { EPREUVE_IMAGES, epreuveConfigs } from '@/lib/epreuves';
@@ -15,7 +15,6 @@ const nclc7 = [
 ];
 
 export default function Home() {
-  const [enLigne, presentiel, hybride] = formules;
   return (
     <>
       {/* Hero: the level scale is the one memorable element. */}
@@ -132,24 +131,22 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* Formules */}
+      {/* Packs */}
       <section className="border-t border-rule bg-paper py-16 sm:py-24">
         <Container>
-          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Avec un formateur, en ligne ou en salle</h2>
-          <p className="mt-4 max-w-2xl text-lg text-slate">La plateforme accompagne nos cours. Le programme est le même ; vous choisissez le cadre.</p>
-          <div className="mt-10 grid gap-10 md:grid-cols-3">
-            {[enLigne, presentiel, hybride].filter(Boolean).map((f) => (
-              <div key={f.id}>
-                <div className="relative mb-5 aspect-[3/2] overflow-hidden rounded-2xl bg-white">
-                  <Image src={f.id === 'en-ligne' ? '/images/study.jpg' : f.id === 'presentiel' ? '/images/classe.jpg' : '/images/montreal.jpg'} alt={f.id === 'en-ligne' ? 'Prise de notes pendant un cours en ligne' : f.id === 'presentiel' ? 'Étudiants en salle de cours' : 'Vue sur Montréal'} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
-                </div>
-                <h3 className="heading text-2xl text-night">{f.name}</h3>
-                <p className="mt-1 text-slate">{f.where}</p>
-                <p className="mt-3 text-ink">{f.summary}</p>
-              </div>
+          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Quatre packs, selon l’accompagnement voulu</h2>
+          <p className="mt-4 max-w-2xl text-lg text-slate">Tous donnent accès à la plateforme complète. Les packs Gold et Platinum ajoutent un formateur, en visio ou en salle à Douala et à Yaoundé.</p>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {packs.map((p) => (
+              <li key={p.id} className={`rounded-2xl bg-white p-6 ${p.featured ? 'ring-2 ring-ocean' : 'border border-rule'}`}>
+                <h3 className="heading text-2xl text-night">{p.name}</h3>
+                <p className="mt-1 text-slate">{p.tagline}</p>
+                <p className="display mt-5 whitespace-nowrap text-3xl text-night">{formatFcfa(p.price)}</p>
+                <p className="text-sm text-slate">{p.months} mois d’accès</p>
+              </li>
             ))}
-          </div>
-          <ButtonLink href="/formules/" variant="dark" className="mt-10">Comparer les formules</ButtonLink>
+          </ul>
+          <ButtonLink href="/packs/" variant="dark" className="mt-10">Comparer les packs</ButtonLink>
         </Container>
       </section>
     </>

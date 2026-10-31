@@ -156,8 +156,8 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/formules/" aria-current={isActive('/formules/') ? 'page' : undefined} className={navLink(isActive('/formules/'))}>
-                {label('Formules', isActive('/formules/'))}
+              <Link href="/packs/" aria-current={isActive('/packs/') ? 'page' : undefined} className={navLink(isActive('/formules/'))}>
+                {label('Packs', isActive('/packs/'))}
               </Link>
             </li>
           </ul>
@@ -280,7 +280,7 @@ export default function Header() {
               </ol>
 
               <div className="mt-3 border-t border-rule pt-3">
-                {[{ href: '/examen-blanc/', text: 'Examen blanc' }, { href: '/formules/', text: 'Formules' }].map((l) => (
+                {[{ href: '/examen-blanc/', text: 'Examen blanc' }, { href: '/packs/', text: 'Packs' }].map((l) => (
                   <Link key={l.href} href={l.href} aria-current={isActive(l.href) ? 'page' : undefined} className="heading block rounded-xl px-3 py-3 text-xl text-night hover:bg-paper">
                     {label(l.text, isActive(l.href))}
                   </Link>
