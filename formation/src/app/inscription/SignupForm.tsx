@@ -3,7 +3,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { contact } from '@/content/contact';
-import { formules, objectifs } from '@/content/offers';
+import { formatFcfa, packs, objectifs } from '@/content/offers';
 import { getSupabase } from '@/lib/supabase/client';
 
 const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'Je ne sais pas'];
@@ -35,13 +35,13 @@ export default function SignupForm() {
   const [formError, setFormError] = useState('');
   const supabase = getSupabase();
 
-  // Prefill from the formules page (?formule=) and the level test (?niveau=).
+  // Prefill from the packs page (?formule=) and the level test (?niveau=).
   useEffect(() => {
     const formule = params.get('formule');
     const niveau = params.get('niveau');
     setForm((f) => ({
       ...f,
-      formule: formules.some((x) => x.id === formule) ? formule! : f.formule,
+      formule: packs.some((x) => x.id === formule) ? formule! : f.formule,
       level: niveau && levels.includes(niveau) ? niveau : f.level,
     }));
   }, [params]);
@@ -170,10 +170,10 @@ export default function SignupForm() {
           <input name="city" value={form.city} onChange={set} placeholder="Douala, Cameroun" className={inputCls} />
         </label>
         <label className="block">
-          <span className="font-semibold text-night">Formule</span>
+          <span className="font-semibold text-night">Pack</span>
           <select name="formule" value={form.formule} onChange={set} required className={inputCls}>
             <option value="" disabled>Choisir</option>
-            {formules.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
+            {packs.map((f) => <option key={f.id} value={f.id}>{f.name}, {formatFcfa(f.price)}, {f.months} mois</option>)}
           </select>
         </label>
         <label className="block">

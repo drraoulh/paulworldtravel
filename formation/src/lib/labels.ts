@@ -1,6 +1,6 @@
-import { formules } from '@/content/offers';
+import { packName } from '@/content/offers';
 
-export const formuleName = (id: string) => formules.find((f) => f.id === id)?.name ?? id;
+export const formuleName = packName;
 
 export const statusLabel: Record<string, string> = {
   pending: 'En attente de paiement',

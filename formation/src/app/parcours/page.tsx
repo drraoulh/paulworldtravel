@@ -31,7 +31,7 @@ export default function Parcours() {
           </ol>
           <p className="mt-10 max-w-2xl text-slate">
             Vous préférez être accompagné ? Nos formateurs suivent ce parcours avec vous, en ligne ou {inPersonPlaces}.{' '}
-            <Link href="/formules/" className="font-bold text-ocean hover:underline">Voir les formules</Link>
+            <Link href="/packs/" className="font-bold text-ocean hover:underline">Voir les packs</Link>
           </p>
         </Container>
       </section>

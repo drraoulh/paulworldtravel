@@ -52,7 +52,7 @@ export default async function Espace() {
             {(enrollments ?? []).length === 0 && (
               <div className="rounded-lg bg-white p-6">
                 <p>Vous n’avez pas encore d’inscription.</p>
-                <ButtonLink href="/formules/" variant="dark" className="mt-4">Choisir une formule</ButtonLink>
+                <ButtonLink href="/packs/" variant="dark" className="mt-4">Choisir un pack</ButtonLink>
               </div>
             )}
             {(enrollments ?? []).map((e) => {
@@ -60,7 +60,7 @@ export default async function Espace() {
               return (
                 <article key={e.id} className="rounded-lg bg-white p-6 sm:p-8">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="heading text-xl text-night">TCF Canada, {formuleName(e.formule).toLowerCase()}</h3>
+                    <h3 className="heading text-xl text-night">Pack {formuleName(e.formule)}</h3>
                     <span className={`rounded-full px-3 py-1 text-sm font-semibold ${statusTone[status]}`}>{statusLabel[status]}</span>
                   </div>
                   {status === 'pending' && (
@@ -87,7 +87,7 @@ export default async function Espace() {
               <p className="mt-2 text-slate">
                 {active
                   ? 'Vos corrections d’expression écrite et orale par l’IA et le tuteur sont disponibles chaque jour.'
-                  : 'Votre compte vous donne un essai gratuit : deux corrections écrites, une correction orale et quinze questions au tuteur. Votre formule les débloque chaque jour.'}
+                  : 'Votre compte vous donne un essai gratuit : deux corrections écrites, une correction orale et quinze questions au tuteur. Votre pack les débloque chaque jour.'}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <ButtonLink href="/epreuve/expression-ecrite/simulateur/" variant="dark">Expression écrite</ButtonLink>

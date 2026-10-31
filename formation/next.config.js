@@ -6,6 +6,7 @@ module.exports = {
   async redirects() {
     return [
       { source: '/cours', destination: '/parcours/', permanent: true },
+      { source: '/formules', destination: '/packs/', permanent: true },
       { source: '/entrainement', destination: '/#epreuves', permanent: false },
       { source: '/entrainement/expression-ecrite', destination: '/epreuve/expression-ecrite/simulateur/', permanent: true },
       { source: '/entrainement/expression-orale', destination: '/epreuve/expression-orale/simulateur/', permanent: true },
