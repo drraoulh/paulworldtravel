@@ -131,6 +131,11 @@ export default async function Espace() {
           </div>
 
           <aside className="space-y-6 lg:col-span-4">
+            <div className="rounded-2xl bg-container/30 p-6">
+              <h2 className="heading text-lg text-night">Nouveau sur la plateforme ?</h2>
+              <p className="mt-1 text-sm text-ink">Huit étapes pour bien démarrer, du test de niveau à l’examen blanc.</p>
+              <Link href="/guide/" className="mt-3 inline-block font-bold text-ocean hover:underline">Lire le guide</Link>
+            </div>
             <CourseProgressCard ids={courseItems.map((it) => it.id)} />
             <div className="rounded-lg bg-white p-6">
               <h2 className="heading text-lg text-night">Test de niveau</h2>
