@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
 import CourseProgressCard from '@/components/parcours/CourseProgressCard';
 import { contact } from '@/content/contact';
+import { FREE_TRIAL } from '@/content/offers';
+import TrialBanner from '@/components/access/TrialBanner';
 import { courseItems } from '@/content/parcours/course';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/config';
@@ -87,8 +89,9 @@ export default async function Espace() {
               <p className="mt-2 text-slate">
                 {active
                   ? 'Vos corrections d’expression écrite et orale par l’IA et le tuteur sont disponibles chaque jour.'
-                  : 'Votre compte vous donne un essai gratuit : deux corrections écrites, une correction orale et quinze questions au tuteur. Votre pack les débloque chaque jour.'}
+                  : `Votre compte gratuit comprend ${FREE_TRIAL.writing} corrections écrites, ${FREE_TRIAL.speaking} corrections orales et ${FREE_TRIAL.tutor} questions au tuteur. Un pack les débloque chaque jour, avec toutes les séries et les examens blancs.`}
               </p>
+              <div className="mt-4 space-y-2"><TrialBanner feature="writing" /><TrialBanner feature="speaking" /></div>
               <div className="mt-5 flex flex-wrap gap-3">
                 <ButtonLink href="/epreuve/expression-ecrite/simulateur/" variant="dark">Expression écrite</ButtonLink>
                 <ButtonLink href="/epreuve/expression-orale/simulateur/" variant="dark">Expression orale</ButtonLink>
@@ -128,6 +131,11 @@ export default async function Espace() {
           </div>
 
           <aside className="space-y-6 lg:col-span-4">
+            <div className="rounded-2xl bg-container/30 p-6">
+              <h2 className="heading text-lg text-night">Nouveau sur la plateforme ?</h2>
+              <p className="mt-1 text-sm text-ink">Huit étapes pour bien démarrer, du test de niveau à l’examen blanc.</p>
+              <Link href="/guide/" className="mt-3 inline-block font-bold text-ocean hover:underline">Lire le guide</Link>
+            </div>
             <CourseProgressCard ids={courseItems.map((it) => it.id)} />
             <div className="rounded-lg bg-white p-6">
               <h2 className="heading text-lg text-night">Test de niveau</h2>

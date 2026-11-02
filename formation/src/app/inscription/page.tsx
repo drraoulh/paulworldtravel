@@ -14,8 +14,8 @@ export default function Inscription() {
   return (
     <>
       <PageHeader
-        title="Inscription"
-        intro="Remplissez ce formulaire : un conseiller vous recontacte avec le tarif, les dates et les moyens de paiement. Votre accès est activé dès le paiement reçu."
+        title="Créer mon compte"
+        intro="Commencez gratuitement, ou choisissez directement un pack : un conseiller vous contacte alors pour le paiement et votre accès est activé dès réception."
       />
       <section className="bg-paper py-12 sm:py-16">
         <Container className="grid grid-cols-1 gap-10 lg:grid-cols-12">

@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import { contact } from '@/content/contact';
 import { formatPrice, isZone, packs, objectifs, zones, type Zone } from '@/content/offers';
 import { getSupabase } from '@/lib/supabase/client';
+import { useSignedIn } from '@/components/ai/useSignedIn';
+import ChoosePack from './ChoosePack';
 
 const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'Je ne sais pas'];
 
@@ -35,6 +37,7 @@ export default function SignupForm() {
   const [status, setStatus] = useState<Status>('idle');
   const [formError, setFormError] = useState('');
   const supabase = getSupabase();
+  const signedIn = useSignedIn();
 
   // Prefill from the packs page (?formule=) and the level test (?niveau=).
   useEffect(() => {
@@ -122,7 +125,9 @@ export default function SignupForm() {
           Votre compte est créé. Cliquez sur le lien que nous venons de vous envoyer pour confirmer votre adresse, puis connectez-vous à votre espace.
         </p>
         <p className="mt-4 text-slate">
-          Un conseiller vous contacte sous 24 h ouvrées avec le tarif, le calendrier et les moyens de paiement. Votre accès est activé dès le paiement reçu.
+          {form.formule
+            ? 'Un conseiller vous contacte sous 24 h ouvrées pour le paiement de votre pack. Votre accès est activé dès réception.'
+            : 'Votre compte gratuit vous donne accès au test de niveau, aux leçons, à la première série de chaque épreuve et à un essai des corrections par l’IA.'}
         </p>
       </div>
     );
@@ -143,11 +148,14 @@ export default function SignupForm() {
       <div className="rounded-lg bg-white p-6 sm:p-10" role="status">
         <h2 className="heading text-2xl text-night">Inscription envoyée</h2>
         <p className="mt-4 text-lg">
-          Merci. Un conseiller vous contacte sous 24 h ouvrées, par email ou sur WhatsApp, avec le tarif, le calendrier et les moyens de paiement.
+          Merci. Un conseiller vous contacte sous 24 h ouvrées, par email ou sur WhatsApp.
         </p>
       </div>
     );
   }
+
+  // Already signed in: choosing a pack does not need the sign-up form again.
+  if (signedIn) return <ChoosePack initialPack={form.formule} zone={form.zone} />;
 
   return (
     <form onSubmit={submit} className="rounded-lg bg-white p-6 sm:p-10">
@@ -174,8 +182,8 @@ export default function SignupForm() {
         </label>
         <label className="block">
           <span className="font-semibold text-night">Pack</span>
-          <select name="formule" value={form.formule} onChange={set} required className={inputCls}>
-            <option value="" disabled>Choisir</option>
+          <select name="formule" value={form.formule} onChange={set} className={inputCls}>
+            <option value="">Compte gratuit, je choisis un pack plus tard</option>
             {packs.map((f) => <option key={f.id} value={f.id}>{f.name}, {formatPrice(f, form.zone)}, {f.months} mois</option>)}
           </select>
         </label>

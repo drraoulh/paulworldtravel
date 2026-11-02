@@ -44,8 +44,9 @@ export const course: CourseModule[] = [
     id: 'depart',
     number: 1,
     title: 'Bien démarrer',
-    summary: 'Mesurez votre niveau de départ et découvrez le déroulement de l’examen.',
+    summary: 'Découvrez la plateforme, puis mesurez votre niveau de départ.',
     items: [
+      { id: 'guide', kind: 'lecon', title: 'Guide : utiliser la plateforme', minutes: 5, href: '/guide/' },
       { id: 'test-niveau', kind: 'exercice', title: 'Test de niveau gratuit', minutes: 10, href: '/test-de-niveau/', auto: true },
     ],
   },

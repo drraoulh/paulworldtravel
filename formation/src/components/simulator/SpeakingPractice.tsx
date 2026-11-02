@@ -7,6 +7,7 @@ import { useSignedIn } from '@/components/ai/useSignedIn';
 import { fmt } from '@/components/ai/useRecorder';
 import MonologuePractice from './MonologuePractice';
 import InteractionPractice from './InteractionPractice';
+import TrialBanner from '@/components/access/TrialBanner';
 
 const duration = (t: SpeakingTask) =>
   t.prepSeconds ? `${fmt(t.prepSeconds)} de préparation, puis ${fmt(t.seconds)} d’échange` : `${fmt(t.seconds)} de parole, sans préparation`;
@@ -24,6 +25,7 @@ export default function SpeakingPractice() {
 
   return (
     <div className="space-y-8">
+      <TrialBanner feature="speaking" />
       <fieldset>
         <legend className="heading mb-3 text-lg text-night">Choisissez une tâche</legend>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">

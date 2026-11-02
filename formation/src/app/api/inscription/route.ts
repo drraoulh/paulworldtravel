@@ -65,13 +65,13 @@ export async function POST(request: Request) {
     if (value) f[key] = value;
   }
   const formule = packs.find((x) => x.id === f.formule);
-  if (!f.firstName || !f.lastName || !f.phone || !formule || !isEmail(f.email ?? '')) {
+  if (!f.firstName || !f.lastName || !f.phone || (f.formule && !formule) || !isEmail(f.email ?? '')) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 422 });
   }
   const zone = isZone(f.zone) ? f.zone : 'cm';
-  const price = formatPrice(formule, zone);
+  const price = formule ? formatPrice(formule, zone) : '';
   f.zone = zones.find((z) => z.id === zone)!.label;
-  f.formule = `${formule.name} (${price}, ${formule.months} mois)`;
+  f.formule = formule ? `${formule.name} (${price}, ${formule.months} mois)` : 'Essai gratuit, pas encore de pack';
 
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
       sender,
       to: (process.env.SIGNUP_TO_EMAIL || DEFAULT_TO).split(',').map((e) => e.trim()).filter(Boolean).map((email) => ({ email })),
       replyTo: { email: f.email, name: name.slice(0, 70) },
-      subject: `Inscription TCF Canada — ${name} (${formule.name})`.slice(0, 200),
+      subject: `Inscription TCF Canada — ${name} (${formule ? formule.name : 'essai gratuit'})`.slice(0, 200),
       htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px">${EMAIL_LOGO}<h2 style="color:#1452c8">Nouvelle inscription TCF Canada</h2><table style="border-collapse:collapse">${rows}</table></div>`,
       textContent: Object.entries(f).map(([k, v]) => `${LABELS[k]} : ${v}`).join('\n'),
       tags: ['formation', 'inscription-tcf'],
@@ -110,8 +110,11 @@ export async function POST(request: Request) {
       subject: 'Votre inscription à la préparation au TCF Canada',
       htmlContent:
         `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}<p>Bonjour ${escapeHtml(f.firstName)},</p>` +
-        `<p>Nous avons bien reçu votre inscription au pack <strong>${escapeHtml(formule.name)}</strong> (${price}, ${formule.months} mois).</p>` +
-        `<p>Un conseiller vous contacte sous 24 h ouvrées pour le paiement${zone === 'cm' ? ', par Mobile Money ou dans nos bureaux' : ''}. Votre accès est activé dès réception.</p>` +
+        (formule
+          ? `<p>Nous avons bien reçu votre inscription au pack <strong>${escapeHtml(formule.name)}</strong> (${price}, ${formule.months} mois).</p>` +
+            `<p>Un conseiller vous contacte sous 24 h ouvrées pour le paiement${zone === 'cm' ? ', par Mobile Money ou dans nos bureaux' : ''}. Votre accès est activé dès réception.</p>`
+          : `<p>Votre compte gratuit est prêt : test de niveau, leçons de méthode, première série de chaque épreuve et essai des corrections par l’IA.</p>` +
+            `<p>Quand vous le souhaitez, choisissez un pack sur https://formation.paulworldtravel.com/packs/ pour tout débloquer.</p>`) +
         `<p>À très bientôt,<br>Paul World Travel Formation<br>WhatsApp : ${contact.phone}</p></div>`,
       tags: ['formation', 'confirmation-tcf'],
     });

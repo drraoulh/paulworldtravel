@@ -113,6 +113,15 @@ export const packs: Pack[] = [
   },
 ];
 
+/*
+ * What a free account gets, once, before choosing a pack. Change the numbers
+ * here: they drive the limits (src/lib/ai/access.ts) and every message.
+ */
+export const FREE_TRIAL = { writing: 3, speaking: 2, tutor: 20 };
+
+/** Practice series open without a pack (numbers 1..FREE_SERIES of each épreuve). */
+export const FREE_SERIES = 1;
+
 /** Formules sold before the packs, still shown for existing enrollments. */
 const legacyNames: Record<string, string> = { 'en-ligne': 'En ligne', presentiel: 'En présentiel', hybride: 'Hybride' };
 

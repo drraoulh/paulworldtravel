@@ -11,6 +11,8 @@ import { markDone } from '@/components/parcours/useCourse';
 import { getSessionCombinaison } from '@/content/combinaisons-sessions';
 import { isCombinaison, parseCombiTaskId, toWritingTask, type Combinaison } from '@/lib/combinaisons';
 import { getSupabase } from '@/lib/supabase/client';
+import TrialBanner from '@/components/access/TrialBanner';
+import { refreshAccess } from '@/components/access/useAccess';
 
 const DRAFT_KEY = 'pwt-ee-draft';
 
@@ -71,6 +73,7 @@ export default function WritingPractice() {
       if (!res.ok) throw new Error(data.error ?? 'La correction a échoué.');
       setFeedback(data.feedback);
       markDone(`ee/simulation-${task.task}`);
+      refreshAccess();
       setQuota({ remaining: data.remaining, plan: data.plan });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La correction a échoué.');
@@ -81,6 +84,7 @@ export default function WritingPractice() {
 
   return (
     <div className="space-y-8">
+      <TrialBanner feature="writing" />
       <fieldset>
         <legend className="heading mb-3 text-lg text-night">Choisissez un sujet</legend>
         {extra && (

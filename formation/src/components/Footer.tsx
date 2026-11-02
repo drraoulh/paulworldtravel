@@ -5,6 +5,7 @@ import { Container } from './ui';
 // The header carries the main sections; the footer carries what helps around them:
 // the useful extras, our offices and how to reach a counsellor.
 const extras = [
+  { href: '/guide/', label: 'Guide de démarrage' },
   { href: '/tcf-canada/', label: 'Le TCF Canada en bref' },
   { href: '/test-de-niveau/', label: 'Test de niveau gratuit' },
   { href: '/entrainement/tuteur/', label: 'Tuteur de français' },

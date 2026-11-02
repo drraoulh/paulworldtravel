@@ -8,6 +8,7 @@ import Quota from '@/components/ai/Quota';
 import { toMp3 } from '@/components/ai/toMp3';
 import { fmt, MIC_ERROR, useRecorder } from '@/components/ai/useRecorder';
 import { markDone } from '@/components/parcours/useCourse';
+import { refreshAccess } from '@/components/access/useAccess';
 
 type Phase = 'intro' | 'prep' | 'starting' | 'dialog' | 'ended' | 'grading' | 'done';
 type Sub = 'ready' | 'recording' | 'waiting';
@@ -181,6 +182,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
       if (!res.ok) throw new Error(data.error ?? 'La correction a échoué.');
       setResult({ feedback: data.feedback });
       markDone('eo/simulation-2');
+      refreshAccess();
       setPhaseState('done');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La correction a échoué.');
