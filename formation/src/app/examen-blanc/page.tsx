@@ -5,7 +5,7 @@ import { seriesFor } from '@/content/series';
 
 export const metadata: Metadata = {
   title: 'Examen blanc TCF Canada',
-  description: 'Compréhension orale, compréhension écrite et expression écrite enchaînées et chronométrées, en conditions réelles.',
+  description: 'Les quatre épreuves du TCF Canada enchaînées et chronométrées, en conditions réelles : compréhension orale, compréhension écrite, expression écrite et expression orale.',
 };
 
 export default function ExamenBlanc() {
@@ -16,10 +16,10 @@ export default function ExamenBlanc() {
     <>
       <PageHeader image={{ src: '/images/examen.jpg', alt: 'Étudiants concentrés pendant un examen écrit' }}
         title="Examen blanc, en conditions réelles."
-        intro="Les trois épreuves écrites et orales collectives enchaînées, avec les durées officielles : compréhension orale, compréhension écrite, puis expression écrite."
+        intro="Les quatre épreuves du TCF Canada enchaînées, avec les durées officielles : compréhension orale, compréhension écrite, expression écrite, puis expression orale."
       />
       <section className="bg-paper py-12 sm:py-16">
-        <Container className="max-w-4xl"><MockExam series={numbers} /></Container>
+        <Container className="max-w-6xl"><MockExam series={numbers} /></Container>
       </section>
     </>
   );

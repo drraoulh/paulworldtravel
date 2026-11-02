@@ -19,7 +19,7 @@ Photographies d’illustration : elles ne représentent ni les locaux ni les can
 
 ## Compréhension orale : questions avec image
 
-- `co/serie-3-1.jpg` à `co/serie-4-4.jpg` : dessins créés pour la plateforme avec le modèle Qwen-Image (Hugging Face), d’après nos propres descriptions.
+- `co/serie-1-1.jpg` à `co/serie-4-4.jpg` (séries 1 à 4) : dessins créés pour la plateforme avec le modèle Qwen-Image (Hugging Face), d’après nos propres descriptions.
 
 ## Dépôt principal
 
