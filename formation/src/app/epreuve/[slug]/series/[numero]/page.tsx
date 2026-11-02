@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import SeriesRunner from '@/components/epreuve/SeriesRunner';
+import PackGate from '@/components/access/PackGate';
+import { FREE_SERIES } from '@/content/offers';
 import { allSeries, getSeries } from '@/content/series';
 import { epreuveById, getEpreuve } from '@/lib/epreuves';
 
@@ -28,7 +30,13 @@ export default async function SeriePage({ params }: Props) {
   return (
     <EpreuveShell epreuve={e} active="series" title={`Série ${series.number}`} intro={`${series.questions.length} questions de ${e.module.name.toLowerCase()}, du niveau A1 au C2.`}>
       <Container className="max-w-6xl">
-        <SeriesRunner epreuve={id} number={series.number} questions={series.questions} />
+        {series.number <= FREE_SERIES
+          ? <SeriesRunner epreuve={id} number={series.number} questions={series.questions} />
+          : (
+            <PackGate what={`La série ${series.number}`} next={`/epreuve/${e.slug}/series/${series.number}/`}>
+              <SeriesRunner epreuve={id} number={series.number} questions={series.questions} />
+            </PackGate>
+          )}
       </Container>
     </EpreuveShell>
   );

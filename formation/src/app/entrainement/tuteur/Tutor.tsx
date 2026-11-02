@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Quota from '@/components/ai/Quota';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
+import TrialBanner from '@/components/access/TrialBanner';
+import { refreshAccess } from '@/components/access/useAccess';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -38,6 +40,7 @@ export default function Tutor() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Le tuteur ne répond pas.');
       setMessages([...next, { role: 'assistant', content: data.reply }]);
+      refreshAccess();
       setQuota({ remaining: data.remaining, plan: data.plan });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Le tuteur ne répond pas.');
@@ -51,6 +54,8 @@ export default function Tutor() {
   if (signedIn === false) return <SignInPrompt next="/entrainement/tuteur/" />;
 
   return (
+    <div className="space-y-4">
+    <TrialBanner feature="tutor" />
     <div className="rounded-2xl border border-rule bg-white">
       <div className="max-h-[60vh] min-h-72 space-y-4 overflow-y-auto p-5 sm:p-8">
         {messages.length === 0 && (
@@ -82,6 +87,7 @@ export default function Tutor() {
         </div>
         <div className="mt-2"><Quota remaining={quota.remaining} plan={quota.plan} unit="question" /></div>
       </form>
+    </div>
     </div>
   );
 }

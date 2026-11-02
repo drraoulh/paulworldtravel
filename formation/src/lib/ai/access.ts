@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { effectiveStatus } from '@/lib/enrollment';
-import { packs } from '@/content/offers';
+import { FREE_TRIAL, packs } from '@/content/offers';
+import { TranscriptionError } from './huggingface';
 
 export type Feature = 'writing' | 'speaking' | 'tutor' | 'generate';
 export type Plan = 'trial' | 'active' | 'staff';
@@ -11,7 +12,7 @@ export type Plan = 'trial' | 'active' | 'staff';
  * a lifetime allowance to try the AI. Active and staff limits are per day.
  */
 export const LIMITS: Record<Plan, Record<Feature, number>> = {
-  trial: { writing: 2, speaking: 1, tutor: 15, generate: 0 },
+  trial: { ...FREE_TRIAL, generate: 0 },
   active: { writing: 6, speaking: 4, tutor: 60, generate: 0 },
   staff: { writing: 50, speaking: 30, tutor: 300, generate: 40 },
 };
@@ -27,6 +28,32 @@ export class AccessError extends Error {
   constructor(public status: number, message: string) {
     super(message);
   }
+}
+
+/** Plan and remaining allowance of each feature, for the signed-in user (null when signed out). */
+export async function accessStatus() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const admin = createAdminClient();
+  if (!admin) return { plan: 'trial' as Plan, remaining: { writing: 0, speaking: 0, tutor: 0 }, configured: false };
+  const [{ data: profile }, { data: enrollments }] = await Promise.all([
+    admin.from('profiles').select('role').eq('id', user.id).single(),
+    admin.from('enrollments').select('formule, status, starts_at, ends_at').eq('user_id', user.id),
+  ]);
+  const staff = profile?.role === 'admin' || profile?.role === 'trainer';
+  const activeRows = (enrollments ?? []).filter((e) => effectiveStatus(e) === 'active');
+  const plan: Plan = staff ? 'staff' : activeRows.length ? 'active' : 'trial';
+  const pack = activeRows.map((e) => packs.find((p) => p.id === e.formule)).filter(Boolean).sort((a, b) => b!.ai.writing - a!.ai.writing)[0] ?? null;
+  const features = ['writing', 'speaking', 'tutor'] as const;
+  const counts = await Promise.all(features.map(async (f) => {
+    let q = admin.from('ai_usage').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('feature', f);
+    if (plan !== 'trial') q = q.gte('created_at', new Date(Date.now() - 86_400_000).toISOString());
+    return (await q).count ?? 0;
+  }));
+  const limitOf = (f: (typeof features)[number]) => (plan === 'active' && pack ? pack.ai[f] : LIMITS[plan][f]);
+  const remaining = Object.fromEntries(features.map((f, i) => [f, Math.max(0, limitOf(f) - counts[i])])) as Record<(typeof features)[number], number>;
+  return { plan, pack: pack?.id ?? null, remaining, configured: true };
 }
 
 /** Signed-in user, plan and remaining allowance for a feature. Throws AccessError. */
@@ -79,6 +106,7 @@ export async function checkAccess(feature: Feature) {
 
 export function errorResponse(error: unknown) {
   if (error instanceof AccessError) return Response.json({ error: error.message }, { status: error.status });
+  if (error instanceof TranscriptionError) return Response.json({ error: error.message }, { status: 503 });
   console.error('AI route failed', error);
   return Response.json({ error: 'Le service est momentanément indisponible. Réessayez dans quelques minutes.' }, { status: 502 });
 }
