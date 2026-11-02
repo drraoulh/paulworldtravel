@@ -1,14 +1,14 @@
-import { listen, type Series } from './types';
+import { listen, picture, type Series } from './types';
 
 // Original scripts, read by the browser voice. Not official TCF questions. First choice = right answer.
 export const co2: Series = {
   epreuve: 'co',
   number: 2,
   questions: [
-    listen('A1', 'Bonjour, je m’appelle Awa. J’ai vingt-huit ans et je suis étudiante.', 'Quel âge a Awa ?', ['28 ans', '18 ans', '20 ans', '38 ans'], '« Vingt-huit ans » = 28.'),
-    listen('A1', [['a', 'Il est quelle heure ?'], ['b', 'Il est midi et demi.']], 'Quelle heure est-il ?', ['12 h 30', '12 h', '13 h', '11 h 30'], 'Midi et demi = 12 h 30.'),
-    listen('A1', 'Le cours de français est le lundi et le mercredi.', 'Quels jours a lieu le cours ?', ['Lundi et mercredi', 'Mardi et jeudi', 'Lundi et vendredi', 'Mercredi et samedi'], 'Le cours a lieu le lundi et le mercredi.'),
-    listen('A1', [['a', 'Vous voulez du thé ou du jus ?'], ['b', 'Un jus d’orange, merci.']], 'Que choisit la personne ?', ['Un jus d’orange', 'Un thé', 'Un café', 'De l’eau'], 'Elle choisit un jus d’orange.'),
+    picture('A1', { src: '/images/co/serie-2-1.jpg', alt: 'Une jeune femme lit un livre sur un banc, dans un parc.' }, ['Elle lit sur un banc dans un parc.', 'Elle écrit une lettre au bureau.', 'Elle court dans le parc.', 'Elle achète un livre dans une librairie.'], 0, 'La jeune femme est assise seule sur un banc, un livre ouvert entre les mains.'),
+    picture('A1', { src: '/images/co/serie-2-2.jpg', alt: 'Un homme casqué fait du vélo sur une piste cyclable.' }, ['Il conduit une voiture.', 'Il répare son vélo dans un garage.', 'Il fait du vélo sur une piste cyclable.', 'Il attend le métro.'], 2, 'L’homme porte un casque et roule à vélo sur une piste, en ville.'),
+    picture('A1', { src: '/images/co/serie-2-3.jpg', alt: 'Une recruteuse et un candidat se serrent la main dans un bureau.' }, ['Deux amis mangent ensemble.', 'Une recruteuse et un candidat se serrent la main.', 'Un professeur corrige des copies.', 'Deux collègues se disputent.'], 1, 'Dans un bureau, deux personnes se serrent la main au-dessus d’une table : c’est un entretien.'),
+    picture('A1', { src: '/images/co/serie-2-4.jpg', alt: 'Une femme arrose les plantes de son balcon.' }, ['Elle fait le ménage dans le salon.', 'Elle cuisine pour sa famille.', 'Elle ouvre la fenêtre de sa chambre.', 'Elle arrose les fleurs de son balcon.'], 3, 'Elle tient un arrosoir au-dessus des pots de fleurs, sur son balcon.'),
     listen('A2', 'Le train numéro huit cent douze, à destination d’Ottawa, partira de la voie trois.', 'D’où part le train ?', ['De la voie 3', 'De la voie 8', 'De la voie 12', 'De la voie 13'], '812 est le numéro du train ; il part de la voie 3.'),
     listen('A2', [['a', 'On se retrouve devant le cinéma ?'], ['b', 'Plutôt à l’intérieur, il pleut beaucoup.']], 'Où vont-ils se retrouver ?', ['À l’intérieur du cinéma', 'Devant le cinéma', 'Au café', 'À la maison'], 'À cause de la pluie, il propose l’intérieur.'),
     listen('A2', 'Bonjour, c’est la garderie. Votre fille a un peu de fièvre. Pouvez-vous venir la chercher avant midi ?', 'Que demande la garderie ?', ['De venir chercher l’enfant avant midi', 'D’apporter des médicaments', 'De rappeler demain', 'De payer la garderie'], 'La garderie demande de venir la chercher avant midi.'),

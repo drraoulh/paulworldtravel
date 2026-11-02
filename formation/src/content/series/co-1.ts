@@ -1,14 +1,14 @@
-import { listen, type Series } from './types';
+import { listen, picture, type Series } from './types';
 
 // Original scripts, read by the browser voice. Not official TCF questions. First choice = right answer.
 export const co1: Series = {
   epreuve: 'co',
   number: 1,
   questions: [
-    listen('A1', 'Bonjour, je voudrais un café et un croissant, s’il vous plaît.', 'Que demande la personne ?', ['Un café et un croissant', 'Un thé et un croissant', 'Un café et un sandwich', 'Deux cafés'], 'Elle commande « un café et un croissant ».'),
-    listen('A1', 'Le magasin ferme à vingt heures ce soir.', 'À quelle heure ferme le magasin ?', ['À 20 h', 'À 12 h', 'À 22 h', 'À 18 h'], '« Vingt heures » = 20 h.'),
-    listen('A1', [['a', 'Tu habites où ?'], ['b', 'J’habite à Laval, près du métro.']], 'Où habite la deuxième personne ?', ['À Laval', 'À Montréal', 'À Québec', 'Dans le métro'], 'Elle habite à Laval, « près du métro ».'),
-    listen('A1', 'Il fait très froid aujourd’hui : moins quinze degrés. Mettez un bon manteau !', 'Quel temps fait-il ?', ['Il fait très froid', 'Il fait chaud', 'Il pleut', 'Il y a du vent'], 'Moins quinze degrés : il fait très froid.'),
+    picture('A1', { src: '/images/co/serie-1-1.jpg', alt: 'Un jeune homme commande un café au comptoir.' }, ['Il commande un café au comptoir.', 'Il fait la vaisselle dans la cuisine.', 'Il attend le bus dans la rue.', 'Il lit un livre à la bibliothèque.'], 0, 'On voit un client au comptoir d’un café ; la serveuse lui tend une tasse.'),
+    picture('A1', { src: '/images/co/serie-1-2.jpg', alt: 'Une femme sous un parapluie appelle un taxi.' }, ['Elle prend le soleil à la plage.', 'Elle monte dans un avion.', 'Elle appelle un taxi sous la pluie.', 'Elle range son parapluie dans un magasin.'], 2, 'Elle tient un parapluie, il pleut, et elle lève la main vers un taxi.'),
+    picture('A1', { src: '/images/co/serie-1-3.jpg', alt: 'Des enfants jouent au football dans un parc.' }, ['Les enfants dorment dans leur chambre.', 'Les enfants jouent au football dans un parc.', 'Les enfants nagent dans une piscine.', 'Les enfants sont assis en classe.'], 1, 'Trois enfants jouent au ballon sur l’herbe, devant un petit but.'),
+    picture('A1', { src: '/images/co/serie-1-4.jpg', alt: 'Une famille fait ses courses au supermarché.' }, ['La famille mange au restaurant.', 'La famille regarde un film.', 'La famille prend le train.', 'La famille fait ses courses au supermarché.'], 3, 'Ils poussent un chariot rempli de fruits et de légumes, entre les rayons.'),
     listen('A2', 'Mesdames et messieurs, le vol pour Paris est retardé d’une heure. L’embarquement aura lieu à la porte douze.', 'Quel problème est annoncé ?', ['Le vol est en retard', 'Le vol est annulé', 'La porte est fermée', 'Les bagages sont perdus'], 'Le vol est « retardé d’une heure ».'),
     listen('A2', 'Bonjour, c’est Julien. Je ne pourrai pas venir à la réunion de demain matin. Je t’appelle ce soir pour en parler.', 'Que va faire Julien ce soir ?', ['Appeler', 'Aller à la réunion', 'Envoyer un courriel', 'Venir au bureau'], 'Il dit : « Je t’appelle ce soir ».'),
     listen('A2', [['a', 'Combien coûtent ces pommes ?'], ['b', 'Trois dollars le kilo, mais si vous en prenez deux kilos, c’est cinq dollars.']], 'Combien coûtent deux kilos de pommes ?', ['5 $', '3 $', '6 $', '2 $'], 'Deux kilos sont à cinq dollars au lieu de six.'),
