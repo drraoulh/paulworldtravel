@@ -28,6 +28,9 @@ export default function PackGate({ what, next, children }: { what: string; next:
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/packs/" className="rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover">Voir les packs</Link>
         {!access.signedIn && (
+          <Link href="/inscription/" className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">Créer un compte gratuit</Link>
+        )}
+        {!access.signedIn && (
           <Link href={`/connexion/?suite=${encodeURIComponent(next)}`} className="rounded-full border border-rule px-6 py-3.5 font-semibold text-night hover:border-night">
             J’ai déjà un pack : me connecter
           </Link>
