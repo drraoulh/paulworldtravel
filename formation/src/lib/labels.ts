@@ -44,6 +44,7 @@ export interface Profile {
   phone: string | null;
   city: string | null;
   role: string;
+  created_at?: string;
 }
 
 export { effectiveStatus } from './enrollment';

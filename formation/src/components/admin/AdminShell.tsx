@@ -7,13 +7,15 @@ import Icon, { type IconName } from '@/components/academy/Icon';
 import { signOut } from '@/app/espace/actions';
 const links: { href: string; label: string; icon: IconName }[] = [
   { href: '/admin/', label: 'Vue d’ensemble', icon: 'home' },
-  { href: '/admin/apprenants/', label: 'Apprenants', icon: 'book' },
+  { href: '/admin/apprenants/', label: 'Apprenants', icon: 'users' },
   { href: '/admin/progressions/', label: 'Progressions', icon: 'chart' },
   { href: '/admin/lecons/', label: 'Leçons et quiz', icon: 'pen' },
   { href: '/admin/inscriptions/', label: 'Inscriptions et accès', icon: 'award' },
+  { href: '/admin/paiements/', label: 'Paiements', icon: 'wallet' },
   { href: '/admin/corrections/', label: 'Corrections', icon: 'check' },
   { href: '/admin/generer/', label: 'Banque d’exercices', icon: 'sparkles' },
   { href: '/admin/combinaisons/', label: 'Sujets des candidats', icon: 'mic' },
+  { href: '/admin/equipe/', label: 'Équipe', icon: 'shield' },
 ];
 export default function AdminShell({ children, isAdmin, email }: { children: ReactNode; isAdmin: boolean; email: string }) {
   const path = usePathname();
