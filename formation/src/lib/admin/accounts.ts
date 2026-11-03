@@ -140,7 +140,7 @@ export async function grantPack(supabase: SupabaseClient, userId: string, pack: 
 }
 
 /** Activates an enrollment for `days` days from today. */
-export async function openEnrollment(supabase: SupabaseClient, id: string, days: number, by: string, endDate?: string) {
+export async function openEnrollment(supabase: SupabaseClient, id: string, days: number, by: string | null, endDate?: string) {
   const start = new Date();
   const end = endDate ?? isoDay(new Date(start.getTime() + days * 86_400_000));
   const { data, error } = await supabase
@@ -175,6 +175,7 @@ export const paymentMethods = [
   ['virement', 'Virement bancaire'],
   ['interac', 'Virement Interac'],
   ['carte', 'Carte bancaire'],
+  ['stripe', 'Carte bancaire en ligne (Stripe)'],
   ['autre', 'Autre'],
 ] as const;
 export const paymentMethodName = (id: string) => paymentMethods.find(([v]) => v === id)?.[1] ?? id;
@@ -188,7 +189,7 @@ export async function recordPayment(p: PaymentInput) {
     user_id: p.userId,
     enrollment_id: p.enrollmentId ?? null,
     pack: p.pack,
-    amount: Math.round(p.amount),
+    amount: Math.round(p.amount * 100) / 100,
     currency: p.currency,
     provider: p.method,
     reference: p.reference || null,

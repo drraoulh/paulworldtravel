@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { formatPrice, packs, type Zone } from '@/content/offers';
 import { requestPack } from './actions';
+import PayByCard from '@/components/packs/PayByCard';
 
 /** For a signed-in candidate: pick a pack and send the request in one step. */
 export default function ChoosePack({ initialPack, zone }: { initialPack: string; zone: Zone }) {
@@ -33,7 +34,7 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
   return (
     <div className="rounded-lg bg-white p-6 sm:p-10">
       <h2 className="heading text-2xl text-night">Vous êtes connecté : choisissez votre pack</h2>
-      <p className="mt-2 text-slate">Pas besoin de remplir le formulaire à nouveau. Un conseiller vous contacte pour le paiement.</p>
+      <p className="mt-2 text-slate">Pas besoin de remplir le formulaire à nouveau. Payez par carte tout de suite, ou envoyez votre demande : un conseiller vous contacte pour le paiement par Mobile Money ou au bureau.</p>
       <fieldset className="mt-6 grid gap-3 sm:grid-cols-2">
         <legend className="sr-only">Pack</legend>
         {packs.map((p) => (
@@ -45,8 +46,9 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
         ))}
       </fieldset>
       {state === 'error' && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-maple">{message || 'La demande a échoué. Réessayez.'}</p>}
+      <PayByCard pack={pack} zone={zone} className="mt-6" />
       <button onClick={send} disabled={state === 'sending'} className="mt-6 rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
-        {state === 'sending' ? 'Envoi…' : 'Envoyer ma demande'}
+        {state === 'sending' ? 'Envoi…' : 'Payer avec un conseiller (Mobile Money, bureau)'}
       </button>
     </div>
   );

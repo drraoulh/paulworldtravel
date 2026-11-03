@@ -12,11 +12,16 @@ import { createClient } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { effectiveStatus, formatDate, formuleName, statusLabel, statusTone, type Enrollment, type Profile } from '@/lib/labels';
 import { signOut } from './actions';
+import PayByCard from '@/components/packs/PayByCard';
+import { stripeConfigured } from '@/lib/stripe';
+import { headers } from 'next/headers';
+import { zoneForCountry } from '@/content/offers';
 
 export const metadata: Metadata = { title: 'Mon espace', robots: { index: false } };
 export const dynamic = 'force-dynamic';
 
-export default async function Espace() {
+export default async function Espace({ searchParams }: { searchParams: Promise<{ paiement?: string }> }) {
+  const paiement = (await searchParams).paiement;
   if (!supabaseConfigured) redirect('/connexion/');
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -31,6 +36,8 @@ export default async function Espace() {
   const courseItems = buildCourse(await publishedModules()).flatMap((m) => m.items);
   const isStaff = profile?.role === 'admin' || profile?.role === 'trainer';
   const active = enrollments?.find((e) => effectiveStatus(e) === 'active');
+  const card = stripeConfigured();
+  const zone = zoneForCountry((await headers()).get('x-vercel-ip-country'));
 
   return (
     <>
@@ -57,6 +64,14 @@ export default async function Espace() {
               <p className="mt-2 text-slate">Retrouvez votre dernière activité et la prochaine étape de votre préparation.</p>
               <ButtonLink href="/parcours/" variant="dark" className="mt-5">Reprendre ma préparation</ButtonLink>
             </div>
+            {paiement === 'ok' && (
+              <p role="status" className="rounded-lg border border-green-200 bg-green-50 p-5 text-green-800">
+                Paiement reçu, merci. Votre pack s’active dans quelques instants : actualisez la page si l’accès n’apparaît pas encore. Un reçu vous est envoyé par email.
+              </p>
+            )}
+            {paiement === 'annule' && (
+              <p role="status" className="rounded-lg border border-rule bg-white p-5 text-slate">Le paiement a été interrompu, rien n’a été débité. Vous pouvez réessayer ci-dessous ou payer avec un conseiller.</p>
+            )}
             <h2 className="heading text-2xl text-night">Mon accès et mes packs</h2>
             {(enrollments ?? []).length === 0 && (
               <div className="rounded-lg bg-white p-6">
@@ -72,9 +87,10 @@ export default async function Espace() {
                     <h3 className="heading text-xl text-night">Pack {formuleName(e.formule)}</h3>
                     <span className={`rounded-full px-3 py-1 text-sm font-semibold ${statusTone[status]}`}>{statusLabel[status]}</span>
                   </div>
+                  {status === 'pending' && card && ['essentiel', 'silver', 'gold', 'platinum'].includes(e.formule) && <PayByCard pack={e.formule} zone={zone} enabled className="mt-4" />}
                   {status === 'pending' && (
                     <p className="mt-4 text-slate">
-                      Inscription reçue le {formatDate(e.created_at)}. Un conseiller vous contacte pour le paiement ; votre accès est activé dès réception.
+                      Inscription reçue le {formatDate(e.created_at)}. {card ? 'Payez par carte pour ouvrir votre accès tout de suite, ou un conseiller vous contacte pour le paiement par Mobile Money.' : 'Un conseiller vous contacte pour le paiement ; votre accès est activé dès réception.'}
                     </p>
                   )}
                   {status === 'active' && (
