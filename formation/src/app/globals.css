@@ -1,23 +1,18 @@
 @import "tailwindcss";
 
-/*
- * Paul World Travel Formation: "ink and highlighter".
- * Ink blue for text and dark surfaces, exam-sheet grey for quiet surfaces,
- * pen blue for links, and the highlighter yellow kept for what matters:
- * the main action, the current place, the target level.
- */
+/* Academy interface: blue actions, neutral course surfaces and a persistent learning navigation. */
 :root {
-  --night: #14213d;       /* ink */
+  --night: #172b4d;       /* ink */
   --night-deep: #0d1730;
-  --ocean: #2442c7;       /* pen blue */
+  --ocean: #0056d2;       /* pen blue */
   --sky: #9fb2ee;
-  --container: #ffd84a;   /* highlighter */
-  --container-hover: #ffcb1f;
+  --container: #dbeafe;   /* highlighter */
+  --container-hover: #c4dbff;
   --maple: #b83a2a;       /* corrections, recording */
-  --paper: #f1f4f8;       /* exam-sheet grey */
+  --paper: #f6f8fc;       /* exam-sheet grey */
   --ink: #1b2436;
   --slate: #515c70;
-  --rule: #d8dee7;
+  --rule: #e2e7ef;
 }
 
 @theme inline {
@@ -41,25 +36,25 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: #ffffff;
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-atkinson), system-ui, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Titles in Literata: large optical size, quiet weight. */
+/* Sans-serif titles keep navigation and course cards consistent. */
 .display {
-  font-family: var(--font-literata), Georgia, serif;
+  font-family: var(--font-atkinson), system-ui, sans-serif;
   font-optical-sizing: auto;
-  font-weight: 560;
+  font-weight: 750;
   letter-spacing: -0.018em;
   line-height: 1.08;
 }
 .heading {
-  font-family: var(--font-literata), Georgia, serif;
+  font-family: var(--font-atkinson), system-ui, sans-serif;
   font-optical-sizing: auto;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.22;
 }
@@ -71,7 +66,7 @@ body {
   line-height: 1.75;
 }
 
-/* The highlighter stroke: under the current tab or menu item, on key expressions. */
+/* A pale accent marks the current topic without competing with primary actions. */
 .marked {
   background-image: linear-gradient(transparent 58%, var(--container) 58%, var(--container) 92%, transparent 92%);
 }
@@ -97,3 +92,11 @@ input[type='radio'], input[type='checkbox'] { accent-color: var(--night); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0s !important; }
 }
+
+.academy-dialog { margin: auto; }
+.academy-dialog[open] { animation: drawer-fade .15s ease-out; }
+.tutor-panel:not([open]) { display: none; }
+.tutor-panel[open] { display: block; animation: drawer-fade .2s ease-out; }
+@media print { #main-content { background: white; } }
+
+.academy-menu { margin: 0; }

@@ -19,7 +19,7 @@ export default async function Packs({ searchParams }: Props) {
   const zone = isZone(asked) ? asked : zoneForCountry((await headers()).get('x-vercel-ip-country'));
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/classroom.jpg', alt: 'Participants dans une salle de cours' }}
         title="Choisissez votre pack"
         intro="Tous les packs donnent accès à la plateforme complète. Plus le pack est élevé, plus vous avez de temps, de corrections et d’accompagnement par un formateur."
       />

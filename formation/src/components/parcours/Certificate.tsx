@@ -44,7 +44,7 @@ export default function Certificate({ ids, modules }: { ids: string[]; modules: 
         <p className="mt-8 text-slate">Nous attestons que</p>
         <p className="display marked mt-2 inline-block text-3xl text-night sm:text-4xl">{name.trim() || 'Votre nom'}</p>
         <p className="mx-auto mt-6 max-w-xl text-ink">
-          a suivi l’intégralité du parcours de préparation au TCF Canada : {modules.join(', ')}.
+          a terminé les activités et réussi les quiz du parcours de préparation au TCF Canada : {modules.join(', ')}.
         </p>
         <p className="mt-8 text-sm text-slate">Délivrée le {date}</p>
         <p className="mx-auto mt-8 max-w-lg border-t border-rule pt-4 text-xs text-slate">

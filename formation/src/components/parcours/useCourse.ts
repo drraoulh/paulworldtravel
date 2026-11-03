@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { readResults } from '@/lib/results';
+import { completionId, isLessonItem, lessonIsRead, quizPassed, READ_PREFIX } from '@/lib/lesson-progress';
 import type { CourseItem } from '@/content/parcours/course';
 
 /*
@@ -50,16 +51,25 @@ function addDay(meta: Meta) {
 /** Marks an item finished (or not). Usable outside React, e.g. after an AI correction. */
 export function markDone(id: string, value = true) {
   if (typeof window === 'undefined') return;
+  // Legacy callers can mark reading, but only quiz submissions can write a quiz-v2 marker.
+  if (isLessonItem(id)) id = `${READ_PREFIX}${id}`;
   const current = readDone();
   const next = value ? Array.from(new Set([...current, id])) : current.filter((v) => v !== id);
   write(DONE, next);
   if (value) { const meta = readMeta(); write(META, { ...meta, days: addDay(meta) }); }
 }
 
+export function markLessonRead(id: string) { markDone(`${READ_PREFIX}${id}`); }
+
+export function recordQuizResult(id: string, score: number, total: number) {
+  if (isLessonItem(id) && quizPassed(score, total)) markDone(completionId(id));
+}
+
 /** Remembers the item being studied, for the "Reprendre" button. */
 export function markVisit(item: { id: string; href: string; title: string }) {
   const meta = readMeta();
   write(META, { ...meta, last: item, days: addDay(meta) });
+  if (isLessonItem(item.id)) markLessonRead(item.id);
 }
 
 export function setWeeklyGoal(goal: number) {
@@ -90,7 +100,7 @@ export function useCourse() {
 
   const seriesIds = s.series.map((x) => x.split('|')[0]);
   const isDone = useCallback(
-    (id: string) => (id === 'examen-blanc' ? s.mocks.length > 0 : id.startsWith('serie:') ? seriesIds.includes(id) : s.done.includes(id)),
+    (id: string) => (id === 'examen-blanc' ? s.mocks.length > 0 : id.startsWith('serie:') ? seriesIds.includes(id) : s.done.includes(completionId(id))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [s],
   );
@@ -102,7 +112,7 @@ export function useCourse() {
     ...s.mocks.map((d) => d.slice(0, 10)),
   ]);
 
-  return { ready: s.ready, isDone, last: s.meta.last, goal: s.meta.goal, days };
+  return { ready: s.ready, isDone, isRead: (id: string) => lessonIsRead(s.done, id), last: s.meta.last, goal: s.meta.goal, days };
 }
 
 /** Share of items done, as a whole percentage. */

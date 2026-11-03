@@ -34,6 +34,7 @@ const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3
 export default function SignupForm() {
   const params = useSearchParams();
   const [form, setForm] = useState(empty);
+  const [submitted, setSubmitted] = useState<{ email: string; formule: string; zone: Zone } | null>(null);
   const [status, setStatus] = useState<Status>('idle');
   const [formError, setFormError] = useState('');
   const supabase = getSupabase();
@@ -107,12 +108,14 @@ export default function SignupForm() {
         body: JSON.stringify(details),
       });
       if (res.ok || accountCreated) {
+        setSubmitted({ email: form.email, formule: form.formule, zone: form.zone });
         setStatus(accountCreated ? 'account_created' : 'success');
         setForm(empty);
       } else {
         setStatus(res.status === 503 ? 'not_configured' : 'error');
       }
     } catch {
+      if (accountCreated) setSubmitted({ email: form.email, formule: form.formule, zone: form.zone });
       setStatus(accountCreated ? 'account_created' : 'error');
     }
   };
@@ -122,13 +125,16 @@ export default function SignupForm() {
       <div className="rounded-lg bg-white p-6 sm:p-10" role="status">
         <h2 className="heading text-2xl text-night">Vérifiez votre boîte mail</h2>
         <p className="mt-4 text-lg">
-          Votre compte est créé. Cliquez sur le lien que nous venons de vous envoyer pour confirmer votre adresse, puis connectez-vous à votre espace.
+          Un lien de confirmation a été envoyé à {submitted?.email}. Confirmez votre adresse, puis connectez-vous pour commencer votre préparation.
         </p>
         <p className="mt-4 text-slate">
-          {form.formule
+          {submitted?.formule
             ? 'Un conseiller vous contacte sous 24 h ouvrées pour le paiement de votre pack. Votre accès est activé dès réception.'
             : 'Votre compte gratuit vous donne accès au test de niveau, aux leçons, à la première série de chaque épreuve et à un essai des corrections par l’IA.'}
         </p>
+        {submitted?.formule && <p className="mt-4 font-semibold text-night">Pack {packs.find((p) => p.id === submitted.formule)?.name} · {formatPrice(packs.find((p) => p.id === submitted.formule)!, submitted.zone)}. Demande reçue → paiement avec un conseiller → activation.</p>}
+        <p className="mt-4 text-sm text-slate">Pensez à vérifier les courriers indésirables si le message n’apparaît pas.</p>
+        <a href="/connexion/?suite=/parcours/" className="mt-6 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">Me connecter après confirmation</a>
       </div>
     );
   }
@@ -165,16 +171,35 @@ export default function SignupForm() {
           <input name="firstName" value={form.firstName} onChange={set} required autoComplete="given-name" className={inputCls} />
         </label>
         <label className="block">
-          <span className="font-semibold text-night">Nom</span>
-          <input name="lastName" value={form.lastName} onChange={set} required autoComplete="family-name" className={inputCls} />
-        </label>
-        <label className="block">
           <span className="font-semibold text-night">Email</span>
           <input type="email" name="email" value={form.email} onChange={set} required autoComplete="email" className={inputCls} />
         </label>
+        {supabase && (
+          <>
+            <label className="block">
+              <span className="font-semibold text-night">Mot de passe</span>
+              <span className="text-slate"> (8 caractères minimum)</span>
+              <input type="password" name="password" value={form.password} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
+            </label>
+            <label className="block">
+              <span className="font-semibold text-night">Confirmer le mot de passe</span>
+              <input type="password" name="password2" value={form.password2} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
+            </label>
+            <p className="text-sm text-slate sm:col-span-2">Ce mot de passe vous servira à vous connecter à votre espace candidat.</p>
+          </>
+        )}
+        <details open={!!form.formule} className="rounded-xl border border-rule p-4 sm:col-span-2">
+          <summary className="cursor-pointer font-bold text-night">Mon objectif et mon pack (facultatif)</summary>
+          <p className="mt-2 text-sm text-slate">Vous pouvez commencer gratuitement et choisir un pack plus tard. Le téléphone est utile si vous souhaitez être rappelé.</p>
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+        <label className="block">
+          <span className="font-semibold text-night">Nom</span>
+          <input name="lastName" value={form.lastName} onChange={set} autoComplete="family-name" className={inputCls} />
+        </label>
+
         <label className="block">
           <span className="font-semibold text-night">Téléphone ou WhatsApp</span>
-          <input type="tel" name="phone" value={form.phone} onChange={set} required autoComplete="tel" placeholder="+237 6 …" className={inputCls} />
+          <input type="tel" name="phone" value={form.phone} onChange={set} autoComplete="tel" placeholder="+237 6 …" className={inputCls} />
         </label>
         <label className="block">
           <span className="font-semibold text-night">Ville et pays</span>
@@ -211,25 +236,13 @@ export default function SignupForm() {
           <span className="font-semibold text-night">Date d’examen prévue</span>
           <input name="examDate" value={form.examDate} onChange={set} placeholder="Par exemple : mars 2027, ou pas encore fixée" className={inputCls} />
         </label>
-        {supabase && (
-          <>
-            <label className="block">
-              <span className="font-semibold text-night">Mot de passe</span>
-              <span className="text-slate"> (8 caractères minimum)</span>
-              <input type="password" name="password" value={form.password} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
-            </label>
-            <label className="block">
-              <span className="font-semibold text-night">Confirmer le mot de passe</span>
-              <input type="password" name="password2" value={form.password2} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
-            </label>
-            <p className="text-sm text-slate sm:col-span-2">Ce mot de passe vous servira à vous connecter à votre espace candidat.</p>
-          </>
-        )}
         <label className="block sm:col-span-2">
           <span className="font-semibold text-night">Message</span>
           <span className="text-slate"> (facultatif)</span>
           <textarea name="message" value={form.message} onChange={set} rows={4} className={inputCls} />
         </label>
+          </div>
+        </details>
         <label className="hidden" aria-hidden="true">
           Site web
           <input name="website" value={form.website} onChange={set} tabIndex={-1} autoComplete="off" />
@@ -251,7 +264,7 @@ export default function SignupForm() {
       )}
 
       <button type="submit" disabled={status === 'sending'} className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-60 sm:w-auto">
-        {status === 'sending' ? 'Envoi en cours…' : 'Envoyer mon inscription'}
+        {status === 'sending' ? 'Envoi en cours…' : form.formule ? 'Créer mon compte et demander ce pack' : 'Créer mon compte gratuit'}
       </button>
     </form>
   );

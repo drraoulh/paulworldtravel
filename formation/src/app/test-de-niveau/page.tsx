@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Container, PageHeader } from '@/components/ui';
 import LevelTest from './LevelTest';
+import { modules } from '@/content/parcours';
 
 export const metadata: Metadata = {
   title: 'Test de niveau de français gratuit',
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default function TestDeNiveau() {
+  const reading = modules.find((m) => m.id === 'ce')!;
   return (
     <>
       <PageHeader image={{ src: '/images/study.jpg', alt: 'Prise de notes pendant une révision' }}
@@ -16,7 +18,7 @@ export default function TestDeNiveau() {
       />
       <section className="bg-paper py-12 sm:py-16">
         <Container className="max-w-3xl">
-          <LevelTest />
+          <LevelTest firstLessonHref={`/epreuve/${reading.slug}/methodologie/${reading.lessons[0].slug}/`} />
         </Container>
       </section>
     </>

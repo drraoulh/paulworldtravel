@@ -1,6 +1,7 @@
 'use client';
 
 import { useDoneLessons } from './useDoneLessons';
+import { markLessonRead, useCourse } from './useCourse';
 
 /** Count of completed lessons among `ids`, with a bar. */
 export function ProgressBar({ ids, label = 'leçons terminées', dark = false }: { ids: string[]; label?: string; dark?: boolean }) {
@@ -29,11 +30,6 @@ export function LessonMark({ id }: { id: string }) {
 }
 
 export function DoneButton({ id }: { id: string }) {
-  const { done, toggle } = useDoneLessons();
-  const ok = done.includes(id);
-  return (
-    <button onClick={() => toggle(id)} className={`rounded-xl px-5 py-3 font-bold ${ok ? 'border-2 border-green-600 text-green-800' : 'bg-container text-night hover:bg-container-hover'}`}>
-      {ok ? 'Leçon terminée' : 'Marquer comme terminée'}
-    </button>
-  );
+  const { isRead } = useCourse();
+  return <button onClick={() => markLessonRead(id)} disabled={isRead(id)} className="rounded-lg border border-rule px-5 py-3 font-bold text-night disabled:opacity-60">{isRead(id) ? 'Leçon consultée' : 'Marquer comme consultée'}</button>;
 }

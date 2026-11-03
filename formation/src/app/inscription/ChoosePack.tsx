@@ -18,10 +18,12 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
     setMessage(res.error ?? '');
   };
 
-  if (state === 'done' || state === 'error') {
+  if (state === 'done') {
     return (
       <div className="rounded-lg bg-white p-6 sm:p-10" role="status">
         <h2 className="heading text-2xl text-night">Demande envoyée</h2>
+        <p className="mt-4 font-semibold text-night">Pack {packs.find((p) => p.id === pack)!.name} · {formatPrice(packs.find((p) => p.id === pack)!, zone)}</p>
+        <ol className="mt-4 list-decimal space-y-2 pl-5 text-slate"><li>Demande de pack reçue.</li><li>Paiement avec votre conseiller, sous 24 h ouvrées pour la prise de contact.</li><li>Activation après réception du paiement.</li></ol>
         <p className="mt-4 text-lg">{message || 'Un conseiller vous contacte sous 24 h ouvrées pour le paiement. Votre accès est activé dès réception.'}</p>
         <Link href="/espace/" className="mt-6 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">Aller à mon espace</Link>
       </div>
@@ -42,6 +44,7 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
           </label>
         ))}
       </fieldset>
+      {state === 'error' && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-maple">{message || 'La demande a échoué. Réessayez.'}</p>}
       <button onClick={send} disabled={state === 'sending'} className="mt-6 rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
         {state === 'sending' ? 'Envoi…' : 'Envoyer ma demande'}
       </button>

@@ -1,157 +1,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import LevelScale from '@/components/LevelScale';
-import { ButtonLink, Container } from '@/components/ui';
 import { headers } from 'next/headers';
-import { formatPrice, packs, zoneForCountry } from '@/content/offers';
-import { lessonCount } from '@/content/parcours';
-import { epreuves } from '@/content/tcf';
-import { EPREUVE_IMAGES, epreuveConfigs } from '@/lib/epreuves';
-
-const nclc7 = [
-  ['458', 'en compréhension orale, sur 699'],
-  ['453', 'en compréhension écrite, sur 699'],
-  ['10', 'en expression écrite, sur 20'],
-  ['10', 'en expression orale, sur 20'],
-];
-
+import { ButtonLink, Container } from '@/components/ui';
+import CourseCatalog from '@/components/academy/CourseCatalog';
+import Icon, { type IconName } from '@/components/academy/Icon';
+import { modules, lessonCount, lessonId } from '@/content/parcours';
+import { EPREUVE_IMAGES } from '@/lib/epreuve-images';
+import { packs, formatPrice, zoneForCountry, FREE_TRIAL } from '@/content/offers';
+import { seriesFor } from '@/content/series';
 export default async function Home() {
-  // Pack prices follow the visitor's country (Vercel geolocation).
   const zone = zoneForCountry((await headers()).get('x-vercel-ip-country'));
-  return (
-    <>
-      {/* Hero: the level scale is the one memorable element. */}
-      <header className="border-b border-rule bg-white">
-        <Container className="pb-14 pt-14 sm:pb-20 sm:pt-20">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-14">
-          <div className="max-w-3xl">
-            <h1 className="display text-[2.6rem] text-night sm:text-6xl lg:text-[4.2rem]">Le TCF Canada, une épreuve à la fois.</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate sm:text-xl">
-              Méthode, séries corrigées, simulateurs et examen blanc pour atteindre le NCLC dont votre dossier a besoin. En ligne, ou en salle à Douala et à Yaoundé.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
-              <ButtonLink href="/test-de-niveau/">Évaluer mon niveau gratuitement</ButtonLink>
-              <Link href="#epreuves" className="font-bold text-night underline decoration-rule decoration-2 underline-offset-8 hover:decoration-night">Voir les quatre épreuves</Link>
-            </div>
-          </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper lg:aspect-[4/5]">
-            <Image src="/images/etudiants.jpg" alt="Deux étudiants révisent ensemble leurs cahiers" fill priority sizes="(min-width: 1024px) 38vw, 100vw" className="object-cover" />
-          </div>
-          </div>
-          <div className="mt-16 sm:mt-20">
-            <LevelScale target={7} label={<>NCLC 7 : le minimum de l’Entrée express pour les travailleurs qualifiés</>} />
-          </div>
-        </Container>
-      </header>
-
-      {/* The four épreuves, as a list: one row per épreuve, in the order of the exam day. */}
-      <section id="epreuves" className="scroll-mt-20 bg-white py-16 sm:py-24">
-        <Container>
-          <div className="grid gap-4 lg:grid-cols-[1fr_2fr] lg:gap-16">
-            <div>
-              <h2 className="heading text-3xl text-night sm:text-4xl">Les quatre épreuves</h2>
-              <p className="mt-4 text-slate">Dans l’ordre du jour de l’examen. Chacune a sa méthode, son entraînement et son tableau de bord.</p>
-            </div>
-            <ol className="border-t border-night">
-              {epreuveConfigs.map((e) => {
-                const info = epreuves.find((x) => x.id === e.module.id)!;
-                const practice = e.sections.find((s) => s.key === 'series' || s.key === 'simulateur')!;
-                return (
-                  <li key={e.slug} className="grid gap-x-6 gap-y-3 border-b border-rule py-7 sm:grid-cols-[7rem_1fr_auto]">
-                    <Link href={`/epreuve/${e.slug}/`} className="relative hidden aspect-square overflow-hidden rounded-xl bg-paper sm:block" tabIndex={-1} aria-hidden="true">
-                      <Image src={EPREUVE_IMAGES[e.module.id].src} alt="" fill sizes="7rem" className="object-cover" />
-                    </Link>
-                    <div>
-                      <Link href={`/epreuve/${e.slug}/`} className="heading text-2xl text-night hover:text-ocean">{info.name}</Link>
-                      <p className="mt-1 text-sm text-slate">{info.format}, {info.minutes} minutes</p>
-                      <p className="mt-3 max-w-xl text-ink">{info.what}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold sm:flex-col sm:items-end sm:pt-2">
-                      <Link href={`/epreuve/${e.slug}/methodologie/`} className="text-ocean hover:underline">Méthodologie</Link>
-                      <Link href={practice.href} className="text-ocean hover:underline">{practice.key === 'series' ? 'Séries de 39 questions' : 'Simulateur IA'}</Link>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-        </Container>
+  const questions = modules.reduce((n, m) => n + m.lessons.reduce((s, l) => s + l.quiz.length, 0), 0);
+  return <>
+    <Container className="py-7 sm:py-10">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><p className="text-xs font-semibold text-slate">Votre espace de formation au TCF Canada</p><Link href="/guide/" className="text-xs font-bold text-ocean hover:underline">Comment ça marche ?</Link></div>
+      <section className="relative overflow-hidden rounded-2xl border border-blue-100 bg-[#edf3ff]">
+        <div className="grid items-center lg:grid-cols-[1.2fr_1fr]">
+          <div className="p-6 sm:p-9 xl:p-11"><span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-ocean"><span className="h-1.5 w-1.5 rounded-full bg-ocean" />Votre projet Canada commence ici</span><h1 className="display mt-5 text-4xl text-night sm:text-5xl xl:text-[3.3rem]">Apprenez aujourd’hui.<br /><span className="text-ocean">Avancez vers votre objectif.</span></h1><p className="mt-5 max-w-lg text-base leading-relaxed text-slate">Une méthode claire, des exercices corrigés et un tuteur IA pour préparer les quatre épreuves du TCF Canada, à votre rythme.</p><div className="mt-7 flex flex-wrap gap-3"><ButtonLink href="/parcours/">Commencer mon parcours <Icon name="arrow" className="ml-2 h-4 w-4" /></ButtonLink><ButtonLink href="/test-de-niveau/" variant="dark">Évaluer mon niveau</ButtonLink></div><p className="mt-4 text-xs text-slate">{lessonCount} leçons gratuites · Sans carte bancaire · En ligne</p></div>
+          <div className="relative min-h-60 self-stretch sm:min-h-80"><Image src="/images/etudiants.jpg" alt="Deux étudiants révisent ensemble pour préparer leur avenir" fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-night/60 via-transparent to-transparent" /><div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl border border-white/50 bg-white/95 p-4 shadow-sm"><span className="rounded-lg bg-blue-50 p-2 text-ocean"><Icon name="award" /></span><div><p className="text-sm font-bold text-night">Un parcours, quatre compétences</p><p className="text-xs text-slate">Lire · Écouter · Écrire · Parler</p></div></div></div>
+        </div>
       </section>
-
-      {/* Mock exam */}
-      <section className="relative isolate overflow-hidden bg-night text-white">
-        <Image src="/images/examen.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover object-center" />
-        <div className="absolute inset-0 -z-10 bg-night/85" />
-        <Container className="grid gap-8 py-16 sm:py-24 lg:grid-cols-[2fr_1fr] lg:items-center">
-          <div>
-            <h2 className="heading text-3xl sm:text-4xl">L’examen blanc, avec les vraies durées</h2>
-            <p className="mt-4 max-w-2xl text-lg text-blue-100">
-              Compréhension orale en 35 minutes, compréhension écrite en 60 minutes, puis expression écrite en 60 minutes. Une seule écoute, un chronomètre, et la correction de vos trois textes à la fin.
-            </p>
-          </div>
-          <div className="lg:justify-self-end"><ButtonLink href="/examen-blanc/">Passer l’examen blanc</ButtonLink></div>
-        </Container>
+      <dl className="my-8 grid grid-cols-2 gap-3 sm:grid-cols-4">{[[String(lessonCount), 'leçons de méthode', 'book'], [String(questions), 'questions de quiz', 'check'], [String(seriesFor('ce').length + seriesFor('co').length), 'séries d’entraînement', 'headphones'], ['À votre rythme', 'sur mobile et ordinateur', 'clock']].map(([n, label, icon]) => <div key={label} className="flex items-center gap-3 rounded-xl border border-rule bg-white p-4"><span className="hidden rounded-lg bg-paper p-2 text-ocean xl:block"><Icon name={icon as IconName} /></span><div><dt className="text-xs text-slate">{label}</dt><dd className="text-lg font-extrabold text-night">{n}</dd></div></div>)}</dl>
+      <section id="epreuves" className="scroll-mt-24 py-4"><div className="mb-5 flex flex-wrap items-end justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[.15em] text-ocean">Le catalogue de formation</p><h2 className="heading mt-1 text-2xl text-night">Une compétence à la fois.</h2><p className="mt-2 text-sm text-slate">Des leçons courtes, des exemples concrets, puis un quiz pour vérifier vos acquis.</p></div><Link href="/parcours/" className="flex items-center gap-2 text-xs font-bold text-ocean">Voir mon parcours <Icon name="arrow" className="h-4 w-4" /></Link></div><CourseCatalog courses={modules.map((m) => ({ id: m.id, title: m.name, intro: m.intro, image: EPREUVE_IMAGES[m.id], href: `/epreuve/${m.slug}/methodologie/`, lessons: m.lessons.map((l) => lessonId(m, l)), minutes: m.lessons.reduce((n, l) => n + l.minutes, 0) }))} /></section>
+      <section className="mt-9 grid gap-5 xl:grid-cols-[1.2fr_1fr]">
+        <div className="rounded-xl border border-rule bg-white p-6 sm:p-8"><p className="text-[10px] font-bold uppercase tracking-[.12em] text-ocean">Votre première séance</p><h2 className="heading mt-2 text-2xl text-night">Savoir où commencer, tout simplement.</h2><ol className="mt-6 space-y-5">{[['01', 'Faites le point', '15 questions pour une première indication en grammaire, vocabulaire et lecture.', '/test-de-niveau/'], ['02', 'Découvrez la méthode', 'Lisez une leçon et ses exemples, puis répondez aux six questions du quiz.', '/parcours/'], ['03', 'Passez à la pratique', 'La première série de lecture et d’écoute est gratuite, sans compte.', '/epreuve/comprehension-orale/series/']].map(([n, title, text, href]) => <li key={n}><Link href={href} className="group flex items-start gap-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-ocean">{n}</span><span><span className="block text-sm font-bold text-night group-hover:text-ocean">{title}</span><span className="mt-1 block text-xs leading-relaxed text-slate">{text}</span></span></Link></li>)}</ol></div>
+        <div className="relative isolate flex min-h-80 flex-col justify-end overflow-hidden rounded-xl bg-night p-6 text-white sm:p-8"><Image src="/images/examen.jpg" alt="" fill sizes="(min-width: 1280px) 35vw, 100vw" className="-z-20 object-cover" /><div className="absolute inset-0 -z-10 bg-gradient-to-t from-night via-night/80 to-night/20" /><span className="mb-3 self-start rounded-md bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wide">Inclus dans les packs</span><h2 className="heading text-2xl">Entraînez-vous dans les conditions de l’examen.</h2><p className="mt-3 text-sm text-blue-100">Les quatre épreuves, les durées officielles et un bilan pour identifier vos priorités de travail.</p><ButtonLink href="/examen-blanc/" className="mt-6 self-start">Découvrir les examens blancs <Icon name="arrow" className="ml-2 h-4 w-4" /></ButtonLink></div>
       </section>
-
-      {/* What the platform contains, stated plainly. */}
-      <section className="bg-paper py-16 sm:py-24">
-        <Container>
-          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Ce que vous trouvez ici</h2>
-          <dl className="mt-10 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              [`${lessonCount} leçons`, 'Une méthode par épreuve, avec des modèles commentés et un quiz pour valider chaque leçon.'],
-              ['4 séries de 39 questions', 'En lecture et en écoute, de A1 à C2, avec des documents audio et les explications.'],
-              ['21 sujets corrigés', 'À l’écrit et à l’oral, chacun avec un corrigé commenté.'],
-              ['Correction par l’IA', 'Note sur 20, erreurs expliquées, NCLC indicatif, et relecture possible par votre formateur.'],
-            ].map(([t, d]) => (
-              <div key={t} className="border-t border-night pt-4">
-                <dt className="heading text-xl text-night">{t}</dt>
-                <dd className="mt-2 text-slate">{d}</dd>
-              </div>
-            ))}
-          </dl>
-        </Container>
-      </section>
-
-      {/* NCLC 7 */}
-      <section className="bg-white py-16 sm:py-24">
-        <Container className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <h2 className="heading text-3xl text-night sm:text-4xl">Ce que demande un NCLC 7</h2>
-            <p className="mt-4 text-lg text-slate">
-              Le Canada convertit chaque résultat du TCF en niveau NCLC. Pour les travailleurs qualifiés d’Entrée express, il faut au moins un NCLC 7 dans chacune des quatre compétences.
-            </p>
-            <Link href="/tcf-canada/" className="mt-6 inline-block font-bold text-ocean hover:underline">Voir le tableau complet des équivalences</Link>
-          </div>
-          <dl className="grid grid-cols-2 border-t border-night">
-            {nclc7.map(([v, l], i) => (
-              <div key={l} className={`flex flex-col-reverse border-b border-rule py-6 ${i % 2 === 0 ? 'pr-6' : 'border-l pl-6'}`}>
-                <dt className="mt-1 text-sm text-slate">{l}</dt>
-                <dd className="display text-5xl text-night">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        </Container>
-      </section>
-
-      {/* Packs */}
-      <section className="border-t border-rule bg-paper py-16 sm:py-24">
-        <Container>
-          <h2 className="heading max-w-2xl text-3xl text-night sm:text-4xl">Quatre packs, selon l’accompagnement voulu</h2>
-          <p className="mt-4 max-w-2xl text-lg text-slate">Tous donnent accès à la plateforme complète. Les packs Gold et Platinum ajoutent un formateur, en visio ou en salle à Douala et à Yaoundé.</p>
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {packs.map((p) => (
-              <li key={p.id} className={`rounded-2xl bg-white p-6 ${p.featured ? 'ring-2 ring-ocean' : 'border border-rule'}`}>
-                <h3 className="heading text-2xl text-night">{p.name}</h3>
-                <p className="mt-1 text-slate">{p.tagline}</p>
-                <p className="display mt-5 whitespace-nowrap text-3xl text-night">{formatPrice(p, zone)}</p>
-                <p className="text-sm text-slate">{p.months} mois d’accès</p>
-              </li>
-            ))}
-          </ul>
-          <ButtonLink href={`/packs/?zone=${zone}`} variant="dark" className="mt-10">Comparer les packs</ButtonLink>
-        </Container>
-      </section>
-    </>
-  );
+      <section className="my-10 rounded-xl border border-blue-100 bg-blue-50 p-6 sm:flex sm:items-center sm:justify-between sm:gap-6"><div className="flex items-start gap-4"><span className="rounded-xl bg-white p-3 text-ocean"><Icon name="sparkles" /></span><div><h2 className="heading text-lg text-night">Une question ne doit pas vous arrêter.</h2><p className="mt-2 max-w-xl text-sm text-slate">Votre compte gratuit comprend {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur IA. Ses estimations ne remplacent pas les résultats officiels.</p></div></div><ButtonLink href="/inscription/" className="mt-5 shrink-0 sm:mt-0">Créer mon compte gratuit</ButtonLink></section>
+      <section className="pb-5"><div className="mb-5 flex items-end justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[.12em] text-ocean">Pour aller plus loin</p><h2 className="heading mt-1 text-2xl text-night">L’accompagnement qui vous correspond.</h2></div><Link href={`/packs/?zone=${zone}`} className="text-xs font-bold text-ocean hover:underline">Comparer les packs</Link></div><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{packs.map((p) => <Link key={p.id} href={`/packs/?zone=${zone}`} className={`rounded-xl border bg-white p-5 transition-shadow hover:shadow-md ${p.featured ? 'border-ocean' : 'border-rule'}`}><p className="text-sm font-bold text-night">{p.name}</p><p className="mt-2 min-h-10 text-xs text-slate">{p.tagline}</p><p className="mt-4 text-xl font-extrabold text-night">{formatPrice(p, zone)}</p><p className="mt-1 text-xs text-slate">{p.months} mois d’accès</p></Link>)}</div></section>
+    </Container>
+  </>;
 }

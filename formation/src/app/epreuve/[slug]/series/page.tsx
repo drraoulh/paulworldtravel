@@ -28,7 +28,7 @@ export default async function SeriesPage({ params }: Props) {
       epreuve={e}
       active="series"
       title="Séries d’entraînement"
-      intro={`Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. ${id === 'co' ? 'Chaque document est un enregistrement à écouter, une seule fois en conditions d’examen.' : 'Sans compte, gratuit.'}`}
+      intro={`Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. ${id === 'co' ? 'La série 1 est gratuite sans compte ; les suivantes nécessitent un pack. Une seule écoute par document en conditions d’examen.' : 'La série 1 est gratuite sans compte ; les suivantes nécessitent un pack.'}`}
     >
       <Container className="space-y-12">
         <SeriesList epreuve={id} slug={e.slug} series={series} />

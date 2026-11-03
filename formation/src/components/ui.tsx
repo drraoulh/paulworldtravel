@@ -15,11 +15,11 @@ type ButtonProps = { href: string; children: ReactNode; variant?: 'primary' | 'o
  */
 export function ButtonLink({ href, children, variant = 'primary', className = '' }: ButtonProps) {
   const styles = {
-    primary: 'bg-container text-night hover:bg-container-hover',
+    primary: 'bg-ocean text-white hover:bg-night',
     outline: 'border border-white/50 text-white hover:bg-white hover:text-night',
     dark: 'bg-night text-white hover:bg-ocean',
   }[variant];
-  const cls = `inline-flex items-center justify-center rounded-full px-6 py-3.5 font-bold transition-colors ${styles} ${className}`;
+  const cls = `inline-flex items-center justify-center rounded-lg px-6 py-3.5 font-bold transition-colors ${styles} ${className}`;
   if (/^(https?:|mailto:|tel:)/.test(href)) {
     return (
       <a href={href} className={cls} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
@@ -39,7 +39,7 @@ export function PageHeader({ title, intro, children, image }: {
 }) {
   return (
     <header className="border-b border-rule bg-white">
-      <Container className={`py-12 sm:py-16 ${image ? 'grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14' : ''}`}>
+      <Container className={`py-9 sm:py-12 ${image ? 'grid items-center gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14' : ''}`}>
         <div>
           <h1 className="display max-w-3xl text-[2.4rem] text-night sm:text-[3.2rem]">{title}</h1>
           {intro && <p className="mt-5 max-w-2xl text-lg text-slate">{intro}</p>}

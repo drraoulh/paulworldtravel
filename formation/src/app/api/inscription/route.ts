@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     if (value) f[key] = value;
   }
   const formule = packs.find((x) => x.id === f.formule);
-  if (!f.firstName || !f.lastName || !f.phone || (f.formule && !formule) || !isEmail(f.email ?? '')) {
+  if (!f.firstName || (f.formule && !formule) || !isEmail(f.email ?? '')) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 422 });
   }
   const zone = isZone(f.zone) ? f.zone : 'cm';
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: 'email_not_configured' }, { status: 503 });
   }
   const sender = { name: process.env.BREVO_SENDER_NAME || 'PAULWORLD TRAVEL', email: senderEmail };
-  const name = `${f.firstName} ${f.lastName}`;
+  const name = [f.firstName, f.lastName].filter(Boolean).join(' ');
 
   const rows = Object.entries(f)
     .map(([k, v]) => `<tr><td style="padding:6px 12px;color:#555;vertical-align:top"><strong>${LABELS[k]}</strong></td><td style="padding:6px 12px;white-space:pre-wrap">${escapeHtml(v)}</td></tr>`)

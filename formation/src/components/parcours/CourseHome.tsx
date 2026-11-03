@@ -1,12 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import Icon from '@/components/academy/Icon';
+import Image from 'next/image';
+import { EPREUVE_IMAGES } from '@/lib/epreuve-images';
+import { FREE_SERIES } from '@/content/offers';
 import type { CourseItem, CourseModule, ItemKind } from '@/content/parcours/course';
 import { useSignedIn } from '@/components/ai/useSignedIn';
 import { markDone, percent, setWeeklyGoal, useCourse } from './useCourse';
 
 export const KIND_LABEL: Record<ItemKind, string> = {
-  lecon: 'Leçon et quiz',
+  lecon: 'Lecture et quiz de validation',
   exercice: 'Exercice noté',
   simulation: 'Simulation corrigée par l’IA',
   examen: 'Examen blanc',
@@ -62,9 +67,10 @@ function weekDays() {
   });
 }
 
-export default function CourseHome({ course, totalMinutes }: { course: CourseModule[]; totalMinutes: number }) {
-  const { ready, isDone, last, goal, days } = useCourse();
+export default function CourseHome({ course, totalMinutes, quizCount }: { course: CourseModule[]; totalMinutes: number; quizCount: number }) {
+  const { ready, isDone, isRead, last, goal, days } = useCourse();
   const signedIn = useSignedIn();
+  const [filter, setFilter] = useState<'all' | 'pending' | 'done'>('all');
   const items = course.flatMap((m) => m.items);
   const doneCount = items.filter((it) => isDone(it.id)).length;
   const pct = percent(items, isDone);
@@ -83,14 +89,14 @@ export default function CourseHome({ course, totalMinutes }: { course: CourseMod
   return (
     <>
       <section className="border-b border-rule bg-white">
-        <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1fr_24rem] lg:items-end lg:px-8">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 sm:py-14 xl:grid-cols-[minmax(0,1fr)_22rem] lg:items-end lg:px-8">
           <div>
-            <h1 className="display max-w-2xl text-[2.3rem] text-night sm:text-[3.1rem]">Préparation complète au TCF Canada</h1>
-            <p className="mt-4 max-w-2xl text-lg text-slate">
-              {course.length} modules, {items.length} éléments, environ {Math.round(totalMinutes / 60)} heures. Avancez à votre rythme : chaque leçon, série et simulation terminée fait progresser votre barre.
-            </p>
+            <p className="text-[10px] font-bold uppercase tracking-[.15em] text-ocean">Mon apprentissage · TCF Canada</p>
+            <h1 className="display mt-3 max-w-2xl text-3xl text-night sm:text-4xl">Chaque séance est un pas de plus.</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate">{course.length} modules, {items.length} activités, environ {Math.round(totalMinutes / 60)} heures. Retrouvez vos cours, entraînez-vous et validez vos acquis à votre rythme.</p>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold text-slate"><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="book" className="h-4 w-4 text-ocean" />{items.filter((it) => it.kind === 'lecon' && it.id !== 'guide').length} leçons gratuites</span><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="check" className="h-4 w-4 text-ocean" />{quizCount} questions de quiz</span></div>
           </div>
-          <div className="rounded-2xl border border-rule bg-paper p-6">
+          <div className="min-w-0 rounded-2xl border border-rule bg-paper p-6">
             <div className="flex items-baseline justify-between">
               <p className="font-semibold text-night">Votre progression</p>
               <p className="display text-3xl text-night">{ready ? pct : 0} %</p>
@@ -113,16 +119,19 @@ export default function CourseHome({ course, totalMinutes }: { course: CourseMod
       </section>
 
       <section className="bg-paper py-10 sm:py-14">
-        <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_20rem] lg:px-8">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 sm:px-6 xl:grid-cols-[minmax(0,1fr)_17rem] lg:px-8">
           <div className="space-y-4">
-            <h2 className="heading text-2xl text-night">Programme du cours</h2>
-            {course.map((m) => {
+            <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="heading text-xl text-night">Vos modules de formation</h2><div role="group" aria-label="Filtrer les modules" className="flex gap-1 rounded-lg border border-rule bg-white p-1">{([{ id: 'all', label: 'Tous' }, { id: 'pending', label: 'À travailler' }, { id: 'done', label: 'Terminés' }] as const).map((f) => <button key={f.id} onClick={() => setFilter(f.id)} aria-pressed={filter === f.id} className={`rounded-md px-3 py-1.5 text-xs font-semibold ${filter === f.id ? 'bg-blue-50 text-ocean' : 'text-slate hover:bg-paper'}`}>{f.label}</button>)}</div></div>
+            <p className="text-xs text-slate">Une leçon consultée reste à valider jusqu’à la réussite de son quiz.</p>
+            {filter === 'done' && !course.some((m) => m.items.every((it) => isDone(it.id))) && <p role="status" className="rounded-xl border border-rule bg-white p-6 text-sm text-slate">Aucun module entièrement terminé. Continuez votre prochaine séance pour avancer.</p>}
+            {course.filter((m) => filter === 'all' || (filter === 'done' ? m.items.every((it) => isDone(it.id)) : !m.items.every((it) => isDone(it.id)))).map((m) => {
               const mDone = m.items.filter((it) => isDone(it.id)).length;
               const mPct = percent(m.items, isDone);
               const mMinutes = m.items.reduce((n, it) => n + it.minutes, 0);
               return (
                 <details key={m.id} open={ready ? m.id === currentModule?.id : m.number <= 2} className="group overflow-hidden rounded-2xl border border-rule bg-white">
                   <summary className="flex cursor-pointer list-none items-center gap-4 p-5 sm:p-6 [&::-webkit-details-marker]:hidden">
+                    {m.id in EPREUVE_IMAGES && <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg sm:h-16 sm:w-20"><Image src={EPREUVE_IMAGES[m.id as keyof typeof EPREUVE_IMAGES].src} alt="" fill sizes="80px" className="object-cover" /></span>}
                     <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold ${mPct === 100 ? 'bg-green-600 text-white' : 'bg-paper text-night'}`}>{m.number}</span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm text-slate">Module {m.number}, {m.items.length} élément{m.items.length > 1 ? 's' : ''}, {mMinutes < 90 ? `${mMinutes} min` : `${Math.round(mMinutes / 60)} h`}</span>
@@ -147,9 +156,11 @@ export default function CourseHome({ course, totalMinutes }: { course: CourseMod
                             <Link href={it.href} className="min-w-0 flex-1">
                               <span className={`block font-semibold ${ok ? 'text-slate' : 'text-night'} hover:text-ocean`}>{it.title}</span>
                               <span className="block text-sm text-slate">{KIND_LABEL[it.kind]}, {it.minutes} min</span>
+                              {it.kind === 'lecon' && it.id !== 'guide' && <span className={`mt-1 block text-xs ${ok ? 'text-green-700' : 'text-slate'}`}>{ok ? '✓ Quiz réussi' : isRead(it.id) ? 'Leçon consultée · quiz à réussir' : 'À découvrir'}</span>}
+                              <span className="mt-1 block text-xs font-semibold text-ocean">{it.kind === 'examen' || (it.id.startsWith('serie:') && Number(it.href.split('/').filter(Boolean).at(-1)) > FREE_SERIES) ? 'Pack requis' : it.kind === 'simulation' ? 'Compte gratuit · essai IA limité' : 'Gratuit sans compte'}</span>
                             </Link>
                             {it.kind === 'simulation' && !ok && ready && (
-                              <button onClick={() => markDone(it.id)} className="hidden shrink-0 rounded-full border border-rule px-3 py-1.5 text-xs font-semibold text-slate hover:border-ocean hover:text-ocean sm:block">
+                              <button onClick={() => markDone(it.id)} className="hidden shrink-0 rounded-lg border border-rule px-3 py-1.5 text-xs font-semibold text-slate hover:border-ocean hover:text-ocean sm:block">
                                 Marquer comme fait
                               </button>
                             )}

@@ -71,3 +71,58 @@ Le site principal expose `/formation/` (présentation et formules) et `/formatio
 ## Parcours candidat simulé dans le site principal
 
 Le site principal propose maintenant `/formation/connexion/`, `/formation/espace/`, les quatre épreuves, les résultats et une simulation raccourcie. Ce parcours fonctionne sans les services de comptes et d’emails et reste explicitement une démonstration locale. Voir [le guide de la démo](../docs/formation-demo.md) pour les capacités, limites et tests. Les comptes réels de cette application indépendante restent gérés par Supabase.
+
+## Vérification du démarrage candidat
+
+Le script `tests/onboarding.browser.cjs` vérifie l’inscription gratuite et avec pack,
+la confirmation du pack choisi, la première leçon après le test, les accès payants
+et les images sur ordinateur et mobile. Il nécessite Playwright et Chromium.
+Les appels d’authentification et d’email sont simulés : aucun compte n’est créé.
+
+Depuis `formation/`, préparer un build local avec des paramètres fictifs :
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://formation-test.invalid NEXT_PUBLIC_SUPABASE_ANON_KEY=formation-local-test-key npm run build
+NEXT_PUBLIC_SUPABASE_URL=https://formation-test.invalid NEXT_PUBLIC_SUPABASE_ANON_KEY=formation-local-test-key npm run start -- --port 3010
+```
+
+Dans un autre terminal :
+
+```bash
+node tests/onboarding.browser.cjs
+```
+
+Ces paramètres sont réservés au test local et ne doivent pas être déployés.
+Ce test ne vérifie pas la réception réelle des emails, le paiement ni l’activation en production.
+
+## Interface et validation des leçons
+
+L’interface Formation utilise une navigation latérale, une recherche dans les 20
+leçons, un catalogue filtrable et un tuteur IA flottant chargé à l’ouverture.
+Le tuteur réutilise `/api/ai/tutor/` : connexion, configuration IA et quotas existants
+restent nécessaires. Les estimations IA ne constituent pas un score officiel.
+
+Chaque leçon comporte 6 questions (120 au total), dont 3 questions d’application
+ajoutées dans `src/content/parcours/extra-questions.ts`. Les quiz de méthode en
+compréhension orale utilisent des extraits écrits ; les séries audio servent à
+pratiquer l’écoute elle-même.
+
+Une ouverture de leçon enregistre une consultation ; seule une réussite de toutes
+les questions valide le quiz. Les anciennes coches restent interprétées comme des
+consultations, car elles ne prouvent pas la réussite d’un quiz. Les marqueurs
+`read:` et `quiz-v2:` sont conservés dans le format de progression existant et
+fusionnés par la synchronisation du compte. La progression et l’attestation restent
+des indications de suivi, pas une preuve d’identité, de droit d’accès ou de niveau officiel.
+
+Depuis `formation/` :
+
+```bash
+node --experimental-strip-types --test tests/*.test.mjs
+node tests/academy.browser.cjs
+```
+
+Le test navigateur utilise le même build local avec paramètres fictifs décrit plus
+haut. Il couvre recherche, filtres, consultation sans validation, quiz échoué puis
+réussi, rechargement, navigation mobile et tuteur flottant (connexion, erreur,
+conservation de la question et nouvelle tentative). Les appels IA et le compte sont
+simulés ; aucun crédit IA n’est consommé.

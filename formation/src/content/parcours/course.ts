@@ -75,7 +75,7 @@ export const course: CourseModule[] = [
           id: lessonId(m, l),
           kind: 'lecon',
           title: l.title,
-          minutes: l.minutes + 3,
+          minutes: l.minutes + 6,
           href: `/epreuve/${m.slug}/methodologie/${l.slug}/`,
         })),
         ...practice,
@@ -86,9 +86,9 @@ export const course: CourseModule[] = [
     id: 'examen',
     number: modules.length + 2,
     title: 'Examen blanc',
-    summary: 'Les trois épreuves écrites enchaînées et chronométrées, comme le jour J.',
+    summary: 'Les quatre épreuves enchaînées : compréhension orale, compréhension écrite, expression écrite et expression orale.',
     items: [
-      { id: 'examen-blanc', kind: 'examen', title: 'Examen blanc complet', minutes: 155, href: '/examen-blanc/', auto: true },
+      { id: 'examen-blanc', kind: 'examen', title: 'Examen blanc complet', minutes: 167, href: '/examen-blanc/', auto: true },
     ],
   },
 ];

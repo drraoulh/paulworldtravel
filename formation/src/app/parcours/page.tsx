@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Container } from '@/components/ui';
 import CourseHome from '@/components/parcours/CourseHome';
 import { inPersonPlaces } from '@/content/contact';
-import { weeklyPlan } from '@/content/parcours';
+import { weeklyPlan, modules } from '@/content/parcours';
 import { course, courseMinutes } from '@/content/parcours/course';
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function Parcours() {
   return (
     <>
-      <CourseHome course={course} totalMinutes={courseMinutes} />
+      <CourseHome course={course} totalMinutes={courseMinutes} quizCount={modules.reduce((n, m) => n + m.lessons.reduce((s, l) => s + l.quiz.length, 0), 0)} />
 
       <section className="bg-white py-12 sm:py-16">
         <Container>

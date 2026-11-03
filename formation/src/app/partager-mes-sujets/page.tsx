@@ -16,7 +16,7 @@ export default async function PartagerPage() {
   }
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/ecriture.jpg', alt: 'Un étudiant prend des notes dans un cahier' }}
         title="Partagez vos sujets d’expression écrite"
         intro="Vous venez de passer le TCF Canada ? Racontez-nous les trois tâches que vous avez eues. Notre équipe les reformule, ajoute un corrigé et les publie par mois de session pour les prochains candidats."
       />

@@ -50,10 +50,15 @@ export default async function Espace() {
       <section className="bg-paper py-12 sm:py-16">
         <Container className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="space-y-6 lg:col-span-8">
-            <h2 className="heading text-2xl text-night">Mes formations</h2>
+            <div className="rounded-2xl bg-white p-6 sm:p-8">
+              <h2 className="heading text-2xl text-night">Ma prochaine séance</h2>
+              <p className="mt-2 text-slate">Retrouvez votre dernière activité et la prochaine étape de votre préparation.</p>
+              <ButtonLink href="/parcours/" variant="dark" className="mt-5">Reprendre ma préparation</ButtonLink>
+            </div>
+            <h2 className="heading text-2xl text-night">Mon accès et mes packs</h2>
             {(enrollments ?? []).length === 0 && (
               <div className="rounded-lg bg-white p-6">
-                <p>Vous n’avez pas encore d’inscription.</p>
+                <p>Votre compte gratuit est prêt : commencez les leçons et la série 1 de chaque compréhension. Vous pourrez choisir un pack plus tard.</p>
                 <ButtonLink href="/packs/" variant="dark" className="mt-4">Choisir un pack</ButtonLink>
               </div>
             )}

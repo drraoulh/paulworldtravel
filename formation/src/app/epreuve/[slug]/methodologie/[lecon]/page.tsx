@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
+import { EPREUVE_IMAGES } from '@/lib/epreuve-images';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui';
 import LessonQuiz from '@/components/parcours/LessonQuiz';
@@ -46,18 +48,21 @@ export default async function LessonPage({ params }: Props) {
         </Container>
       </div>
       <section className="bg-paper py-8 sm:py-12">
-      <Container className="grid gap-8 lg:grid-cols-[19rem_1fr]">
-        <aside className="order-2 lg:order-1 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
+      <Container className="grid gap-8 xl:grid-cols-[16rem_1fr]">
+        <aside className="order-2 xl:order-1 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto">
           <ModuleOutline title={place.module.title} number={place.module.number} items={place.module.items} currentId={id} />
         </aside>
 
-        <div className="order-1 min-w-0 lg:order-2">
-        <header className="mb-8 max-w-[44rem]">
+        <div className="order-1 min-w-0 xl:order-2">
+        <header className="mb-8 max-w-[44rem] overflow-hidden rounded-xl border border-rule bg-white">
+          <div className="relative h-40 sm:h-48"><Image src={EPREUVE_IMAGES[m.id].src} alt={EPREUVE_IMAGES[m.id].alt} fill priority sizes="(min-width: 1280px) 50vw, 100vw" className="object-cover" /></div>
+          <div className="p-6">
           <p className="text-sm font-semibold text-ocean">Leçon {index + 1} sur {m.lessons.length}, {lesson.minutes} min de lecture</p>
           <h1 className="display mt-2 text-[2rem] text-night sm:text-[2.6rem]">{lesson.title}</h1>
-          <p className="mt-3 text-lg text-slate">Objectif : {lesson.goal}</p>
+          <p className="mt-3 text-sm leading-relaxed text-slate">Objectif : {lesson.goal}</p><nav aria-label="Dans cette leçon" className="mt-5 flex flex-wrap gap-4 border-t border-rule pt-4 text-xs font-bold text-ocean"><a href="#lesson-content">Lire la leçon</a><a href="#quiz">Quiz · {lesson.quiz.length} questions</a><Link href={practice.href}>Mettre en pratique</Link></nav>
+          </div>
         </header>
-        <article className="min-w-0 max-w-[44rem] space-y-10">
+        <article id="lesson-content" className="min-w-0 max-w-[44rem] scroll-mt-24 space-y-10 rounded-xl border border-rule bg-white p-5 sm:p-7">
           {lesson.sections.map((s) => (
             <section key={s.heading}>
               <h2 className="heading text-2xl text-night">{s.heading}</h2>
@@ -91,10 +96,10 @@ export default async function LessonPage({ params }: Props) {
             </div>
           )}
 
-          <section>
-            <h2 className="heading text-2xl text-night">Vérifiez vos acquis</h2>
-            <p className="mt-2 text-slate">Trois questions. Un sans-faute valide automatiquement la leçon.</p>
-            <div className="mt-6"><LessonQuiz questions={lesson.quiz} lessonId={id} /></div>
+          <section id="quiz" className="scroll-mt-24">
+            <h2 className="heading text-2xl text-night">Validez vos compétences</h2>
+            <p className="mt-2 text-slate">{lesson.quiz.length} questions corrigées et expliquées. Répondez à toutes les questions correctement pour valider le quiz. Vous pouvez réessayer après avoir relu la leçon.</p>
+            <div className="mt-6"><LessonQuiz key={id} questions={lesson.quiz} lessonId={id} /></div>
           </section>
 
           <p className="rounded-2xl bg-white p-6 text-slate">

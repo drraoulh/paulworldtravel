@@ -3,19 +3,19 @@
 import { useMemo, useState } from 'react';
 import type { QuizQuestion } from '@/content/parcours';
 import { seededOrder as order } from '@/lib/shuffle';
-import { useDoneLessons } from './useDoneLessons';
+import { recordQuizResult } from './useCourse';
 
 export default function LessonQuiz({ questions, lessonId }: { questions: QuizQuestion[]; lessonId: string }) {
   const orders = useMemo(() => questions.map((q) => order(q.prompt, q.choices.length)), [questions]);
   const [picked, setPicked] = useState<(number | null)[]>(questions.map(() => null));
   const [checked, setChecked] = useState(false);
-  const { toggle } = useDoneLessons();
+
   const score = questions.reduce((n, q, i) => n + (picked[i] === q.answer ? 1 : 0), 0);
   const complete = picked.every((p) => p !== null);
 
   const check = () => {
     setChecked(true);
-    if (score === questions.length) toggle(lessonId, true);
+    recordQuizResult(lessonId, score, questions.length);
   };
 
   return (
@@ -60,7 +60,7 @@ export default function LessonQuiz({ questions, lessonId }: { questions: QuizQue
         ) : (
           <>
             <p className="heading text-xl text-night">{score} / {questions.length}</p>
-            <p className="text-slate">{score === questions.length ? 'Leçon validée.' : 'Relisez les passages concernés, puis réessayez.'}</p>
+            <p className="text-slate">{score === questions.length ? 'Quiz réussi : compétences validées.' : 'Relisez les passages concernés, puis réessayez.'}</p>
             <button onClick={() => { setPicked(questions.map(() => null)); setChecked(false); }} className="rounded-full border border-rule px-5 py-3 font-semibold text-night hover:border-ocean">
               Recommencer
             </button>

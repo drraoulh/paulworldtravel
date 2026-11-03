@@ -32,7 +32,7 @@ export default function SeriesList({ epreuve, slug, series }: { epreuve: 'ce' | 
                 ? <><strong className="text-night">Meilleur score : {r.best} / {r.last.total}</strong><span className="block text-slate">{r.attempts} tentative{r.attempts > 1 ? 's' : ''}, dernière le {new Date(r.last.date).toLocaleDateString('fr-CA')}</span></>
                 : <span className="text-slate">Pas encore commencée</span>}
             </span>
-            <span className="mt-5 font-bold text-ocean">{r ? 'Refaire la série' : 'Commencer'}</span>
+            <span className="mt-5 font-bold text-ocean">{s.number > FREE_SERIES && !unlocked ? 'Débloquer avec un pack' : r ? 'Refaire la série' : s.number <= FREE_SERIES ? 'Commencer gratuitement' : 'Commencer'}</span>
           </Link>
         );
       })}

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Inscription() {
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/etudiants.jpg', alt: 'Deux étudiants révisent ensemble' }}
         title="Créer mon compte"
         intro="Commencez gratuitement, ou choisissez directement un pack : un conseiller vous contacte alors pour le paiement et votre accès est activé dès réception."
       />

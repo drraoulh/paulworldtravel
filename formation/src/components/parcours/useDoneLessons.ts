@@ -1,15 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-// Completed lessons are remembered in this browser only (a convenience, not a record).
+import { QUIZ_PREFIX } from '@/lib/lesson-progress';
+
+// Quiz-validated lessons are remembered locally and synchronized by ProgressSync when signed in.
 const KEY = 'pwt-parcours-done';
 const EVENT = 'pwt-parcours-change';
 
 function read(): string[] {
   try {
     const value = JSON.parse(localStorage.getItem(KEY) ?? '[]');
-    return Array.isArray(value) ? value.filter((v) => typeof v === 'string') : [];
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string' && v.startsWith(QUIZ_PREFIX)).map((v) => v.slice(QUIZ_PREFIX.length)) : [];
   } catch {
     return [];
   }
@@ -29,15 +31,5 @@ export function useDoneLessons() {
     };
   }, []);
 
-  const toggle = useCallback((id: string, value?: boolean) => {
-    const current = read();
-    const next = (value ?? !current.includes(id)) ? Array.from(new Set([...current, id])) : current.filter((v) => v !== id);
-    try {
-      localStorage.setItem(KEY, JSON.stringify(next));
-    } catch { /* Progress is optional. */ }
-    setDone(next);
-    window.dispatchEvent(new Event(EVENT));
-  }, []);
-
-  return { done, toggle };
+  return { done };
 }

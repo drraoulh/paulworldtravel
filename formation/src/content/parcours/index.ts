@@ -3,11 +3,12 @@ import { ce } from './ce';
 import { ee } from './ee';
 import { eo } from './eo';
 import type { Lesson, Module } from './types';
+import { extraQuestions } from './extra-questions';
 
 export type { Lesson, Module, QuizQuestion } from './types';
 
 /** Learning path: one module per test, in the order of the exam day. */
-export const modules: Module[] = [co, ce, ee, eo];
+export const modules: Module[] = [co, ce, ee, eo].map((m) => ({ ...m, lessons: m.lessons.map((l) => ({ ...l, quiz: [...l.quiz, ...(extraQuestions[`${m.id}/${l.slug}`] ?? [])] })) }));
 
 export const lessonCount = modules.reduce((n, m) => n + m.lessons.length, 0);
 

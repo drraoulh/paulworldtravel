@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import type { CourseItem } from '@/content/parcours/course';
 import { KIND_LABEL, KindIcon, StatusMark } from './CourseHome';
-import { markDone, markVisit, percent, useCourse } from './useCourse';
+import { markVisit, percent, useCourse } from './useCourse';
 
 /** Remembers the item for the "Reprendre" button of the course page. */
 export function TrackVisit({ item }: { item: { id: string; href: string; title: string } }) {
@@ -56,19 +56,17 @@ export function ModuleOutline({ title, number, items, currentId }: { title: stri
 
 /** Bottom bar: mark the lesson finished, then go to the next item. */
 export function NextBar({ id, next }: { id: string; next: CourseItem | null }) {
-  const { isDone } = useCourse();
+  const { isDone, isRead } = useCourse();
   const ok = isDone(id);
   return (
-    <div className="sticky bottom-0 z-10 -mx-4 border-t border-rule bg-white/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:border sm:px-5">
+    <div className="relative z-10 -mx-4 border-t border-rule bg-white/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:border sm:px-5">
       <div className="flex items-center gap-3">
-        <button onClick={() => markDone(id, !ok)} aria-pressed={ok}
-          className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold ${ok ? 'bg-green-50 text-green-800' : 'border border-rule text-night hover:border-night'}`}>
-          <StatusMark done={ok} />
-          <span className="hidden sm:inline">{ok ? 'Terminée' : 'Marquer comme terminée'}</span>
-          <span className="sm:hidden">{ok ? 'Terminée' : 'Terminer'}</span>
-        </button>
+        <div className="min-w-0 text-xs sm:text-sm">
+          <p className="font-semibold text-night">{isRead(id) ? 'Leçon consultée' : 'Lecture en cours'}</p>
+          {ok ? <p className="font-semibold text-green-700">✓ Quiz réussi</p> : <a href="#quiz" className="font-semibold text-ocean hover:underline">Réussir le quiz pour valider →</a>}
+        </div>
         {next ? (
-          <Link href={next.href} onClick={() => { if (!ok) markDone(id); }}
+          <Link href={next.href}
             className="ml-auto flex min-w-0 items-center rounded-full bg-night px-5 py-3 text-sm font-bold text-white hover:bg-ocean">
             <span className="truncate">Suivant : {next.title}</span>
           </Link>

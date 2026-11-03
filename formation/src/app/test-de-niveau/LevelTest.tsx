@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { estimateLevel, levelAdvice, questions } from '@/content/levelTest';
 import { getSupabase } from '@/lib/supabase/client';
+import { useSignedIn } from '@/components/ai/useSignedIn';
 import { markDone } from '@/components/parcours/useCourse';
 
-export default function LevelTest() {
+export default function LevelTest({ firstLessonHref }: { firstLessonHref: string }) {
+  const signedIn = useSignedIn();
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => questions.map(() => null));
   const [checked, setChecked] = useState(false);
@@ -66,11 +68,16 @@ export default function LevelTest() {
         <p className="mt-2 font-semibold text-night">{correct} bonnes réponses sur {questions.length}</p>
         <p className="mt-6 max-w-2xl text-lg">{levelAdvice[level]}</p>
         <p className="mt-4 max-w-2xl text-sm text-slate">
-          Ce test rapide donne une indication. Il ne remplace pas un test blanc complet, que nous vous proposons au début de la formation.
+          Cette indication porte sur la grammaire, le vocabulaire et la lecture. L’écoute, l’expression écrite et l’expression orale ne sont pas évaluées. Ce résultat n’est pas un score officiel TCF ou NCLC.
         </p>
+        <div className="mt-6 rounded-xl bg-paper p-5">
+          <h2 className="heading text-xl text-night">Votre première séance : découvrir la méthode de lecture</h2>
+          <p className="mt-2 text-slate">Commencez par une leçon gratuite, puis essayez la série 1. Travaillez ensuite les autres compétences pour compléter ce premier bilan.</p>
+          <Link href={firstLessonHref} className="mt-4 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">Commencer ma première leçon gratuite</Link>
+        </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link href={`/inscription/?niveau=${level}`} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">
-            M’inscrire avec ce résultat
+          <Link href={signedIn ? '/parcours/' : `/inscription/?niveau=${level}`} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">
+            {signedIn ? 'Continuer mon parcours' : 'Créer mon compte gratuit'}
           </Link>
           <button onClick={restart} className="inline-flex items-center justify-center rounded-md border-2 border-night px-6 py-3 font-bold text-night hover:bg-night hover:text-white">
             Recommencer le test

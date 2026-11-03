@@ -17,12 +17,12 @@ const steps: { title: string; text: string; link: { href: string; label: string 
   },
   {
     title: 'Passez le test de niveau',
-    text: 'Quinze questions, une dizaine de minutes. Vous savez d’où vous partez et quelles épreuves travailler en priorité.',
+    text: 'Quinze questions, une dizaine de minutes. Vous obtenez une première indication en grammaire, vocabulaire et lecture. Ce test ne mesure pas l’écoute ni l’expression écrite ou orale.',
     link: { href: '/test-de-niveau/', label: 'Passer le test de niveau' },
   },
   {
     title: 'Suivez le parcours, étape par étape',
-    text: 'La page Parcours est votre point de départ à chaque connexion. Le bouton « Reprendre » vous emmène directement à l’étape suivante, et la barre de progression avance à chaque leçon, série ou simulation terminée. Les 20 leçons de méthode sont gratuites ; chacune se termine par un quiz.',
+    text: 'La page Parcours est votre point de départ à chaque connexion. Le bouton « Reprendre » vous emmène directement à l’étape suivante, et la barre de progression avance à chaque quiz réussi, série ou simulation terminée. Une leçon consultée est distinguée d’un quiz réussi. Les 20 leçons de méthode sont gratuites ; chacune se termine par un quiz.',
     link: { href: '/parcours/', label: 'Ouvrir le parcours' },
   },
   {
@@ -37,7 +37,7 @@ const steps: { title: string; text: string; link: { href: string; label: string 
   },
   {
     title: 'Choisissez un pack quand vous êtes prêt',
-    text: 'Un pack débloque toutes les séries, les examens blancs et des corrections par l’IA chaque jour ; Gold et Platinum ajoutent un formateur. Les prix s’affichent dans votre monnaie (FCFA, dollar canadien ou dollar américain). Après votre demande, un conseiller vous contacte pour le paiement et votre accès est activé dès réception.',
+    text: 'Un pack débloque toutes les séries, les examens blancs et des corrections par l’IA chaque jour. Silver inclut des relectures par un formateur ; Gold et Platinum ajoutent des cours et un suivi. Les prix s’affichent dans votre monnaie (FCFA, dollar canadien ou dollar américain). Après votre demande, un conseiller vous contacte pour le paiement et votre accès est activé dès réception.',
     link: { href: '/packs/', label: 'Comparer les packs' },
   },
   {
@@ -63,7 +63,7 @@ const tips = [
 export default function Guide() {
   return (
     <>
-      <PageHeader
+      <PageHeader image={{ src: '/images/study.jpg', alt: 'Un cahier de révision pour organiser sa préparation' }}
         title="Bien démarrer sur la plateforme"
         intro="Huit étapes pour passer de la première visite au jour de l’examen. Lisez-les une fois : ensuite, la page Parcours vous guide toute seule."
       />

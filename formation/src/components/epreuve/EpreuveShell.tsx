@@ -31,8 +31,8 @@ export default function EpreuveShell({ epreuve, active, title, intro, action, ch
           {intro && <p className="mt-4 max-w-2xl text-lg text-slate">{intro}</p>}
           {action && <div className="mt-7">{action}</div>}
           </div>
-          <div className={`relative overflow-hidden rounded-2xl bg-paper ${isHome ? 'aspect-[16/10] lg:aspect-[5/4]' : 'hidden aspect-[4/3] lg:block'}`}>
-            <Image src={img.src} alt={img.alt} fill priority sizes={isHome ? '(min-width: 1024px) 40vw, 100vw' : '16rem'} className="object-cover" />
+          <div className={`relative overflow-hidden rounded-2xl bg-paper ${isHome ? 'aspect-[16/10] lg:aspect-[5/4]' : 'aspect-[16/7] lg:aspect-[4/3]'}`}>
+            <Image src={img.src} alt={img.alt} fill priority sizes={isHome ? '(min-width: 1024px) 40vw, 100vw' : '(min-width: 1024px) 16rem, 100vw'} className="object-cover" />
           </div>
           </div>
           <nav aria-label={`Sections : ${m.name}`} className="-mx-4 mt-9 overflow-x-auto px-4 sm:mx-0 sm:px-0">
