@@ -1,18 +1,5 @@
 import Link from 'next/link';
-
-const items = [
-  ['/admin/', 'Inscriptions'],
-  ['/admin/corrections/', 'Corrections'],
-  ['/admin/generer/', 'Générer des exercices'],
-  ['/admin/combinaisons/', 'Combinaisons'],
-] as const;
-
+const labels: Record<string, string> = { '/admin/inscriptions/': 'Inscriptions', '/admin/corrections/': 'Corrections', '/admin/generer/': 'Banque d’exercices', '/admin/combinaisons/': 'Sujets des candidats' };
 export default function AdminNav({ current }: { current: string }) {
-  return (
-    <nav aria-label="Administration" className="mb-6 flex flex-wrap gap-4 text-sm font-semibold">
-      {items.map(([href, label]) => (
-        <Link key={href} href={href} className={current === href ? 'text-container' : 'text-blue-200 hover:text-white'}>{label}</Link>
-      ))}
-    </nav>
-  );
+  return <nav aria-label="Fil d’Ariane administration" className="mb-4 flex gap-2 text-xs text-blue-100"><Link href="/admin/" className="hover:underline">Administration</Link><span aria-hidden="true">/</span><span>{labels[current] ?? 'Vue d’ensemble'}</span></nav>;
 }

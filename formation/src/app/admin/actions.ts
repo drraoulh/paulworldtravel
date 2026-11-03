@@ -2,25 +2,14 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { supabaseConfigured } from '@/lib/supabase/config';
+import { requireAdmin } from '@/lib/staff';
 import { isValidEndDate } from '@/lib/practice';
-import { createClient } from '@/lib/supabase/server';
 import { escapeHtml, sendEmail } from '@/lib/brevo';
 import { contact } from '@/content/contact';
 import { formatDate, formuleName } from '@/lib/labels';
 
 // Every change goes through the signed-in admin's session: row level security
 // rejects it if the account is not an administrator.
-
-async function requireAdmin() {
-  if (!supabaseConfigured) redirect('/connexion/?suite=/admin/');
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/connexion/?suite=/admin/');
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-  if (profile?.role !== 'admin') redirect('/espace/');
-  return { supabase, user };
-}
 
 const EMAIL_LOGO =
   '<table role="presentation" style="margin:0 0 20px"><tr><td style="vertical-align:middle"><img src="https://www.paulworldtravel.com/brand/symbole-nav.png" alt="Paul World Travel" width="56" height="46" style="display:block;border:0"></td><td style="vertical-align:middle;padding-left:12px;font-family:Arial,sans-serif;font-size:18px;font-weight:bold;color:#0a2a5e">Paul World Travel</td></tr></table>';
@@ -32,10 +21,10 @@ export async function activateEnrollment(formData: FormData) {
   const endInput = String(formData.get('ends_at') ?? '');
   if (!id) return;
 
-  const { supabase, user } = await requireAdmin();
+  const { supabase, user } = await requireAdmin('/admin/inscriptions/');
 
   const start = new Date();
-  if ((endInput && !isValidEndDate(endInput, isoDate(start))) || (!endInput && ![30, 60, 90, 180].includes(days))) redirect('/admin/?erreur=date');
+  if ((endInput && !isValidEndDate(endInput, isoDate(start))) || (!endInput && ![30, 60, 90, 180].includes(days))) redirect('/admin/inscriptions/?erreur=date');
   const end = endInput ? new Date(endInput) : new Date(start.getTime() + Math.max(1, days || 30) * 86_400_000);
   const { data: enrollment, error } = await supabase
     .from('enrollments')
@@ -45,7 +34,7 @@ export async function activateEnrollment(formData: FormData) {
     .single();
   if (error || !enrollment) {
     console.error('Activation failed', error);
-    redirect('/admin/?erreur=enregistrement');
+    redirect('/admin/inscriptions/?erreur=enregistrement');
   }
 
   // Tell the candidate their access is open (best effort).
@@ -66,7 +55,7 @@ export async function activateEnrollment(formData: FormData) {
       console.error('Activation email failed', e);
     }
   }
-  revalidatePath('/admin/');
+  revalidatePath('/admin/', 'layout');
   revalidatePath('/espace/');
 }
 
@@ -74,10 +63,10 @@ export async function setEnrollmentStatus(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   const status = String(formData.get('status') ?? '');
   if (!id || !['pending', 'expired', 'cancelled'].includes(status)) return;
-  const { supabase } = await requireAdmin();
+  const { supabase } = await requireAdmin('/admin/inscriptions/');
   const { data, error } = await supabase.from('enrollments').update({ status }).eq('id', id).select('id').single();
-  if (error || !data) redirect('/admin/?erreur=enregistrement');
-  revalidatePath('/admin/');
+  if (error || !data) redirect('/admin/inscriptions/?erreur=enregistrement');
+  revalidatePath('/admin/', 'layout');
   revalidatePath('/espace/');
 }
 
@@ -85,9 +74,9 @@ export async function saveNotes(formData: FormData) {
   const id = String(formData.get('id') ?? '');
   const notes = String(formData.get('staff_notes') ?? '').slice(0, 3000);
   if (!id) return;
-  const { supabase } = await requireAdmin();
+  const { supabase } = await requireAdmin('/admin/inscriptions/');
   const { data, error } = await supabase.from('enrollments').update({ staff_notes: notes }).eq('id', id).select('id').single();
-  if (error || !data) redirect('/admin/?erreur=enregistrement');
-  revalidatePath('/admin/');
+  if (error || !data) redirect('/admin/inscriptions/?erreur=enregistrement');
+  revalidatePath('/admin/', 'layout');
   revalidatePath('/espace/');
 }

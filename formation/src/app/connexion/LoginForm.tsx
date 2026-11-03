@@ -42,7 +42,12 @@ export default function LoginForm() {
             : 'Email ou mot de passe incorrect.',
         });
       }
-      const wanted = params.get('suite') ?? '/espace/';
+      let wanted = params.get('suite');
+      if (!wanted) {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data: profile } = user ? await supabase.from('profiles').select('role').eq('id', user.id).single() : { data: null };
+        wanted = profile?.role === 'admin' || profile?.role === 'trainer' ? '/admin/' : '/espace/';
+      }
       // Full navigation: the server must receive the new session cookie with the request.
       window.location.assign(safeRedirectPath(wanted));
     } else {

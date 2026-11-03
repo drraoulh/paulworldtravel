@@ -47,7 +47,7 @@ export const packs: Pack[] = [
     tagline: 'Pour s’entraîner seul, à son rythme.',
     ai: { writing: 2, speaking: 1, tutor: 20 },
     includes: [
-      'Tout le parcours : 20 leçons de méthode et leurs quiz',
+      'Tout le parcours : les leçons de méthode et leurs quiz',
       'Toutes les séries chronométrées d’écoute et de lecture',
       'Combinaisons d’expression écrite avec corrigés',
       'Examen blanc et tableau de bord',

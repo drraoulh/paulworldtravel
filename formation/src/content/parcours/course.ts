@@ -1,5 +1,5 @@
 import { allSeries, SERIES_SECONDS } from '@/content/series';
-import { lessonId, modules } from '.';
+import { lessonId, modules, type Module } from '.';
 
 /*
  * The learning path laid out as a course: numbered modules, each a list of
@@ -39,7 +39,7 @@ const speakingTasks = [
   { n: 3, title: 'Tâche 3 orale : défendre un point de vue', minutes: 10 },
 ];
 
-export const course: CourseModule[] = [
+export const buildCourse = (trainingModules: Module[]): CourseModule[] => [
   {
     id: 'depart',
     number: 1,
@@ -50,7 +50,7 @@ export const course: CourseModule[] = [
       { id: 'test-niveau', kind: 'exercice', title: 'Test de niveau gratuit', minutes: 10, href: '/test-de-niveau/', auto: true },
     ],
   },
-  ...modules.map((m, i): CourseModule => {
+  ...trainingModules.map((m, i): CourseModule => {
     const series = allSeries.filter((s) => s.epreuve === m.id);
     const practice: CourseItem[] =
       m.id === 'ee'
@@ -84,7 +84,7 @@ export const course: CourseModule[] = [
   }),
   {
     id: 'examen',
-    number: modules.length + 2,
+    number: trainingModules.length + 2,
     title: 'Examen blanc',
     summary: 'Les quatre épreuves enchaînées : compréhension orale, compréhension écrite, expression écrite et expression orale.',
     items: [
@@ -93,14 +93,17 @@ export const course: CourseModule[] = [
   },
 ];
 
+export const course = buildCourse(modules);
+
 export const courseItems = course.flatMap((m) => m.items);
 
 export const courseMinutes = courseItems.reduce((n, it) => n + it.minutes, 0);
 
 /** Module and position of an item, and the item that follows it in the course. */
-export function locateItem(id: string) {
+export function locateItem(id: string, outline = course) {
+  const courseItems = outline.flatMap((m) => m.items);
   const index = courseItems.findIndex((it) => it.id === id);
   if (index < 0) return null;
-  const mod = course.find((m) => m.items.some((it) => it.id === id))!;
+  const mod = outline.find((m) => m.items.some((it) => it.id === id))!;
   return { item: courseItems[index], module: mod, next: courseItems[index + 1] ?? null };
 }

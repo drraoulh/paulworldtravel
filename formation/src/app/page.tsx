@@ -4,11 +4,14 @@ import { headers } from 'next/headers';
 import { ButtonLink, Container } from '@/components/ui';
 import CourseCatalog from '@/components/academy/CourseCatalog';
 import Icon, { type IconName } from '@/components/academy/Icon';
-import { modules, lessonCount, lessonId } from '@/content/parcours';
+import { lessonId } from '@/content/parcours';
+import { publishedModules } from '@/lib/training-content';
 import { EPREUVE_IMAGES } from '@/lib/epreuve-images';
 import { packs, formatPrice, zoneForCountry, FREE_TRIAL } from '@/content/offers';
 import { seriesFor } from '@/content/series';
 export default async function Home() {
+  const modules = await publishedModules();
+  const lessonCount = modules.reduce((n, m) => n + m.lessons.length, 0);
   const zone = zoneForCountry((await headers()).get('x-vercel-ip-country'));
   const questions = modules.reduce((n, m) => n + m.lessons.reduce((s, l) => s + l.quiz.length, 0), 0);
   return <>

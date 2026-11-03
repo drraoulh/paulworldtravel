@@ -54,16 +54,20 @@ export default function ProgressSync() {
     let lastPushed = '';
     let timer: ReturnType<typeof setTimeout> | undefined;
     let cancelled = false;
+    let generation = 0;
 
     const push = async (p: Progress) => {
       const json = JSON.stringify(p);
       if (!userId || json === lastPushed) return;
+      const ownerId = userId;
       const previous = lastPushed;
       lastPushed = json;
       try {
         const { error } = await supabase.auth.updateUser({ data: { [REMOTE_KEY]: p } });
-        if (error) lastPushed = previous; // retried on the next change
-      } catch { lastPushed = previous; }
+        if (cancelled || userId !== ownerId) return;
+        const { error: snapshotError } = await supabase.from('learner_progress').upsert({ user_id: ownerId, snapshot: p }, { onConflict: 'user_id' });
+        if (error || snapshotError) lastPushed = previous; // retried on the next change
+      } catch { if (userId === ownerId) lastPushed = previous; }
     };
 
     const onChange = () => {
@@ -73,21 +77,25 @@ export default function ProgressSync() {
     };
 
     const start = async () => {
+      const startedAt = generation;
       const { data: { user } } = await supabase.auth.getUser();
-      if (cancelled || !user || user.id === userId) return;
-      const remote = user.user_metadata?.[REMOTE_KEY] ? normalizeProgress(user.user_metadata[REMOTE_KEY]) : null;
+      if (cancelled || startedAt !== generation || !user || user.id === userId) return;
+      const { data: saved } = await supabase.from('learner_progress').select('snapshot').eq('user_id', user.id).maybeSingle();
+      if (cancelled || startedAt !== generation || user.id === userId) return;
+      const metadata = user.user_metadata?.[REMOTE_KEY] ? normalizeProgress(user.user_metadata[REMOTE_KEY]) : normalizeProgress(null);
+      const remote = mergeProgress(metadata, saved?.snapshot ? normalizeProgress(saved.snapshot) : null);
       const owner = readOwner();
       // Local progress left by another account is replaced, not merged.
       const local = owner && owner !== user.id ? normalizeProgress(null) : readLocalProgress();
       const merged = mergeProgress(local, remote);
       userId = user.id;
       set(OWNER, user.id);
-      lastPushed = remote ? JSON.stringify(remote) : '';
+      lastPushed = ''; // mirror an existing account snapshot on first connection too
       writeLocalProgress(merged);
       await push(merged);
     };
 
-    const stop = () => { userId = null; lastPushed = ''; clearTimeout(timer); };
+    const stop = () => { generation++; userId = null; lastPushed = ''; clearTimeout(timer); };
 
     window.addEventListener(PROGRESS_EVENT, onChange);
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {

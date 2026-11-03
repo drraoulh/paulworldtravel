@@ -2,6 +2,7 @@
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const base = process.env.FORMATION_BASE_URL || 'http://127.0.0.1:3010';
+const supabaseUrl = process.env.FORMATION_SUPABASE_URL || 'https://formation-test.invalid';
 const lesson = '/epreuve/comprehension-orale/methodologie/ecoute-unique/';
 const id = 'co/ecoute-unique';
 const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi elle correspond', 'S’appuyer sur le sens général et éliminer les propositions impossibles', 'Se reconcentrer sur le nouvel enregistrement', 'Celle qui répond précisément à la question', 'Chercher le détail du document qui confirme l’une et contredit l’autre'];
@@ -9,7 +10,7 @@ const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
   try {
     const context = await browser.newContext();
-    await context.route('https://formation-test.invalid/**', (r) => r.fulfill({ json: r.request().url().includes('/rest/') ? [] : {} }));
+    await context.route(`${supabaseUrl}/**`, (r) => r.fulfill({ json: r.request().url().includes('/rest/') ? [] : {} }));
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
@@ -87,8 +88,8 @@ const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi
     const encode = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
     const token = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: user.id, exp: Math.floor(Date.now()/1000)+3600, aud: 'authenticated' })}.test-signature`;
     const session = { access_token: token, refresh_token: 'test-refresh', expires_in: 3600, expires_at: Math.floor(Date.now()/1000)+3600, token_type: 'bearer', user };
-    await signed.addCookies([{ name: 'sb-formation-test-auth-token', value: 'base64-' + encode(session), url: base, sameSite: 'Lax' }]);
-    await signed.route('https://formation-test.invalid/**', (r) => r.fulfill({ json: r.request().url().includes('/rest/') ? [] : user }));
+    await signed.addCookies([{ name: `sb-${new URL(supabaseUrl).hostname.split('.')[0]}-auth-token`, value: 'base64-' + encode(session), url: base, sameSite: 'Lax' }]);
+    await signed.route(`${supabaseUrl}/**`, (r) => r.fulfill({ json: r.request().url().includes('/rest/') ? [] : user }));
     await signed.route('**/api/access/', (r) => r.fulfill({ json: { signedIn: true, plan: 'trial', remaining: { tutor: 20, writing: 3, speaking: 2 } } }));
     let attempts = 0;
     await signed.route('**/api/ai/tutor/', (r) => {

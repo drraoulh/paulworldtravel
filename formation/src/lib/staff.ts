@@ -12,3 +12,10 @@ export async function requireStaff(path: string) {
   if (me?.role !== 'admin' && me?.role !== 'trainer') redirect('/espace/');
   return { supabase, user, isAdmin: me.role === 'admin' };
 }
+
+/** Every administrative write checks the database role again, independently of the layout. */
+export async function requireAdmin(path: string) {
+  const staff = await requireStaff(path);
+  if (!staff.isAdmin) redirect('/admin/?erreur=droits');
+  return staff;
+}

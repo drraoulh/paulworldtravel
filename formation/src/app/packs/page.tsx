@@ -28,7 +28,7 @@ export default async function Packs({ searchParams }: Props) {
         <Container>
           <PackGrid initialZone={zone} />
           <p className="mt-8 text-slate">
-            Pas encore décidé ? Le compte gratuit comprend le test de niveau, les 20 leçons, la série {FREE_SERIES} de chaque compréhension et un essai de l’IA : {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur.{' '}
+            Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, la série {FREE_SERIES} de chaque compréhension et un essai de l’IA : {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur.{' '}
             <Link href="/test-de-niveau/" className="font-semibold text-ocean hover:underline">Commencer par le test de niveau</Link>
           </p>
         </Container>

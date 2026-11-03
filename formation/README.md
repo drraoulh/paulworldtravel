@@ -126,3 +126,74 @@ haut. Il couvre recherche, filtres, consultation sans validation, quiz échoué 
 réussi, rechargement, navigation mobile et tuteur flottant (connexion, erreur,
 conservation de la question et nouvelle tentative). Les appels IA et le compte sont
 simulés ; aucun crédit IA n’est consommé.
+
+## Administration distincte de l’espace apprenant
+
+`/admin/` dispose de son propre agencement, menu, tableau de bord et navigation
+mobile. Les comptes `admin` et `trainer` y accèdent ; un candidat est redirigé vers
+son espace. Après une connexion sans destination explicite, le rôle enregistré
+dans `profiles` détermine l’espace d’arrivée. Chaque écriture vérifie à nouveau ce
+rôle côté serveur ; la navigation seule n’accorde aucun droit.
+
+- `/admin/apprenants/` : recherche et pagination (25 candidats par page).
+- `/admin/apprenants/[id]/` : coordonnées, demandes de pack, notes internes,
+  progression par module, activités, tests de niveau et dernières corrections.
+- `/admin/progressions/` : consultations, quiz réussis, entraînements terminés et
+  dernière activité synchronisée. Ce suivi reste indicatif, pas une note officielle.
+- `/admin/lecons/` : catalogue, filtres, création, édition du contenu et des quiz,
+  aperçu, brouillon, publication, archivage et restauration. Les modifications
+  utilisent une révision attendue afin de rejeter un écrasement concurrent.
+- `/admin/inscriptions/` : gestion des demandes et activation après paiement.
+  Les corrections, exercices générés et combinaisons gardent leurs routes dédiées.
+
+Les formateurs consultent les apprenants et les leçons et relisent les productions.
+Seuls les administrateurs modifient les coordonnées, notes internes, demandes de
+pack et leçons. L’email de connexion et les rôles ne se modifient pas depuis la fiche
+apprenant. Aucune suppression de compte n’est effectuée par cette interface.
+
+Pour une nouvelle base, appliquer **une fois** `supabase/admin.sql`, après les trois
+scripts de base. Les migrations correspondantes ont déjà été appliquées au projet
+Supabase de cette application. Le script utilise RLS et des droits explicites ;
+la publication s’exécute avec les droits de la session, sans clé privilégiée.
+Les brouillons et notes sont privés à l’équipe. Seul le contenu publié, y compris
+les contenus archivés précédemment publics, est dans `lesson_publications`.
+Archiver le retire des parcours, de la recherche et de sa page publique ; restaurer
+le rend de nouveau disponible. Une nouvelle leçon publiée apparaît dans le parcours,
+le catalogue et la recherche sans modifier le code.
+
+`learner_progress` conserve une copie bornée de la progression du compte. La
+synchronisation fusionne cette copie, les anciennes métadonnées de compte et les
+activités de l’appareil. Les progressions existantes ont été reprises à la création
+de la table ; les nouvelles activités apparaissent lors de leur synchronisation.
+Les sessions locales sans compte ne sont pas exposées au personnel.
+
+### Vérifications de l’administration
+
+Le test navigateur utilise un service local factice sur le port 4020. Il ne crée
+aucun compte réel, n’envoie aucun email et ne consomme aucun crédit IA. Configurer
+le build de test puis démarrer Next.js :
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:4020 NEXT_PUBLIC_SUPABASE_ANON_KEY=admin-local-test-key npm run build
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:4020 NEXT_PUBLIC_SUPABASE_ANON_KEY=admin-local-test-key npm run start -- --port 3011
+```
+
+Dans un autre terminal, le test démarre et arrête lui-même le service factice :
+
+```bash
+node --experimental-strip-types --test tests/*.test.mjs
+node tests/admin.browser.cjs
+```
+
+Il vérifie les coordonnées et notes, la progression, le brouillon privé, la
+publication réelle dans le parcours, la création, les conflits de révision,
+l’archivage/restauration, la connexion admin, le refus candidat et le refus d’une
+requête d’écriture forgée depuis un compte formateur, ainsi que trois largeurs
+d’écran. `tests/admin-rls.sql` vérifie séparément les politiques sur une base de test
+avec des identités temporaires dans une transaction annulée. Il a également été
+exécuté et annulé sur la base configurée ; aucune identité de test n’y a été conservée.
+
+Pour réutiliser les tests navigateur apprenants avec ce build local, définir
+`FORMATION_BASE_URL=http://127.0.0.1:3011` et
+`FORMATION_SUPABASE_URL=http://127.0.0.1:4020`, et démarrer au préalable le service
+avec `node tests/fixtures/admin-backend.cjs`. Ne jamais déployer les paramètres de test.

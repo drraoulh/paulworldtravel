@@ -22,7 +22,7 @@ const steps: { title: string; text: string; link: { href: string; label: string 
   },
   {
     title: 'Suivez le parcours, étape par étape',
-    text: 'La page Parcours est votre point de départ à chaque connexion. Le bouton « Reprendre » vous emmène directement à l’étape suivante, et la barre de progression avance à chaque quiz réussi, série ou simulation terminée. Une leçon consultée est distinguée d’un quiz réussi. Les 20 leçons de méthode sont gratuites ; chacune se termine par un quiz.',
+    text: 'La page Parcours est votre point de départ à chaque connexion. Le bouton « Reprendre » vous emmène directement à l’étape suivante, et la barre de progression avance à chaque quiz réussi, série ou simulation terminée. Une leçon consultée est distinguée d’un quiz réussi. Les leçons de méthode sont gratuites ; chacune se termine par un quiz.',
     link: { href: '/parcours/', label: 'Ouvrir le parcours' },
   },
   {

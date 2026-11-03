@@ -6,30 +6,32 @@ import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui';
 import LessonQuiz from '@/components/parcours/LessonQuiz';
 import { ModuleOutline, ModuleProgress, NextBar, TrackVisit } from '@/components/parcours/Player';
-import { getLesson, lessonId } from '@/content/parcours';
-import { locateItem } from '@/content/parcours/course';
+import { lessonId } from '@/content/parcours';
+import { publishedLesson, publishedModules } from '@/lib/training-content';
+import { buildCourse, locateItem } from '@/content/parcours/course';
 import { epreuveConfigs, getEpreuve } from '@/lib/epreuves';
 
 type Props = { params: Promise<{ slug: string; lecon: string }> };
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 export const generateStaticParams = () => epreuveConfigs.flatMap((e) => e.module.lessons.map((l) => ({ slug: e.slug, lecon: l.slug })));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, lecon } = await params;
-  const found = getLesson(slug, lecon);
+  const found = await publishedLesson(slug, lecon);
   return found ? { title: `${found.lesson.title} | ${found.module.name}`, description: found.lesson.goal } : {};
 }
 
 export default async function LessonPage({ params }: Props) {
   const { slug, lecon } = await params;
   const e = getEpreuve(slug);
-  const found = getLesson(slug, lecon);
+  const found = await publishedLesson(slug, lecon);
   if (!e || !found) notFound();
   const { module: m, lesson, index } = found;
   const id = lessonId(m, lesson);
   const practice = lesson.practice ?? m.practice;
-  const place = locateItem(id)!;
+  const place = locateItem(id, buildCourse(await publishedModules()))!;
   const href = `/epreuve/${e.slug}/methodologie/${lesson.slug}/`;
 
   return (

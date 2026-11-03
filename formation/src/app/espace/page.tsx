@@ -6,7 +6,8 @@ import CourseProgressCard from '@/components/parcours/CourseProgressCard';
 import { contact } from '@/content/contact';
 import { FREE_TRIAL } from '@/content/offers';
 import TrialBanner from '@/components/access/TrialBanner';
-import { courseItems } from '@/content/parcours/course';
+import { buildCourse } from '@/content/parcours/course';
+import { publishedModules } from '@/lib/training-content';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { effectiveStatus, formatDate, formuleName, statusLabel, statusTone, type Enrollment, type Profile } from '@/lib/labels';
@@ -27,6 +28,7 @@ export default async function Espace() {
     supabase.from('level_test_results').select('level, score, total, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(3),
     supabase.from('submissions').select('id, kind, task_prompt, ai_score, trainer_score, trainer_comment, status, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10),
   ]);
+  const courseItems = buildCourse(await publishedModules()).flatMap((m) => m.items);
   const isStaff = profile?.role === 'admin' || profile?.role === 'trainer';
   const active = enrollments?.find((e) => effectiveStatus(e) === 'active');
 

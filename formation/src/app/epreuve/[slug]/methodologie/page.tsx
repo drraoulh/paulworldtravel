@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import { LessonMark, ProgressBar } from '@/components/parcours/Progress';
+import { publishedModules } from '@/lib/training-content';
 import { lessonId } from '@/content/parcours';
 import { epreuveConfigs, getEpreuve } from '@/lib/epreuves';
 
@@ -20,11 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MethodologiePage({ params }: Props) {
   const e = getEpreuve((await params).slug);
   if (!e) notFound();
-  const m = e.module;
+  const m = (await publishedModules()).find((m) => m.slug === e.slug)!;
   const ids = m.lessons.map((l) => lessonId(m, l));
 
   return (
-    <EpreuveShell epreuve={e} active="methodologie" title="Méthodologie et astuces" intro={`${m.lessons.length} leçons pour maîtriser l’épreuve de ${m.name.toLowerCase()}. Chaque leçon se valide par un quiz de trois questions.`}>
+    <EpreuveShell epreuve={e} active="methodologie" title="Méthodologie et astuces" intro={`${m.lessons.length} leçons pour maîtriser l’épreuve de ${m.name.toLowerCase()}. Chaque leçon se valide par son quiz corrigé.`}>
       <Container className="grid gap-10 lg:grid-cols-[1fr_20rem]">
         <ol className="space-y-3">
           {m.lessons.map((l, i) => (
@@ -43,7 +44,7 @@ export default async function MethodologiePage({ params }: Props) {
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-2xl bg-white p-6">
             <ProgressBar ids={ids} />
-            <ButtonLink href={`/epreuve/${e.slug}/methodologie/${m.lessons[0].slug}/`} variant="dark" className="mt-5 w-full">Commencer la première leçon</ButtonLink>
+            {m.lessons[0] ? <ButtonLink href={`/epreuve/${e.slug}/methodologie/${m.lessons[0].slug}/`} variant="dark" className="mt-5 w-full">Commencer la première leçon</ButtonLink> : <p className="mt-4 text-sm">Aucune leçon publiée pour le moment.</p>}
             <Link href={m.practice.href} className="mt-4 block text-center font-bold text-ocean hover:underline">{m.practice.label}</Link>
           </div>
           <div className="rounded-2xl bg-white p-6 text-sm text-slate">

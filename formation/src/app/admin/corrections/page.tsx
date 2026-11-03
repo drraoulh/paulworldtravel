@@ -17,17 +17,17 @@ type Row = {
   profiles: { email: string; first_name: string | null; last_name: string | null } | null;
 };
 
-export default async function Corrections({ searchParams }: { searchParams: Promise<{ statut?: string; erreur?: string }> }) {
+export default async function Corrections({ searchParams }: { searchParams: Promise<{ statut?: string; erreur?: string; apprenant?: string }> }) {
   const { supabase } = await requireStaff('/admin/corrections/');
   const params = await searchParams;
   const filter = params.statut === 'relues' ? 'trainer_reviewed' : 'ai_reviewed';
-  const { data, error } = await supabase
+  let query = supabase
     .from('submissions')
     .select('*, profiles!submissions_user_id_fkey(email, first_name, last_name)')
     .eq('status', filter)
-    .order('created_at', { ascending: false })
-    .limit(100)
-    .returns<Row[]>();
+    .order('created_at', { ascending: false });
+  if (params.apprenant && /^[0-9a-f-]{36}$/i.test(params.apprenant)) query = query.eq('user_id', params.apprenant);
+  const { data, error } = await query.limit(100).returns<Row[]>();
 
   return (
     <>
@@ -37,8 +37,8 @@ export default async function Corrections({ searchParams }: { searchParams: Prom
           <h1 className="display text-3xl sm:text-4xl">Corrections</h1>
           <p className="mt-3 max-w-2xl text-blue-100">Productions corrigées par l’IA. Relisez-les, ajustez la note si besoin et laissez un commentaire : le candidat le voit dans son espace.</p>
           <nav className="mt-6 flex gap-2" aria-label="Filtrer">
-            <Link href="/admin/corrections/" className={`rounded-full px-4 py-2 text-sm font-semibold ${filter === 'ai_reviewed' ? 'bg-container text-night' : 'bg-white/10 hover:bg-white/20'}`}>À relire</Link>
-            <Link href="/admin/corrections/?statut=relues" className={`rounded-full px-4 py-2 text-sm font-semibold ${filter === 'trainer_reviewed' ? 'bg-container text-night' : 'bg-white/10 hover:bg-white/20'}`}>Relues</Link>
+            <Link href={`/admin/corrections/${params.apprenant ? `?apprenant=${encodeURIComponent(params.apprenant)}` : ''}`} className={`rounded-full px-4 py-2 text-sm font-semibold ${filter === 'ai_reviewed' ? 'bg-container text-night' : 'bg-white/10 hover:bg-white/20'}`}>À relire</Link>
+            <Link href={`/admin/corrections/?statut=relues${params.apprenant ? `&apprenant=${encodeURIComponent(params.apprenant)}` : ''}`} className={`rounded-full px-4 py-2 text-sm font-semibold ${filter === 'trainer_reviewed' ? 'bg-container text-night' : 'bg-white/10 hover:bg-white/20'}`}>Relues</Link>
           </nav>
         </Container>
       </header>

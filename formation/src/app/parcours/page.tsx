@@ -3,15 +3,19 @@ import Link from 'next/link';
 import { Container } from '@/components/ui';
 import CourseHome from '@/components/parcours/CourseHome';
 import { inPersonPlaces } from '@/content/contact';
-import { weeklyPlan, modules } from '@/content/parcours';
-import { course, courseMinutes } from '@/content/parcours/course';
+import { weeklyPlan } from '@/content/parcours';
+import { buildCourse } from '@/content/parcours/course';
+import { publishedModules } from '@/lib/training-content';
 
 export const metadata: Metadata = {
   title: 'Parcours de formation TCF Canada',
   description: 'Un cours complet en six modules, avec barre de progression : test de niveau, méthode de chaque épreuve, séries notées, simulations corrigées par l’IA et examen blanc.',
 };
 
-export default function Parcours() {
+export default async function Parcours() {
+  const modules = await publishedModules();
+  const course = buildCourse(modules);
+  const courseMinutes = course.flatMap((m) => m.items).reduce((n, it) => n + it.minutes, 0);
   return (
     <>
       <CourseHome course={course} totalMinutes={courseMinutes} quizCount={modules.reduce((n, m) => n + m.lessons.reduce((s, l) => s + l.quiz.length, 0), 0)} />

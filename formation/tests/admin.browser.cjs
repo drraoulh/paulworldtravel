@@ -1,0 +1,49 @@
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright');
+const {startBackend,sessionCookie,ADMIN,TRAINER,LEARNER}=require('./fixtures/admin-backend.cjs');
+const base=process.env.FORMATION_BASE_URL||'http://127.0.0.1:3011';
+(async()=>{
+ const backend=await startBackend();
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox']});
+ try{
+  const admin=await browser.newContext({viewport:{width:1440,height:1000}});await admin.addCookies([sessionCookie(ADMIN,base)]);
+  const page=await admin.newPage();const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('BROWSER ERROR',e.stack);});
+  console.log('Checking dedicated dashboard and learner management');
+  await page.goto(base+'/admin/');await page.getByRole('heading',{name:'Vue d’ensemble',exact:true}).waitFor();
+  if(process.env.ADMIN_SCREENSHOT_DIR){require('node:fs').mkdirSync(process.env.ADMIN_SCREENSHOT_DIR,{recursive:true});await page.screenshot({path:process.env.ADMIN_SCREENSHOT_DIR+'/admin-dashboard.png',fullPage:true});}
+  assert.equal(await page.getByRole('button',{name:'Ouvrir le tuteur IA'}).count(),0);
+  assert.equal(await page.getByRole('navigation',{name:'Navigation de formation'}).count(),0);
+  await page.goto(base+'/admin/apprenants/');await page.getByRole('link',{name:'Camille Martin',exact:true}).waitFor();
+  await page.getByRole('textbox',{name:'Rechercher un apprenant'}).fill('inexistant');await page.getByRole('button',{name:'Rechercher',exact:true}).click();await page.getByRole('heading',{name:'Aucun apprenant à afficher'}).waitFor();
+  await page.goto(`${base}/admin/apprenants/${LEARNER}/`);await page.getByRole('heading',{name:'Camille Martin',exact:true}).waitFor();
+  await page.getByRole('textbox',{name:'Ville et pays',exact:true}).fill('Yaoundé');await page.getByRole('button',{name:'Enregistrer les coordonnées'}).click();await page.waitForURL(/succes=profile/);assert.equal(backend.state.profiles.find(p=>p.id===LEARNER).city,'Yaoundé');
+  await page.getByRole('textbox',{name:'Note interne',exact:true}).fill('Renforcer la gestion du temps.');await page.getByRole('button',{name:'Enregistrer la note'}).click();await page.waitForURL(/succes=notes/);assert.equal(backend.state.learner_notes[0].note,'Renforcer la gestion du temps.');
+  await page.goto(base+'/admin/progressions/');await page.getByText('1/20 quiz réussis',{exact:false}).waitFor();
+  console.log('Checking lesson draft, publication and concurrency');
+  const edit=base+'/admin/lecons/co/ecoute-unique/';const publicLesson=base+'/epreuve/comprehension-orale/methodologie/ecoute-unique/';
+  await page.goto(edit);await page.getByRole('textbox',{name:'Titre',exact:true}).fill('Une méthode actualisée');
+  let actionRequest;
+  page.on('request',r=>{if(r.method()==='POST'&&r.headers()['next-action'])actionRequest={headers:r.headers(),body:r.postDataBuffer()};});
+  await page.getByRole('button',{name:'Enregistrer le brouillon',exact:true}).click();await page.getByText('Brouillon enregistré. La version apprenant reste inchangée.',{exact:true}).waitFor({timeout:7000});
+  assert.equal(backend.state.lesson_drafts[0].revision,1);assert.equal(backend.state.lesson_publications.length,0);
+  const guest=await browser.newContext();const view=await guest.newPage();await view.goto(publicLesson);assert.match(await view.locator('h1').innerText(),/Réussir avec une seule écoute/);
+  await page.getByRole('button',{name:'Publier la leçon',exact:true}).click();await page.getByText('Leçon publiée. Les apprenants voient cette version.',{exact:true}).waitFor();await view.goto(publicLesson);assert.equal(await view.locator('h1').innerText(),'Une méthode actualisée');
+  const second=await admin.newPage();await second.goto(edit);await page.getByRole('textbox',{name:'Titre',exact:true}).fill('Une méthode en brouillon');await page.getByRole('button',{name:'Enregistrer le brouillon',exact:true}).click();await page.getByText('Brouillon enregistré. La version apprenant reste inchangée.',{exact:true}).waitFor({timeout:7000});
+  await second.getByRole('textbox',{name:'Titre',exact:true}).fill('Écrasement interdit');await second.getByRole('button',{name:'Enregistrer le brouillon',exact:true}).click();await second.getByRole('alert').filter({hasText:'Une autre version existe'}).waitFor();assert.equal(backend.state.lesson_drafts[0].content.title,'Une méthode en brouillon');
+  console.log('Checking reversible archive and creation of a new lesson');
+  await page.goto(base+'/admin/lecons/');let article=page.locator('article').filter({has:page.getByRole('link',{name:'Une méthode en brouillon',exact:true})});await article.getByRole('button',{name:'Archiver',exact:true}).click();await page.waitForURL(/succes=statut/);assert.equal((await view.goto(publicLesson)).status(),404);
+  article=page.locator('article').filter({has:page.getByRole('link',{name:'Une méthode en brouillon',exact:true})});await article.getByRole('button',{name:'Restaurer',exact:true}).click();await article.getByRole('button',{name:'Archiver',exact:true}).waitFor();await view.goto(publicLesson);assert.equal(await view.locator('h1').innerText(),'Une méthode actualisée');
+  await page.goto(base+'/admin/lecons/nouvelle/');await page.getByRole('combobox',{name:/^Compétence/}).selectOption('ce');await page.getByRole('textbox',{name:'Adresse de la leçon',exact:true}).fill('nouvelle-lecon-test');await page.getByRole('textbox',{name:'Titre',exact:true}).fill('Lire une consigne');await page.getByRole('textbox',{name:'Objectif pédagogique'}).fill('Repérer une demande dans un document.');await page.getByRole('textbox',{name:'Titre de section',exact:true}).fill('Repérer la demande');await page.getByRole('textbox',{name:/^Paragraphes/}).fill('Lisez la consigne et repérez le verbe qui indique l’action attendue.');
+  await page.getByRole('button',{name:/^Quiz ·/}).click();await page.getByRole('textbox',{name:'Consigne de la question 1',exact:true}).fill('Que faut-il lire en premier ?');for(const [n,v] of ['La consigne','La dernière ligne','Le titre du site','La date du jour'].entries())await page.getByRole('textbox',{name:`Réponse ${String.fromCharCode(65+n)} · question 1`,exact:true}).fill(v);await page.getByRole('textbox',{name:'Explication de la correction · question 1',exact:true}).fill('La consigne indique la tâche attendue.');
+  await page.getByRole('button',{name:'Enregistrer le brouillon',exact:true}).click();await page.waitForURL(/admin\/lecons\/ce\/nouvelle-lecon-test/);const newPublic=base+'/epreuve/comprehension-ecrite/methodologie/nouvelle-lecon-test/';assert.equal((await view.goto(newPublic)).status(),404);await page.getByRole('button',{name:'Publier la leçon',exact:true}).click();await page.getByText('Leçon publiée. Les apprenants voient cette version.',{exact:true}).waitFor();assert.equal((await view.goto(newPublic)).status(),200);assert.equal(await view.locator('h1').innerText(),'Lire une consigne');assert.equal(await view.locator('#quiz fieldset').count(),1);
+  console.log('Checking learner isolation, trainer permissions and responsive admin');
+  const candidate=await browser.newContext();await candidate.addCookies([sessionCookie(LEARNER,base)]);const cp=await candidate.newPage();await cp.goto(base+'/admin/');assert.ok(!cp.url().includes('/admin/'));assert.equal(await cp.getByRole('navigation',{name:'Navigation administration'}).count(),0);
+  const trainer=await browser.newContext();await trainer.addCookies([sessionCookie(TRAINER,base)]);const tp=await trainer.newPage();await tp.goto(edit);await tp.getByText('Consultation uniquement.',{exact:false}).waitFor();assert.equal(await tp.getByRole('button',{name:'Publier la leçon',exact:true}).count(),0);
+  const loginContext=await browser.newContext();const loginPage=await loginContext.newPage();await loginPage.goto(base+'/connexion/');await loginPage.getByRole('textbox',{name:'Email',exact:true}).fill('admin@example.invalid');await loginPage.getByLabel('Mot de passe',{exact:true}).fill('Local-test-password');await loginPage.getByRole('button',{name:'Me connecter',exact:true}).click();await loginPage.waitForURL(base+'/admin/');await loginContext.close();
+  const before=backend.state.lesson_drafts.map(d=>d.revision).join(',');
+  assert.ok(actionRequest);const forged=await trainer.request.post(edit,{headers:{'next-action':actionRequest.headers['next-action'],'content-type':actionRequest.headers['content-type'],origin:base},maxRedirects:0,data:actionRequest.body});assert.match(forged.headers()['x-action-redirect']||'',/admin.*droits/);assert.equal(backend.state.lesson_drafts.map(d=>d.revision).join(','),before);
+  for(const width of [1440,1024,390]){await page.setViewportSize({width,height:900});for(const path of ['/admin/','/admin/apprenants/',`/admin/apprenants/${LEARNER}/`,'/admin/progressions/','/admin/lecons/',edit.replace(base,''),'/admin/inscriptions/','/admin/corrections/']){await page.goto(base+path);await page.locator('#admin-content h1').waitFor();await page.evaluate(()=>document.fonts.ready);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`Overflow ${width} ${path}`);}}
+  await page.getByRole('button',{name:'Ouvrir le menu administrateur'}).click();await page.getByRole('dialog',{name:'Administration',exact:true}).getByRole('link',{name:'Leçons et quiz',exact:true}).click();await page.waitForURL(base+'/admin/lecons/');assert.equal(await page.getByRole('dialog',{name:'Administration',exact:true}).isVisible(),false);
+  assert.deepEqual(errors,[]);console.log('PASS: separate admin, learner edits/notes/progress, draft isolation, publication, conflicts, archive/restore, new lessons, candidate denial, trainer read-only and forged action denial, mobile admin.');
+ }finally{await browser.close();await backend.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

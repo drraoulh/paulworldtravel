@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const base = process.env.FORMATION_BASE_URL || 'http://127.0.0.1:3010';
+const supabaseUrl = process.env.FORMATION_SUPABASE_URL || 'https://formation-test.invalid';
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
   try {
@@ -10,7 +11,7 @@ const base = process.env.FORMATION_BASE_URL || 'http://127.0.0.1:3010';
     const errors = [];
     const page = await context.newPage();
     page.on('pageerror', (error) => (errors.push(error.message), console.log('BROWSER ERROR', error.message)));
-    await context.route('https://formation-test.invalid/**', async (route) => {
+    await context.route(`${supabaseUrl}/**`, async (route) => {
       const url = route.request().url();
       if (url.includes('/signup')) return route.fulfill({ json: { user: { id: 'test-user', email: 'candidate@example.com', identities: [{ id: 'test-identity' }] }, session: null } });
       return route.fulfill({ json: url.includes('/rest/v1/') ? [] : {} });

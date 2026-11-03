@@ -21,7 +21,7 @@ export default function PackGate({ what, next, children }: { what: string; next:
       </p>
       <h2 className="heading mt-5 text-2xl text-night">{what} fait partie des packs</h2>
       <p className="mt-3 max-w-2xl text-slate">
-        Votre compte gratuit comprend le test de niveau, les 20 leçons de méthode, la série {FREE_SERIES} de chaque compréhension, les sujets corrigés
+        Votre compte gratuit comprend le test de niveau, les leçons de méthode, la série {FREE_SERIES} de chaque compréhension, les sujets corrigés
         et un essai de l’IA : {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur.
         Un pack débloque toutes les séries, les examens blancs et les corrections chaque jour.
       </p>

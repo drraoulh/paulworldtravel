@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import { writingTasks, speakingTasks } from '@/content/expression';
+import { publishedModules } from '@/lib/training-content';
 import { seriesFor } from '@/content/series';
 import { epreuveConfigs, getEpreuve } from '@/lib/epreuves';
 
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function EpreuvePage({ params }: Props) {
   const e = getEpreuve((await params).slug);
   if (!e) notFound();
-  const m = e.module;
+  const m = (await publishedModules()).find((m) => m.slug === e.slug)!;
   const series = e.kind === 'comprehension' ? seriesFor(m.id as 'ce' | 'co') : [];
   const subjects = m.id === 'ee' ? writingTasks.length : m.id === 'eo' ? speakingTasks.length : 0;
 
@@ -40,7 +41,7 @@ export default async function EpreuvePage({ params }: Props) {
       epreuve={e}
       active="presentation"
       intro={m.intro}
-      action={<ButtonLink href={`/epreuve/${e.slug}/methodologie/${m.lessons[0].slug}/`}>Commencer par la première leçon</ButtonLink>}
+      action={m.lessons[0] ? <ButtonLink href={`/epreuve/${e.slug}/methodologie/${m.lessons[0].slug}/`}>Commencer par la première leçon</ButtonLink> : <ButtonLink href={m.practice.href}>Commencer un entraînement</ButtonLink>}
     >
       <Container className="space-y-14">
         <div>
