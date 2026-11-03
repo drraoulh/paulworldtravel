@@ -5,6 +5,7 @@ import { ButtonLink, Container, PageHeader } from '@/components/ui';
 import PackGrid from '@/components/packs/PackGrid';
 import { FREE_SERIES, FREE_TRIAL, isZone, zoneForCountry } from '@/content/offers';
 import { contact } from '@/content/contact';
+import { stripeConfigured } from '@/lib/stripe';
 
 export const metadata: Metadata = {
   title: 'Packs de préparation au TCF Canada',
@@ -41,7 +42,9 @@ export default async function Packs({ searchParams }: Props) {
             <p className="mt-4 text-lg text-slate">
               Inscrivez-vous en choisissant votre pack. Un conseiller vous contacte sous 24 h ouvrées pour le paiement : par Mobile Money (MTN ou Orange) ou dans nos bureaux de Douala et de Yaoundé au Cameroun, et à distance depuis le Canada et les autres pays, selon les moyens que le conseiller vous indique. Votre accès est activé dès réception, pour la durée du pack.
             </p>
-            <p className="mt-4 text-slate">Le paiement en ligne directement sur le site arrive bientôt.</p>
+            {stripeConfigured()
+              ? <p className="mt-4 text-slate">Vous pouvez aussi payer par carte bancaire en ligne (Visa, Mastercard, Apple Pay) depuis votre espace, après la création de votre compte : l’accès s’ouvre immédiatement.</p>
+              : <p className="mt-4 text-slate">Le paiement par carte en ligne arrive bientôt.</p>}
           </div>
           <div className="rounded-2xl bg-paper p-6 sm:p-8">
             <h3 className="heading text-xl text-night">Une question avant de choisir ?</h3>
