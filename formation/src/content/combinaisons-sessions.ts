@@ -1,8 +1,9 @@
 import type { Combinaison, CombiTask } from '@/lib/combinaisons';
+import { moreSessionCombinaisons } from './combinaisons-sessions-2';
 
 /*
  * Combinations of recent sessions, written by the team from the themes that
- * candidates reported after their exam (August to October 2026). Wording,
+ * candidates reported after their exam (August to October 2026; May to July in combinaisons-sessions-2.ts). Wording,
  * documents and model answers are our own; only the themes come from reports.
  */
 
@@ -14,7 +15,7 @@ function c(year: number, month: number, n: number, theme: string, tasks: [CombiT
   return { id, theme, created_at: `${year}-${String(month).padStart(2, '0')}-01T00:00:00Z`, content: { kind: 'combinaison', year, month, source: 'candidats', tasks } };
 }
 
-export const sessionCombinaisons: Combinaison[] = [
+const recentCombinaisons: Combinaison[] = [
   /* ───────────── Octobre 2026 ───────────── */
   c(2026, 10, 1, 'Cuisinier amateur ou professionnel ?', [
     {
@@ -697,5 +698,8 @@ Pauline`,
     },
   ]),
 ];
+
+/** August to October (this file), then May to July (combinaisons-sessions-2.ts), newest first. */
+export const sessionCombinaisons: Combinaison[] = [...recentCombinaisons, ...moreSessionCombinaisons];
 
 export const getSessionCombinaison = (id: string) => sessionCombinaisons.find((x) => x.id === id) ?? null;
