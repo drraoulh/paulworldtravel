@@ -1,3 +1,6 @@
+import { moreWritingCorriges } from './expression-ee-plus';
+import { moreSpeakingCorriges } from './expression-eo-plus';
+
 /**
  * Model answers ("corrigés") for each practice subject, keyed by subject id.
  * Original texts written for this platform. They are shown to candidates, never sent to the AI.
@@ -8,7 +11,7 @@ export interface Corrige {
   note: string;
 }
 
-export const corriges: Record<string, Corrige> = {
+const baseCorriges: Record<string, Corrige> = {
   // Expression écrite, tâche 1
   'ee1-demenagement': {
     text: 'Salut Karim,\n\nJ’ai enfin emménagé dans mon nouvel appartement à Laval ! Il est au deuxième étage d’un petit immeuble calme, avec deux chambres et une cuisine lumineuse. Le quartier me plaît beaucoup : il y a un grand parc juste en face et une épicerie au coin de la rue. Le métro est à dix minutes à pied, donc c’est très pratique pour aller au travail.\n\nEst-ce que tu serais libre samedi prochain ? Je t’invite à souper vers 19 h pour fêter mon installation. Dis-moi si ça te va !\n\nÀ bientôt,\nAïcha',
@@ -142,3 +145,6 @@ export const corriges: Record<string, Corrige> = {
     note: 'Le texte respecte la structure attendue : synthèse des deux points de vue, puis opinion argumentée et nuancée, avec une condition et une proposition.',
   },
 };
+
+/** Model answers of the original subjects and of the subjects added later. */
+export const corriges: Record<string, Corrige> = { ...baseCorriges, ...moreWritingCorriges, ...moreSpeakingCorriges };

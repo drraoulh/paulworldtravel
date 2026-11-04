@@ -1,5 +1,8 @@
 // Original practice subjects for the TCF Canada expression tests (not official subjects).
 
+import { moreWritingTasks } from './expression-ee-plus';
+import { moreSpeakingTasks } from './expression-eo-plus';
+
 export interface WritingTask {
   id: string;
   task: 1 | 2 | 3;
@@ -11,7 +14,7 @@ export interface WritingTask {
   minutes: number;
 }
 
-export const writingTasks: WritingTask[] = [
+const baseWritingTasks: WritingTask[] = [
   {
     id: 'ee1-demenagement',
     task: 1,
@@ -231,6 +234,9 @@ export const writingTasks: WritingTask[] = [
   },
 ];
 
+/** The original subjects, then the ones added later (expression-ee-plus.ts). */
+export const writingTasks: WritingTask[] = [...baseWritingTasks, ...moreWritingTasks];
+
 export interface SpeakingTask {
   id: string;
   task: 1 | 2 | 3;
@@ -247,7 +253,7 @@ export interface SpeakingTask {
   partner?: { role: string; opening: string; facts: string };
 }
 
-export const speakingTasks: SpeakingTask[] = [
+const baseSpeakingTasks: SpeakingTask[] = [
   {
     id: 'eo1-presentation',
     task: 1,
@@ -461,5 +467,8 @@ export const speakingTasks: SpeakingTask[] = [
     mode: 'monologue',
   },
 ];
+
+/** The original subjects, then the ones added later (expression-eo-plus.ts). */
+export const speakingTasks: SpeakingTask[] = [...baseSpeakingTasks, ...moreSpeakingTasks];
 
 export const wordCount = (text: string) => (text.trim() ? text.trim().split(/\s+/u).length : 0);
