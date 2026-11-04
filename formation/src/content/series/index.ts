@@ -10,12 +10,14 @@ import { co1 } from './co-1';
 import { co2 } from './co-2';
 import { co3 } from './co-3';
 import { co4 } from './co-4';
+import { co5 } from './co-5';
+import { co6 } from './co-6';
 import type { Series } from './types';
 
 export type { Series, SeriesQuestion, Level } from './types';
 export { rightChoice } from './types';
 
-export const allSeries: Series[] = [ce1, ce2, ce3, ce4, ce5, ce6, ce7, ce8, co1, co2, co3, co4];
+export const allSeries: Series[] = [ce1, ce2, ce3, ce4, ce5, ce6, ce7, ce8, co1, co2, co3, co4, co5, co6];
 
 export const seriesFor = (epreuve: 'ce' | 'co') => allSeries.filter((s) => s.epreuve === epreuve);
 export const getSeries = (epreuve: 'ce' | 'co', number: number) => allSeries.find((s) => s.epreuve === epreuve && s.number === number);
