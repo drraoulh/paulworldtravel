@@ -35,7 +35,7 @@ export default async function SeriesPage({ params }: Props) {
         {id === 'ce' && <TeamSeries />}
         <p className="text-sm text-slate">
           Questions originales créées pour cette plateforme, pas des questions officielles du TCF.
-          {id === 'co' && ' Les séries 1 à 3 sont enregistrées avec des voix québécoises de synthèse (ElevenLabs) ; les suivantes, avec des voix de synthèse libres (SIWIS, licence CC BY 4.0 ; UPMC Pierre, licence CC BY-SA 4.0). Complétez avec la radio et des podcasts francophones pour habituer votre oreille aux vrais accents.'}
+          {id === 'co' && ' Les séries 1 à 6 sont enregistrées avec des voix québécoises de synthèse (ElevenLabs) ; les suivantes, avec des voix de synthèse libres (SIWIS, licence CC BY 4.0 ; UPMC Pierre, licence CC BY-SA 4.0). Complétez avec la radio et des podcasts francophones pour habituer votre oreille aux vrais accents.'}
         </p>
       </Container>
     </EpreuveShell>
