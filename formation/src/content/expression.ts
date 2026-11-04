@@ -1,5 +1,6 @@
 // Original practice subjects for the TCF Canada expression tests (not official subjects).
 
+import { moreWritingTasks } from './expression-ee-plus';
 import { moreSpeakingTasks } from './expression-eo-plus';
 
 export interface WritingTask {
@@ -13,7 +14,7 @@ export interface WritingTask {
   minutes: number;
 }
 
-export const writingTasks: WritingTask[] = [
+const baseWritingTasks: WritingTask[] = [
   {
     id: 'ee1-demenagement',
     task: 1,
@@ -232,6 +233,9 @@ export const writingTasks: WritingTask[] = [
     minutes: 30,
   },
 ];
+
+/** The original subjects, then the ones added later (expression-ee-plus.ts). */
+export const writingTasks: WritingTask[] = [...baseWritingTasks, ...moreWritingTasks];
 
 export interface SpeakingTask {
   id: string;

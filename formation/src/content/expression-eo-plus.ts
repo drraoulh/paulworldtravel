@@ -1,5 +1,5 @@
 // Additional original practice subjects for the TCF Canada speaking test (not official subjects),
-// with their model answers. Merged with `speakingTasks` and `corriges` by the pages that use them.
+// with their model answers. Merged into `speakingTasks` (expression.ts) and `corriges` (corriges.ts).
 import type { SpeakingTask } from './expression';
 import type { Corrige } from './corriges';
 

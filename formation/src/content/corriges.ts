@@ -1,3 +1,4 @@
+import { moreWritingCorriges } from './expression-ee-plus';
 import { moreSpeakingCorriges } from './expression-eo-plus';
 
 /**
@@ -146,4 +147,4 @@ const baseCorriges: Record<string, Corrige> = {
 };
 
 /** Model answers of the original subjects and of the subjects added later. */
-export const corriges: Record<string, Corrige> = { ...baseCorriges, ...moreSpeakingCorriges };
+export const corriges: Record<string, Corrige> = { ...baseCorriges, ...moreWritingCorriges, ...moreSpeakingCorriges };
