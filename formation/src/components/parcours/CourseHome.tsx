@@ -221,9 +221,9 @@ export default function CourseHome({ course, totalMinutes, quizCount }: { course
             </div>
 
             <div className="rounded-2xl bg-white p-6 text-sm text-slate">
-              Une question pendant le parcours ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean hover:underline">Demandez au tuteur IA</Link>.{' '}
+              Une question pendant le parcours ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Demandez au tuteur IA</Link>.{' '}
               {signedIn === true && 'Votre progression est enregistrée sur votre compte.'}
-              {signedIn === false && <><Link href="/connexion/?suite=/parcours/" className="font-semibold text-ocean hover:underline">Connectez-vous</Link> pour retrouver votre progression sur tous vos appareils.</>}
+              {signedIn === false && <><Link href="/connexion/?suite=/parcours/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Connectez-vous</Link> pour retrouver votre progression sur tous vos appareils.</>}
             </div>
           </aside>
         </div>

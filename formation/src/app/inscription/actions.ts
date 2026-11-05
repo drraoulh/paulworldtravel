@@ -1,16 +1,17 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { formatPrice, isZone, packDuration, packs } from '@/content/offers';
+import { formatPrice, packDuration, packs } from '@/content/offers';
+import { visitorZone } from '@/lib/zone';
 
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /** A signed-in candidate asks for a pack: a pending enrollment, and an email to the team. */
-export async function requestPack(packId: string, zoneId: string): Promise<{ ok: boolean; error?: string }> {
+export async function requestPack(packId: string): Promise<{ ok: boolean; error?: string }> {
   const pack = packs.find((p) => p.id === packId);
   if (!pack) return { ok: false, error: 'Pack inconnu.' };
-  const zone = isZone(zoneId) ? zoneId : 'cm';
+  const zone = await visitorZone();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'Connectez-vous pour choisir un pack.' };

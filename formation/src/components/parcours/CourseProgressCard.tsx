@@ -19,7 +19,7 @@ export default function CourseProgressCard({ ids }: { ids: string[] }) {
         <div className="h-full rounded-full bg-ocean transition-[width] duration-700" style={{ width: `${pct}%` }} />
       </div>
       <p className="mt-3 text-slate">Votre progression est enregistrée sur votre compte.</p>
-      <Link href="/parcours/" className="mt-4 inline-block font-bold text-ocean hover:underline">{link}</Link>
+      <Link href="/parcours/" className="mt-4 inline-block font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">{link}</Link>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { contact } from '@/content/contact';
-import { formatPrice, freeSeriesFirstTo, packDuration, isZone, packs, objectifs, zones, type Zone } from '@/content/offers';
+import { formatPrice, freeSeriesFirstTo, packDuration, packs, objectifs, type Zone } from '@/content/offers';
 import { getSupabase } from '@/lib/supabase/client';
 import { useSignedIn } from '@/components/ai/useSignedIn';
 import ChoosePack from './ChoosePack';
@@ -31,9 +31,9 @@ type Status = 'idle' | 'sending' | 'success' | 'account_created' | 'exists' | 'n
 
 const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3 text-ink focus:border-ocean focus:outline-none';
 
-export default function SignupForm() {
+export default function SignupForm({ zone }: { zone: Zone }) {
   const params = useSearchParams();
-  const [form, setForm] = useState(empty);
+  const [form, setForm] = useState({ ...empty, zone });
   const [submitted, setSubmitted] = useState<{ email: string; formule: string; zone: Zone } | null>(null);
   const [status, setStatus] = useState<Status>('idle');
   const [formError, setFormError] = useState('');
@@ -43,12 +43,10 @@ export default function SignupForm() {
   // Prefill from the packs page (?formule=) and the level test (?niveau=).
   useEffect(() => {
     const formule = params.get('formule');
-    const zone = params.get('zone');
     const niveau = params.get('niveau');
     setForm((f) => ({
       ...f,
       formule: packs.some((x) => x.id === formule) ? formule! : f.formule,
-      zone: isZone(zone) ? zone : f.zone,
       level: niveau && levels.includes(niveau) ? niveau : f.level,
     }));
   }, [params]);
@@ -210,12 +208,6 @@ export default function SignupForm() {
           <select name="formule" value={form.formule} onChange={set} className={inputCls}>
             <option value="">Compte gratuit, je choisis un pack plus tard</option>
             {packs.map((f) => <option key={f.id} value={f.id}>{f.name}, {formatPrice(f, form.zone)}, {packDuration(f)}</option>)}
-          </select>
-        </label>
-        <label className="block">
-          <span className="font-semibold text-night">Vous payez depuis</span>
-          <select name="zone" value={form.zone} onChange={set} className={inputCls}>
-            {zones.map((z) => <option key={z.id} value={z.id}>{z.label}</option>)}
           </select>
         </label>
         <label className="block">

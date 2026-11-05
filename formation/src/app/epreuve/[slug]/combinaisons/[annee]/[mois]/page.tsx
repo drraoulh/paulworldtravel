@@ -32,7 +32,7 @@ export default async function MoisPage({ params }: Props) {
       intro={`${list.length} combinaison${list.length > 1 ? 's' : ''} de cette session. Faites les trois tâches dans l’ordre : 10, 20 puis 30 minutes.`}
     >
       <Container className="space-y-6">
-        <Link href={`/epreuve/${e.slug}/combinaisons/?annee=${year}`} className="font-bold text-ocean hover:underline">Tous les mois de {year}</Link>
+        <Link href={`/epreuve/${e.slug}/combinaisons/?annee=${year}`} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Tous les mois de {year}</Link>
         {list.length === 0 && <p className="rounded-2xl bg-white p-6 text-slate">Aucune combinaison publiée pour ce mois.</p>}
         {list.map((c, i) => (
           <article key={c.id} className="rounded-2xl bg-white p-6 sm:p-8">

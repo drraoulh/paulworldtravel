@@ -20,7 +20,7 @@ const CEMAC = ['CM', 'GA', 'CG', 'TD', 'CF', 'GQ'];
 
 /** Zone from a two-letter country code (for example Vercel's x-vercel-ip-country header). */
 export const zoneForCountry = (country: string | null | undefined): Zone =>
-  !country ? 'cm' : country.toUpperCase() === 'CA' ? 'ca' : CEMAC.includes(country.toUpperCase()) ? 'cm' : 'intl';
+  !country ? 'intl' : country.toUpperCase() === 'CA' ? 'ca' : CEMAC.includes(country.toUpperCase()) ? 'cm' : 'intl';
 
 export const isZone = (z: unknown): z is Zone => z === 'cm' || z === 'ca' || z === 'intl';
 

@@ -4,7 +4,8 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { createCheckout, stripeConfigured } from '@/lib/stripe';
 import { SITE } from '@/lib/email-layout';
-import { isZone, packDuration, packs, zones, type Zone } from '@/content/offers';
+import { packDuration, packs, zones } from '@/content/offers';
+import { visitorZone } from '@/lib/zone';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -28,7 +29,8 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const pack = packs.find((p) => p.id === body.pack);
   if (!pack) return fail(400, 'Pack inconnu.');
-  const zone: Zone = isZone(body.zone) ? body.zone : 'cm';
+  // The price zone comes from the server (visitor's country), never from the request.
+  const zone = await visitorZone();
   const currency = zones.find((z) => z.id === zone)!.currency;
   const amount = pack.prices[zone];
 

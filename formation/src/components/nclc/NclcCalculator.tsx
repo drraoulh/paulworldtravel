@@ -53,7 +53,7 @@ export default function NclcCalculator() {
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <h2 className="heading text-xl text-night">Vos résultats au TCF Canada</h2>
           {(practice.co || practice.ce) && (
-            <button type="button" onClick={() => setValues((v) => ({ ...v, ...practice }))} className="text-sm font-bold text-ocean hover:underline">
+            <button type="button" onClick={() => setValues((v) => ({ ...v, ...practice }))} className="text-sm font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">
               Reprendre mes scores estimés d’entraînement
             </button>
           )}

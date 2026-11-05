@@ -84,7 +84,7 @@ export default function LoginForm() {
       <button type="submit" disabled={busy} className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-60">
         {busy ? 'Un instant…' : mode === 'login' ? 'Me connecter' : 'Recevoir le lien'}
       </button>
-      <button type="button" onClick={() => { setMode(mode === 'login' ? 'reset' : 'login'); setMessage(null); }} className="mt-5 text-sm font-semibold text-ocean hover:underline">
+      <button type="button" onClick={() => { setMode(mode === 'login' ? 'reset' : 'login'); setMessage(null); }} className="mt-5 text-sm font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">
         {mode === 'login' ? 'Mot de passe oublié ?' : 'Retour à la connexion'}
       </button>
     </form>

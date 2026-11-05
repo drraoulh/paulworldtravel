@@ -10,16 +10,16 @@ type ButtonProps = { href: string; children: ReactNode; variant?: 'primary' | 'o
 
 /*
  * primary: the highlighter, for the one main action of a screen.
- * dark: ink, for secondary actions on light surfaces.
+ * dark: secondary action on light surfaces (white, blue border).
  * outline: for actions on ink surfaces.
  */
 export function ButtonLink({ href, children, variant = 'primary', className = '' }: ButtonProps) {
   const styles = {
-    primary: 'bg-ocean text-white hover:bg-night',
-    outline: 'border border-white/50 text-white hover:bg-white hover:text-night',
-    dark: 'bg-night text-white hover:bg-ocean',
+    primary: 'bg-ocean text-white shadow-[0_4px_14px_rgba(36,66,199,.35)] hover:-translate-y-0.5 hover:bg-night',
+    outline: 'border-2 border-white/70 text-white hover:bg-white hover:text-night',
+    dark: 'border-2 border-ocean bg-white text-ocean hover:-translate-y-0.5 hover:bg-ocean hover:text-white',
   }[variant];
-  const cls = `inline-flex items-center justify-center rounded-lg px-6 py-3.5 font-bold transition-colors ${styles} ${className}`;
+  const cls = `inline-flex items-center justify-center rounded-lg px-6 py-3.5 font-bold transition ${styles} ${className}`;
   if (/^(https?:|mailto:|tel:)/.test(href)) {
     return (
       <a href={href} className={cls} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
