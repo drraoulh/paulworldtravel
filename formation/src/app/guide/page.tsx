@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Container, PageHeader } from '@/components/ui';
-import { FREE_TRIAL, freeSeriesAreFree, freeSeriesRange } from '@/content/offers';
+import { freeSeriesAreFree, freeSeriesRange } from '@/content/offers';
 import GuideDone from './GuideDone';
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const steps: { title: string; text: string; link: { href: string; label: string } }[] = [
   {
     title: 'Créez votre compte gratuit',
-    text: `L’inscription est gratuite et sans engagement. Elle enregistre votre progression sur tous vos appareils et vous donne un essai de l’intelligence artificielle : ${FREE_TRIAL.writing} corrections écrites, ${FREE_TRIAL.speaking} corrections orales et ${FREE_TRIAL.tutor} questions au tuteur. Vous choisirez un pack plus tard, seulement si la plateforme vous convient.`,
+    text: `L’inscription est gratuite et sans engagement. Elle enregistre votre progression sur tous vos appareils. Le compte gratuit ne comprend pas d’accès à l’intelligence artificielle. Les corrections et le tuteur IA sont inclus dans les packs payants actifs, selon leurs quotas. Vous choisirez un pack plus tard, seulement si la plateforme vous convient.`,
     link: { href: '/inscription/', label: 'Créer mon compte gratuit' },
   },
   {
@@ -32,7 +32,7 @@ const steps: { title: string; text: string; link: { href: string; label: string 
   },
   {
     title: 'Rédigez et parlez, l’IA vous corrige',
-    text: 'Dans le simulateur d’expression écrite, choisissez un sujet, rédigez dans le temps imparti et recevez une note indicative sur 20 avec vos erreurs expliquées. Dans le simulateur d’expression orale, autorisez le micro, parlez, et l’IA vous corrige ; à la tâche 2, vous échangez avec un interlocuteur IA comme face à l’examinateur. Le nombre d’essais restants s’affiche au-dessus de chaque simulateur.',
+    text: 'Avec un pack payant actif, dans le simulateur d’expression écrite, choisissez un sujet, rédigez dans le temps imparti et recevez une note indicative sur 20 avec vos erreurs expliquées. Dans le simulateur d’expression orale, autorisez le micro, parlez, et l’IA vous corrige ; à la tâche 2, vous échangez avec un interlocuteur IA comme face à l’examinateur. Le quota restant s’affiche au-dessus de chaque simulateur.',
     link: { href: '/epreuve/expression-ecrite/simulateur/', label: 'Essayer le simulateur écrit' },
   },
   {
@@ -42,12 +42,12 @@ const steps: { title: string; text: string; link: { href: string; label: string 
   },
   {
     title: 'Passez un examen blanc complet',
-    text: 'Les quatre épreuves s’enchaînent avec les durées officielles : compréhension orale, compréhension écrite, expression écrite puis expression orale. Prévoyez environ 2 h 50, des écouteurs, un micro et un endroit calme. Faites-en un au début, puis un autre quelques semaines avant l’examen pour mesurer vos progrès.',
+    text: 'Les quatre épreuves s’enchaînent avec les durées officielles : compréhension orale, compréhension écrite, expression écrite puis expression orale. Chaque examen blanc corrigé utilise un crédit séparé de votre pack et inclut les 3 écrits et les 3 oraux, sans toucher aux quotas d’entraînement. Prévoyez environ 2 h 50, des écouteurs, un micro et un endroit calme. Faites-en un au début, puis un autre quelques semaines avant l’examen pour mesurer vos progrès.',
     link: { href: '/examen-blanc/', label: 'Voir les examens blancs' },
   },
   {
     title: 'Suivez vos résultats',
-    text: 'Mon espace regroupe votre progression dans le parcours, vos corrections, vos essais restants et votre pack. Le tableau de bord de chaque épreuve montre vos scores par niveau, pour savoir où vous perdez des points.',
+    text: 'Mon espace regroupe votre progression dans le parcours, vos corrections, vos quotas IA restants et votre pack. Le tableau de bord de chaque épreuve montre vos scores par niveau, pour savoir où vous perdez des points.',
     link: { href: '/espace/', label: 'Ouvrir mon espace' },
   },
 ];
@@ -56,7 +56,7 @@ const tips = [
   'Travaillez un peu chaque jour plutôt que beaucoup une fois par semaine : fixez votre objectif hebdomadaire sur la page Parcours.',
   'À l’oral, utilisez Chrome sur ordinateur ou sur Android, et autorisez le micro quand le navigateur le demande.',
   'En compréhension orale, mettez des écouteurs : à l’examen, chaque document n’est diffusé qu’une fois.',
-  'Une question de grammaire ou de méthode ? Le tuteur IA répond à toute heure.',
+  'Une question de grammaire ou de méthode ? Avec un pack actif, le tuteur IA répond à toute heure dans la limite de votre quota.',
   'Vous avez passé le TCF ? Partagez vos sujets : ils aident les prochains candidats.',
 ];
 

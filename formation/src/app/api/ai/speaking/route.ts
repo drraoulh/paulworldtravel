@@ -1,5 +1,6 @@
 import { speakingTasks } from '@/content/expression';
-import { checkAccess, errorResponse } from '@/lib/ai/access';
+import { checkAccess, errorResponse, AccessError } from '@/lib/ai/access';
+import { runExamOperation, type CorrectionAccess } from '@/lib/ai/exams';
 import { transcribe, transcriptionConfigured } from '@/lib/ai/huggingface';
 import { aiConfigured, chat, MODELS, parseJson } from '@/lib/ai/openrouter';
 import { cleanFeedback, dialogueText, interactionPrompt, speakingPrompt } from '@/lib/ai/prompts';
@@ -24,26 +25,30 @@ export async function POST(request: Request) {
     if (!(audio instanceof Blob) || audio.size < 2000) return Response.json({ error: 'Enregistrement vide ou trop court.' }, { status: 422 });
     if (audio.size > MAX_BYTES) return Response.json({ error: 'Enregistrement trop lourd. Réessayez avec un enregistrement plus court.' }, { status: 413 });
 
-    const access = await checkAccess('speaking');
-    const transcript = await transcribe(await audio.arrayBuffer(), audio.type.split(';')[0]);
-    if (transcript.split(/\s+/).filter(Boolean).length < 8) {
-      return Response.json({ error: 'Nous n’avons presque rien entendu. Vérifiez votre micro et parlez plus près de l’appareil.', transcript }, { status: 422 });
-    }
-    const answer = await chat(MODELS.grading(), speakingPrompt(task, transcript, seconds), { json: true, maxTokens: 3000 });
-    const feedback = cleanFeedback(parseJson(answer), 'eo');
+    const correct = async (access: CorrectionAccess) => {
+      const transcript = await transcribe(await audio.arrayBuffer(), audio.type.split(';')[0]);
+      if (transcript.split(/\s+/).filter(Boolean).length < 8) {
+        throw new AccessError(422, 'Nous n’avons presque rien entendu. Vérifiez votre micro et parlez plus près de l’appareil.');
+      }
+      const answer = await chat(MODELS.grading(), speakingPrompt(task, transcript, seconds), { json: true, maxTokens: 3000 });
+      const feedback = cleanFeedback(parseJson(answer), 'eo');
 
-    await access.record();
-    const { data, error } = await access.admin
-      .from('submissions')
-      .insert({
-        user_id: access.user.id, kind: 'eo', task_id: task.id, task_prompt: task.prompt,
-        transcript, duration_seconds: seconds, ai_score: feedback.score, ai_feedback: feedback,
-      })
-      .select('id')
-      .single();
-    if (error) console.error('Saving submission failed', error);
+      await access.record();
+      const { data, error } = await access.admin
+        .from('submissions')
+        .insert({
+          user_id: access.user.id, kind: 'eo', task_id: task.id, task_prompt: task.prompt,
+          transcript, duration_seconds: seconds, ai_score: feedback.score, ai_feedback: feedback,
+        })
+        .select('id')
+        .single();
+      if (error) console.error('Saving submission failed', error);
 
-    return Response.json({ id: data?.id ?? null, transcript, feedback, remaining: access.remaining, plan: access.plan });
+      return { id: data?.id ?? null, transcript, feedback, remaining: access.remaining, plan: access.plan };
+    };
+    return Response.json(form.has('examSessionId')
+      ? await runExamOperation(form.get('examSessionId'), 'speaking', task.id, correct)
+      : await correct(await checkAccess('speaking')));
   } catch (error) {
     return errorResponse(error);
   }
@@ -54,23 +59,28 @@ async function gradeInteraction(request: Request) {
   const body = await request.json().catch(() => ({}));
   const task = speakingTasks.find((t) => t.id === body.taskId && t.mode === 'interaction');
   if (!task) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });
-  const { user, admin } = await verifyTicket(body.ticket, task.id);
+  const access = await verifyTicket(body.ticket, task.id);
   const turns = parseTurns(body.turns);
   const seconds = Math.max(0, Math.min(600, Math.round(Number(body.seconds) || 0)));
   const words = turns.filter((t) => t.who === 'candidate').map((t) => t.text).join(' ').split(/\s+/).filter(Boolean).length;
   if (words < 8) return Response.json({ error: 'L’échange est trop court pour être corrigé. Posez plusieurs questions.' }, { status: 422 });
 
-  const answer = await chat(MODELS.grading(), interactionPrompt(task, turns, seconds), { json: true, maxTokens: 3000 });
-  const feedback = cleanFeedback(parseJson(answer), 'interaction');
-  const transcript = dialogueText(turns);
-  const { data, error } = await admin
-    .from('submissions')
-    .insert({
-      user_id: user.id, kind: 'eo', task_id: task.id, task_prompt: task.prompt,
-      transcript, duration_seconds: seconds, ai_score: feedback.score, ai_feedback: feedback,
-    })
-    .select('id')
-    .single();
-  if (error) console.error('Saving submission failed', error);
-  return Response.json({ id: data?.id ?? null, transcript, feedback });
+  const correct = async ({ user, admin }: Pick<CorrectionAccess, 'user' | 'admin'>) => {
+    const answer = await chat(MODELS.grading(), interactionPrompt(task, turns, seconds), { json: true, maxTokens: 3000 });
+    const feedback = cleanFeedback(parseJson(answer), 'interaction');
+    const transcript = dialogueText(turns);
+    const { data, error } = await admin
+      .from('submissions')
+      .insert({
+        user_id: user.id, kind: 'eo', task_id: task.id, task_prompt: task.prompt,
+        transcript, duration_seconds: seconds, ai_score: feedback.score, ai_feedback: feedback,
+      })
+      .select('id')
+      .single();
+    if (error) console.error('Saving submission failed', error);
+    return { id: data?.id ?? null, transcript, feedback };
+  };
+  return Response.json(access.examSessionId
+    ? await runExamOperation(access.examSessionId, 'speaking', task.id, correct)
+    : await correct(access));
 }

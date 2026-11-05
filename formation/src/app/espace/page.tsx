@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
 import CourseProgressCard from '@/components/parcours/CourseProgressCard';
 import { contact } from '@/content/contact';
-import { FREE_TRIAL, freeSeriesRange, isPackId } from '@/content/offers';
+import { freeSeriesRange, isPackId } from '@/content/offers';
+import ExamCredits from '@/components/access/ExamCredits';
 import TrialBanner from '@/components/access/TrialBanner';
 import { buildCourse } from '@/content/parcours/course';
 import { publishedModules } from '@/lib/training-content';
@@ -35,7 +36,7 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
   ]);
   const courseItems = buildCourse(await publishedModules()).flatMap((m) => m.items);
   const isStaff = profile?.role === 'admin' || profile?.role === 'trainer';
-  const active = enrollments?.find((e) => effectiveStatus(e) === 'active');
+  const active = enrollments?.find((e) => effectiveStatus(e) === 'active' && isPackId(e.formule));
   const card = cardPaymentFor(profile?.role);
   const zone = zoneForCountry((await headers()).get('x-vercel-ip-country'));
 
@@ -110,11 +111,11 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
             <div className="rounded-2xl border border-rule bg-white p-6">
               <h3 className="heading text-lg text-night">Cours, entraînements et tests blancs</h3>
               <p className="mt-2 text-slate">
-                {active
-                  ? 'Vos corrections d’expression écrite et orale par l’IA et le tuteur sont disponibles chaque jour.'
-                  : `Votre compte gratuit comprend ${FREE_TRIAL.writing} corrections écrites, ${FREE_TRIAL.speaking} corrections orales et ${FREE_TRIAL.tutor} questions au tuteur. Un pack les débloque chaque jour, avec toutes les séries et les examens blancs.`}
+                {(active || isStaff)
+                  ? 'Vos corrections d’expression écrite et orale par l’IA et le tuteur sont disponibles selon vos quotas sur les dernières 24 heures.'
+                  : `Votre compte gratuit ne comprend pas d’accès à l’IA. Un pack payant actif débloque les corrections et le tuteur selon ses quotas, avec toutes les séries et les examens blancs.`}
               </p>
-              <div className="mt-4 space-y-2"><TrialBanner feature="writing" /><TrialBanner feature="speaking" /></div>
+              <div className="mt-4 space-y-2"><ExamCredits /><TrialBanner feature="writing" /><TrialBanner feature="speaking" /></div>
               <div className="mt-5 flex flex-wrap gap-3">
                 <ButtonLink href="/epreuve/expression-ecrite/simulateur/" variant="dark">Expression écrite</ButtonLink>
                 <ButtonLink href="/epreuve/expression-orale/simulateur/" variant="dark">Expression orale</ButtonLink>

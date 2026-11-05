@@ -9,7 +9,7 @@ const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
   try {
-    const context = await browser.newContext();
+    const context = await browser.newContext();await context.addCookies([require('./fixtures/cookies.cjs')(base)]);
     await context.route(`${supabaseUrl}/**`, (r) => r.fulfill({ json: r.request().url().includes('/rest/') ? [] : {} }));
     const page = await context.newPage();
     const errors = [];
@@ -83,20 +83,20 @@ const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi
     console.log('PASS: catalog/search, reading vs quiz, failed quiz/retry/success/reload, floating tutor signed out/Escape, mobile menu, module filter, three viewport sizes.');
     await context.close();
     // Signed-in tutor uses the existing API, preserves failed questions, and renders a retry.
-    const signed = await browser.newContext();
+    const signed = await browser.newContext();await signed.addCookies([require('./fixtures/cookies.cjs')(base)]);
     const user = { id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', email: 'test@example.com', user_metadata: {}, app_metadata: {}, identities: [], created_at: new Date().toISOString() };
     const encode = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
     const token = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: user.id, exp: Math.floor(Date.now()/1000)+3600, aud: 'authenticated' })}.test-signature`;
     const session = { access_token: token, refresh_token: 'test-refresh', expires_in: 3600, expires_at: Math.floor(Date.now()/1000)+3600, token_type: 'bearer', user };
     await signed.addCookies([{ name: `sb-${new URL(supabaseUrl).hostname.split('.')[0]}-auth-token`, value: 'base64-' + encode(session), url: base, sameSite: 'Lax' }]);
     await signed.route(`${supabaseUrl}/**`, (r) => r.fulfill({ json: r.request().url().includes('/rest/') ? [] : user }));
-    await signed.route('**/api/access/', (r) => r.fulfill({ json: { signedIn: true, plan: 'trial', remaining: { tutor: 20, writing: 3, speaking: 2 } } }));
+    await signed.route('**/api/access/', (r) => r.fulfill({ json: { signedIn: true, plan: 'active', pack: 'essentiel', aiAllowed: true, remaining: { tutor: 5, writing: 1, speaking: 1 } } }));
     let attempts = 0;
     await signed.route('**/api/ai/tutor/', (r) => {
       attempts++;
       const body = r.request().postDataJSON();
       assert.equal(body.messages.length, 1, 'retry does not duplicate a failed question');
-      return attempts === 1 ? r.fulfill({ status: 503, json: { error: 'Service temporairement indisponible.' } }) : r.fulfill({ json: { reply: 'Présentez votre idée, expliquez-la, puis donnez un exemple.', remaining: 19, plan: 'trial' } });
+      return attempts === 1 ? r.fulfill({ status: 503, json: { error: 'Service temporairement indisponible.' } }) : r.fulfill({ json: { reply: 'Présentez votre idée, expliquez-la, puis donnez un exemple.', remaining: 4, plan: 'active' } });
     });
     const tutorPage = await signed.newPage();
     const tutorErrors = [];
@@ -113,6 +113,20 @@ const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi
     assert.equal(attempts, 2);
     assert.deepEqual(tutorErrors, []);
     console.log('PASS: authenticated tutor request, error display, question retained, retry without duplication, AI reply (mocked).');
+    // Free accounts cannot see or submit the AI forms, including the floating assistant.
+    await signed.route('**/api/access/', (r) => r.fulfill({ json: { signedIn: true, plan: 'trial', aiAllowed: false, remaining: { tutor: 0, writing: 0, speaking: 0 } } }));
+    await tutorPage.goto(base + '/parcours/');
+    await tutorPage.getByRole('button', { name: 'Ouvrir le tuteur IA' }).click();
+    await tutorPage.getByRole('dialog', { name: 'Votre tuteur IA' }).getByRole('heading', { name: 'Un pack actif est nécessaire pour l’IA' }).waitFor();
+    assert.equal(await tutorPage.getByRole('textbox', { name: 'Votre question' }).count(), 0);
+    for (const path of ['/entrainement/tuteur/', '/epreuve/expression-ecrite/simulateur/', '/epreuve/expression-orale/simulateur/']) {
+      await tutorPage.goto(base + path);
+      await tutorPage.getByRole('heading', { name: 'Un pack actif est nécessaire pour l’IA' }).waitFor();
+      assert.equal(await tutorPage.locator('main textarea').count(), 0);
+      assert.equal(await tutorPage.getByRole('textbox', { name: 'Votre question' }).count(), 0);
+    }
+    assert.equal(attempts, 2, 'free account never sends an AI request');
+    console.log('PASS: free account blocked in floating tutor, tutor page and both simulators; no AI request sent.');
     await signed.close();
   } finally { await browser.close(); }
 })().catch((e) => { console.error(e); process.exitCode = 1; });

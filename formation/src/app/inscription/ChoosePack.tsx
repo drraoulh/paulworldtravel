@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import TermsAcceptance from '@/components/legal/TermsAcceptance';
+import { LEGAL_VERSION } from '@/content/legal';
 import { useState } from 'react';
 import { formatPrice, packDuration, packs, type Zone } from '@/content/offers';
 import { requestPack } from './actions';
@@ -10,13 +12,15 @@ import { tier } from '@/components/packs/PackGrid';
 /** For a signed-in candidate: pick a pack, then pay by card or ask an advisor (Mobile Money, office). */
 export default function ChoosePack({ initialPack, zone }: { initialPack: string; zone: Zone }) {
   const [pack, setPack] = useState(packs.some((p) => p.id === initialPack) ? initialPack : 'gold');
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const chosen = packs.find((p) => p.id === pack)!;
 
   const send = async () => {
+    if (!termsAccepted) { setState('error'); setMessage('Acceptez les conditions d’utilisation et de vente pour continuer.'); return; }
     setState('sending');
-    const res = await requestPack(pack);
+    const res = await requestPack(pack, { accepted: termsAccepted, version: LEGAL_VERSION });
     setState(res.ok ? 'done' : 'error');
     setMessage(res.error ?? '');
   };
@@ -61,18 +65,22 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
         </div>
       </fieldset>
 
+      <div className="mt-6">
+        <TermsAcceptance checked={termsAccepted} onChange={setTermsAccepted} paid />
+      </div>
+
       <div className="mt-8">
         <p className="mb-3 text-sm font-bold text-night">2. Le paiement de votre pack {chosen.name} · {formatPrice(chosen, zone)}</p>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-xl border-2 border-rule p-5">
             <p className="font-bold text-night">Par carte, tout de suite</p>
             <p className="mt-1 text-sm text-slate">Accès ouvert dès le paiement accepté.</p>
-            <PayByCard pack={pack} zone={zone} className="mt-4" fallback={<p className="mt-4 rounded-lg bg-paper p-3 text-sm text-slate">Le paiement par carte arrive bientôt.</p>} />
+            <PayByCard pack={pack} zone={zone} legalAccepted={termsAccepted} className="mt-4" fallback={<p className="mt-4 rounded-lg bg-paper p-3 text-sm text-slate">Le paiement par carte arrive bientôt.</p>} />
           </div>
           <div className="rounded-xl border-2 border-rule p-5">
             <p className="font-bold text-night">Mobile Money ou au bureau</p>
             <p className="mt-1 text-sm text-slate">Un conseiller vous contacte sous 24 h ouvrées (MTN, Orange, espèces).</p>
-            <button onClick={send} disabled={state === 'sending'} className="mt-4 inline-flex w-full items-center justify-center rounded-lg border-2 border-ocean bg-white px-5 py-3.5 font-bold text-ocean transition hover:bg-ocean hover:text-white disabled:opacity-50">
+            <button onClick={send} disabled={state === 'sending' || !termsAccepted} className="mt-4 inline-flex w-full items-center justify-center rounded-lg border-2 border-ocean bg-white px-5 py-3.5 font-bold text-ocean transition hover:bg-ocean hover:text-white disabled:opacity-50">
               {state === 'sending' ? 'Envoi…' : 'Être contacté par un conseiller'}
             </button>
           </div>

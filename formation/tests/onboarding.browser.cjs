@@ -7,7 +7,8 @@ const supabaseUrl = process.env.FORMATION_SUPABASE_URL || 'https://formation-tes
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
   try {
-    const context = await browser.newContext();
+    // Pin the pricing region: production derives it from Vercel geolocation.
+    const context = await browser.newContext({ extraHTTPHeaders: { 'x-vercel-ip-country': 'CM' } });await context.addCookies([require('./fixtures/cookies.cjs')(base)]);
     const errors = [];
     const page = await context.newPage();
     page.on('pageerror', (error) => (errors.push(error.message), console.log('BROWSER ERROR', error.message)));
@@ -29,15 +30,22 @@ const supabaseUrl = process.env.FORMATION_SUPABASE_URL || 'https://formation-tes
       await page.locator('input[name=password2]').fill('Test-password-123');
       assert.equal(await page.locator('input[name=phone]').getAttribute('required'), null);
       assert.equal(await page.locator('details').getAttribute('open') !== null, Boolean(pack));
+      await page.getByRole('checkbox', { name: /J’accepte les/ }).check();
       await page.getByRole('button', { name: pack ? 'Créer mon compte et demander ce pack' : 'Créer mon compte gratuit', exact: true }).click();
       await page.getByRole('heading', { name: 'Vérifiez votre boîte mail' }).waitFor();
       assert.equal(payload.formule, pack);
+      assert.equal(payload.legalAcceptance.accepted,true);
+      assert.equal(payload.legalAcceptance.version,'2026-11-05');
       assert.equal('password' in payload, false);
       assert.equal('password2' in payload, false);
       const result = await page.locator('main').innerText();
       assert.match(result, /candidate@example.com/);
       if (pack) assert.match(result, /Pack Gold · 75 000 FCFA/);
-      else assert.match(result, /Votre compte gratuit vous donne accès/);
+      else {
+        assert.match(result, /Votre compte gratuit vous donne accès/);
+        assert.match(result, /sans accès à l’IA/);
+        assert.doesNotMatch(result, /essai des corrections/);
+      }
     }
     await page.goto(`${base}/test-de-niveau/`);
     for (let i = 0; i < 15; i++) {

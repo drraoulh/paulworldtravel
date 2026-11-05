@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
+import AiGate from '@/components/access/AiGate';
 import SpeakingPractice from '@/components/simulator/SpeakingPractice';
 import WritingPractice from '@/components/simulator/WritingPractice';
 import { expressionConfigs, getEpreuve } from '@/lib/epreuves';
@@ -29,7 +30,7 @@ export default async function SimulateurPage({ params }: Props) {
         ? 'Choisissez un sujet, rédigez dans le temps conseillé, puis recevez une note sur 20, vos erreurs expliquées et une version améliorée.'
         : 'Tâches 1 et 3 : enregistrez votre réponse. Tâche 2 : préparez-vous 2 minutes, puis dialoguez avec un interlocuteur joué par l’IA. Votre oral est transcrit puis noté sur 20.'}
     >
-      <Container>{isEe ? <WritingPractice /> : <SpeakingPractice />}</Container>
+      <Container><AiGate next={`/epreuve/${e.slug}/simulateur/`}>{isEe ? <WritingPractice /> : <SpeakingPractice />}</AiGate></Container>
     </EpreuveShell>
   );
 }

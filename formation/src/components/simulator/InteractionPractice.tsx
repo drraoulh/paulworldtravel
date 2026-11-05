@@ -28,11 +28,11 @@ function speak(text: string) {
 }
 const hush = () => { if (typeof window !== 'undefined') window.speechSynthesis?.cancel(); };
 
-export default function InteractionPractice({ task, onBusy }: { task: SpeakingTask; onBusy: (busy: boolean) => void }) {
+export default function InteractionPractice({ task, onBusy, examSessionId, initialResult, onResult }: { task: SpeakingTask; onBusy: (busy: boolean) => void; examSessionId?: string; initialResult?: { feedback: Feedback }; onResult?: (result: { feedback: Feedback }) => void }) {
   const partner = task.partner!;
   const prepTotal = task.prepSeconds ?? 0;
   const rec = useRecorder();
-  const [phase, setPhase] = useState<Phase>('intro');
+  const [phase, setPhase] = useState<Phase>(initialResult ? 'done' : 'intro');
   const [sub, setSub] = useState<Sub>('ready');
   const [prepLeft, setPrepLeft] = useState(prepTotal);
   const [notes, setNotes] = useState('');
@@ -41,7 +41,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
   const [voice, setVoice] = useState(true);
   const [error, setError] = useState('');
   const [quota, setQuota] = useState<{ remaining: number | null; plan: string | null }>({ remaining: null, plan: null });
-  const [result, setResult] = useState<{ feedback: Feedback } | null>(null);
+  const [result, setResult] = useState<{ feedback: Feedback } | null>(initialResult ?? null);
 
   // Refs read by the timer, which outlives renders.
   const ticket = useRef('');
@@ -85,6 +85,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
         say(data.reply);
       }
       setTurnList(next);
+      if (examSessionId && next.filter((t) => t.who === 'candidate').length >= 12) { setPhaseState('ended'); hush(); }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La réplique n’a pas pu être envoyée.');
     } finally {
@@ -92,7 +93,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
       setSubState('ready');
       if (final) setPhaseState('ended');
     }
-  }, [rec, task.id]);
+  }, [rec, task.id, examSessionId]);
 
   // One clock for the preparation and the dialogue. The dialogue clock pauses while the partner "thinks".
   useEffect(() => {
@@ -125,7 +126,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
     setError('');
     try {
       const res = await fetch('/api/ai/speaking/session/', {
-        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ taskId: task.id }),
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ taskId: task.id, examSessionId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'L’échange n’a pas pu démarrer.');
@@ -180,7 +181,9 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'La correction a échoué.');
-      setResult({ feedback: data.feedback });
+      const corrected = { feedback: data.feedback };
+      setResult(corrected);
+      onResult?.(corrected);
       markDone('eo/simulation-2');
       refreshAccess();
       setPhaseState('done');
@@ -201,7 +204,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
             Vous parlez à tour de rôle : appuyez sur « Parler », posez votre question, puis sur « Envoyer ». Le chronomètre s’arrête pendant que l’interlocuteur répond.
           </p>
           <div className="flex flex-wrap items-center gap-4">
-            <button onClick={startPrep} className="inline-flex items-center rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">
+            <button onClick={startPrep} disabled={Boolean(examSessionId && result)} className="inline-flex items-center rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">
               {phase === 'done' ? 'Refaire la tâche' : `Commencer la préparation (${fmt(prepTotal)})`}
             </button>
             <label className="flex items-center gap-2 text-sm text-ink">
@@ -209,7 +212,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
               Entendre les réponses à voix haute
             </label>
           </div>
-          <p className="text-sm text-slate">L’échange compte pour une correction d’oral, décomptée au début du dialogue.</p>
+          <p className="text-sm text-slate">{examSessionId ? 'Échange inclus dans votre examen blanc, sans utiliser de correction d’entraînement. Jusqu’à 12 répliques. Une fois corrigé, son résultat est conservé.' : 'L’échange compte pour une correction d’oral, décomptée au début du dialogue.'}</p>
         </div>
       )}
 
@@ -285,7 +288,7 @@ export default function InteractionPractice({ task, onBusy }: { task: SpeakingTa
       )}
 
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-maple">{error}</p>}
-      <p className="text-sm text-slate">Vos répliques sont transcrites puis supprimées. Seul le texte de l’échange est conservé dans votre espace.</p>
+      <p className="text-sm text-slate">Le site ne conserve pas les fichiers audio de vos répliques. Le texte de l’échange et sa correction sont enregistrés dans votre espace.</p>
 
       {result && <FeedbackView feedback={result.feedback} improvedLabel="Questions modèles que vous auriez pu poser" />}
     </div>

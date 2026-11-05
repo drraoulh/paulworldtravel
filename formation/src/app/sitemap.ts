@@ -21,6 +21,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/partager-mes-sujets/',
     '/inscription/',
     '/blog/',
+    '/mentions-legales/',
+    '/conditions-utilisation/',
+    '/conditions-vente/',
+    '/confidentialite/',
+    '/cookies/',
   ];
 
   const epreuvePages = epreuveConfigs.flatMap((e) => {

@@ -2,6 +2,7 @@ import { writingTasks, wordCount, type WritingTask } from '@/content/expression'
 import { parseCombiTaskId, toWritingTask } from '@/lib/combinaisons';
 import { getCombinaison } from '@/lib/combinaisons-server';
 import { checkAccess, errorResponse } from '@/lib/ai/access';
+import { runExamOperation, type CorrectionAccess } from '@/lib/ai/exams';
 import { aiConfigured, chat, MODELS, parseJson } from '@/lib/ai/openrouter';
 import { cleanFeedback, writingPrompt } from '@/lib/ai/prompts';
 
@@ -24,22 +25,26 @@ export async function POST(request: Request) {
     if (!task) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });
     if (words < 20) return Response.json({ error: 'Écrivez au moins 20 mots avant de demander une correction.' }, { status: 422 });
 
-    const access = await checkAccess('writing');
-    const answer = await chat(MODELS.grading(), writingPrompt(task, text, words), { json: true, maxTokens: 3000 });
-    const feedback = cleanFeedback(parseJson(answer), 'ee');
+    const correct = async (access: CorrectionAccess) => {
+      const answer = await chat(MODELS.grading(), writingPrompt(task, text, words), { json: true, maxTokens: 3000 });
+      const feedback = cleanFeedback(parseJson(answer), 'ee');
 
-    await access.record();
-    const { data, error } = await access.admin
-      .from('submissions')
-      .insert({
-        user_id: access.user.id, kind: 'ee', task_id: task.id, task_prompt: task.prompt,
-        content: text, word_count: words, ai_score: feedback.score, ai_feedback: feedback,
-      })
-      .select('id')
-      .single();
-    if (error) console.error('Saving submission failed', error);
+      await access.record();
+      const { data, error } = await access.admin
+        .from('submissions')
+        .insert({
+          user_id: access.user.id, kind: 'ee', task_id: task.id, task_prompt: task.prompt,
+          content: text, word_count: words, ai_score: feedback.score, ai_feedback: feedback,
+        })
+        .select('id')
+        .single();
+      if (error) console.error('Saving submission failed', error);
 
-    return Response.json({ id: data?.id ?? null, feedback, remaining: access.remaining, plan: access.plan });
+      return { id: data?.id ?? null, feedback, remaining: access.remaining, plan: access.plan };
+    };
+    return Response.json(body.examSessionId !== undefined
+      ? await runExamOperation(body.examSessionId, 'writing', task.id, correct)
+      : await correct(await checkAccess('writing')));
   } catch (error) {
     return errorResponse(error);
   }

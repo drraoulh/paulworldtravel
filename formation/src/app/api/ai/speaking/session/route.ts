@@ -1,5 +1,6 @@
 import { speakingTasks } from '@/content/expression';
 import { checkAccess, errorResponse } from '@/lib/ai/access';
+import { examAccess } from '@/lib/ai/exams';
 import { issueTicket } from '@/lib/ai/interaction';
 import { aiConfigured } from '@/lib/ai/openrouter';
 import { transcriptionConfigured } from '@/lib/ai/huggingface';
@@ -16,6 +17,10 @@ export async function POST(request: Request) {
     const task = speakingTasks.find((t) => t.id === body.taskId && t.mode === 'interaction');
     if (!task) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });
 
+    if (body.examSessionId !== undefined) {
+      const access = await examAccess(body.examSessionId, 'speaking', task.id);
+      return Response.json({ ticket: issueTicket(access.user.id, task.id, access.session.id), remaining: null, plan: access.plan });
+    }
     const access = await checkAccess('speaking');
     const ticket = issueTicket(access.user.id, task.id);
     await access.record();

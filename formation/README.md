@@ -197,3 +197,143 @@ Pour réutiliser les tests navigateur apprenants avec ce build local, définir
 `FORMATION_BASE_URL=http://127.0.0.1:3011` et
 `FORMATION_SUPABASE_URL=http://127.0.0.1:4020`, et démarrer au préalable le service
 avec `node tests/fixtures/admin-backend.cjs`. Ne jamais déployer les paramètres de test.
+
+
+## IA : packs payants, examens blancs prioritaires
+
+Un compte gratuit n’a aucun accès à l’IA. Un pack doit être reconnu et actif :
+une inscription en attente, future, expirée ou annulée ne suffit pas. Les rôles
+sont lus dans la base, jamais dans les métadonnées modifiables du compte.
+
+| Pack | Examens blancs corrigés / durée du pack | Écrits / 24 h | Oraux / 24 h | Questions tuteur / 24 h |
+| --- | --- | ---: | ---: | ---: |
+| Express | 1 / 7 jours | 1 | 1 | 3 |
+| Essentiel | 4 / 30 jours | 1 | 1 | 5 |
+| Silver | 8 / 60 jours | 2 | 1 | 10 |
+| Gold | 12 / 90 jours | 3 | 2 | 15 |
+| Platinum | 24 / 90 jours | 4 | 2 | 20 |
+
+Les quotas d’entraînement sont calculés sur les dernières 24 heures. Les crédits
+d’examen sont liés à une inscription payante (`enrollments.id`) et ne se cumulent
+pas entre packs actifs : le pack le plus élevé est utilisé. Un renouvellement
+avec de nouveaux crédits nécessite une nouvelle inscription active ; modifier
+simplement les dates de l’ancienne ne remet pas son compteur à zéro.
+L’équipe dispose de quotas internes bornés, dont 24 examens sur 30 jours.
+
+Un crédit est réservé au démarrage de l’examen blanc et couvre **3 écrits +
+3 oraux**, indépendamment des quotas d’entraînement et de tuteur. La réservation
+est atomique et idempotente : un double clic ou une nouvelle tentative réseau
+avec le même identifiant ne décompte pas deux crédits. Les corrections sont
+accessibles pendant 24 heures, tant que le pack associé reste actif. Garder la
+page ouverte jusqu’au bilan ; la saisie et l’avancement de l’examen restent dans
+la page et ne sont pas restaurés après son rechargement.
+
+Chaque sujet est fixé par le numéro d’examen côté serveur. Chaque correction
+réussie est enregistrée et réutilisée lors des appels répétés. Une tâche peut être
+retentée au plus deux fois en cas d’échec ; une correction simultanée est refusée
+pendant sa réservation. L’interaction orale de l’examen est limitée à 12 répliques,
+également enregistrées pour empêcher leur refacturation lors d’un nouvel appel.
+Les compréhensions utilisent les corrigés existants sans appel IA. Les notes
+restent indicatives et l’oral transcrit ne permet pas d’évaluer la prononciation.
+
+Configurer `OPENAI_API_KEY` côté serveur pour utiliser directement OpenAI :
+`gpt-6-luna` pour le tuteur et les corrections, sans raisonnement supplémentaire,
+et `gpt-transcribe` pour les enregistrements en français. Modèles configurables
+avec les variables de `.env.example`. La clé ne doit jamais être exposée par
+`NEXT_PUBLIC_`. Ajouter la clé à l’environnement serveur puis redéployer.
+Sans OpenAI, le texte conserve OpenRouter et l’oral nécessite aussi `HF_TOKEN`.
+Aucun second fournisseur n’est appelé automatiquement après un échec.
+
+Budget estimé pour **20 apprenants**, sans limite d’inscription : 0,05 à 0,10 USD
+par examen complet, soit 4 à 8 USD pour 80 examens (un par semaine et par personne
+sur quatre semaines). Aux quotas maximaux avec entraînements et tuteur, prévoir
+environ 20 à 25 USD/mois pour 20 Essentiel, 21 à 25 pour Silver, 36 à 41 pour Gold
+et 42 à 50 pour Platinum ; Express : 4,50 à 5,50 USD pour 20 personnes sur 7 jours.
+Hypothèses : 5 minutes par oral d’entraînement, environ 10 minutes d’audio par
+examen, 3 000 tokens d’entrée et 1 000 de sortie par correction, 1 500 d’entrée et
+300 de sortie par question au tuteur. Hors taxes, hébergement et usage de l’équipe.
+Les échecs après un appel facturable et la longueur des échanges peuvent augmenter
+le coût : ces estimations ne sont pas un plafond financier garanti.
+Tarifs de référence : Luna 0,10 USD/million de tokens d’entrée, 0,50 USD/million
+sortie ; transcription 0,0045 USD/minute (5 novembre 2026).
+<https://developers.openai.com/api/docs/pricing>
+
+Appliquer `supabase/ai-exams.sql` après `ai.sql` pour une nouvelle base. Les tables
+ont RLS activé ; seul le serveur peut réserver les crédits et écrire les résultats.
+Les candidats ne peuvent lire que leurs propres réservations. Les deux fonctions
+SQL s’exécutent avec les droits de l’appelant et ne sont accordées qu’à
+`service_role`. Aucun accès direct du navigateur aux opérations internes.
+
+Vérifications sans compte créé, email envoyé ou appel IA facturable :
+
+```bash
+node --experimental-strip-types --test tests/*.test.mjs
+# Avec le build, Next.js et la fixture locale documentés plus haut :
+node tests/exams.browser.cjs
+node tests/academy.browser.cjs
+node tests/onboarding.browser.cjs
+```
+
+`tests/ai.test.mjs` couvre notamment les six corrections malgré des quotas
+quotidiens épuisés, le cache, le refus des sujets hors examen, l’expiration,
+l’appartenance du compte, l’annulation du pack et le renouvellement.
+`tests/ai-exams.sql` vérifie les réservations SQL, le quota, les appels simultanés,
+le cache et les privilèges, dans une transaction annulée. Le test navigateur couvre
+le parcours des quatre épreuves et les six corrections, avec micro et IA factices.
+
+
+## Documents légaux et choix de confidentialité
+
+Les pages `/mentions-legales/`, `/conditions-utilisation/`, `/conditions-vente/`,
+`/confidentialite/` et `/cookies/` utilisent l’identité publique de PW3T SARL,
+communiquée par son représentant : nom juridique, capital, siège, RCCM et gérant.
+Les informations personnelles des associés ne sont pas publiées. Les documents
+sont reliés au pied de page, au sitemap et aux formulaires et peuvent être imprimés
+ou enregistrés en PDF depuis le navigateur. L’identité et la version commune sont
+dans `src/content/legal.ts` ; modifier la version lors d’une nouvelle publication
+contractuelle importante, puis actualiser les tests de version correspondants.
+
+`CookieConsent` mémorise un choix explicite dans le cookie `pwt-cookie-consent`,
+pour 180 jours, avec `Path=/`, `SameSite=Lax` et `Secure` en HTTPS. Les statistiques
+sont désactivées par défaut. Les boutons Accepter et Refuser ont la même visibilité,
+les préférences détaillées ne précochent pas les statistiques, et le choix peut
+être changé dans le pied de page. Le dialogue est utilisable au clavier.
+
+Vercel Analytics est chargé seulement après accord. `beforeSend` revérifie aussi
+le choix courant : le retrait bloque les futurs événements même si le script a
+déjà été chargé. Les paramètres et fragments sont retirés des URL ; les espaces
+privés, paiements, pages d’authentification, conversations et simulateurs IA sont
+exclus. L’en-tête `Referrer-Policy: strict-origin` réduit les informations contenues
+dans le référent HTTP. Les cookies de session et le stockage pédagogique demandé
+ne sont pas supprimés lorsqu’on refuse uniquement les statistiques.
+
+L’inscription requiert une case non précochée d’acceptation des CGU (et des CGV si
+un pack est demandé). La version et l’horodatage déclarés accompagnent la création
+du compte dans ses métadonnées ; ces métadonnées ne servent pas à l’autorisation
+et ne constituent pas un journal immuable. La notification Brevo ajoute sa propre
+date serveur et la version. Les demandes de pack et le démarrage d’un paiement
+refusent aussi les conditions absentes, refusées ou d’une ancienne version côté
+serveur. Le paiement Stripe conserve la version et la date serveur dans ses
+métadonnées. Aucune acceptation rétroactive n’est ajoutée aux comptes existants.
+L’acceptation des conditions est distincte de l’accord aux statistiques et ne vaut
+pas inscription publicitaire ou renonciation automatique à un droit légal.
+
+Les politiques décrivent le service actuel et les droits impératifs applicables ;
+elles ne définissent pas de nouveau délai commercial de remboursement ni de
+suppression automatique des comptes. Les demandes de droits et réclamations sont
+traitées via l’adresse de contact publiée. Les engagements particuliers restent à
+confirmer avec le client avant son règlement.
+
+Vérifications locales sans données réelles ni paiement :
+
+```bash
+node --experimental-strip-types --test tests/*.test.mjs
+# Avec le build de test, le serveur Next et la fixture locale documentés plus haut :
+node tests/legal.browser.cjs
+```
+
+Le test navigateur utilise un script de statistiques factice pour vérifier le
+chargement après accord, le retrait, les URL nettoyées, le refus persistant, les
+pages et liens légaux sur deux largeurs, l’identité publiée, la case d’inscription
+et l’acceptation avant un paiement simulé. Les autres scénarios navigateur refusent
+explicitement les statistiques pour se concentrer sur leurs parcours respectifs.

@@ -3,7 +3,7 @@ import { inPersonPlaces } from './contact';
 
 /*
  * The five packs, priced per zone (Express first, the cheapest way in). The AI allowances below are enforced by
- * src/lib/ai/access.ts (per day, while the pack is active).
+ * src/lib/ai/access.ts (over the last 24 hours, while the pack is active).
  */
 export type PackId = 'express' | 'essentiel' | 'silver' | 'gold' | 'platinum';
 
@@ -34,8 +34,10 @@ export interface Pack {
   includes: string[];
   /** Replaces `includes` outside Cameroon, where classes in our offices are not practical. */
   includesAbroad?: string[];
-  /** Daily AI allowance while the pack is active. */
+  /** AI allowance over a rolling 24-hour window while the pack is active. */
   ai: { writing: number; speaking: number; tutor: number };
+  /** Complete corrected mock exams for this enrollment, separate from training. */
+  mockExams: number;
   featured?: boolean;
   /** Short entry pack, shown as a wide card above the others. */
   starter?: boolean;
@@ -44,59 +46,57 @@ export interface Pack {
 export const packs: Pack[] = [
   {
     id: 'express',
+    mockExams: 1,
     name: 'Express',
     prices: { cm: 5000, ca: 12.99, intl: 9.99 },
     days: 7,
     tagline: 'Une semaine intensive, juste avant l’examen.',
-    ai: { writing: 1, speaking: 1, tutor: 10 },
+    ai: { writing: 1, speaking: 1, tutor: 3 },
     starter: true,
     includes: [
       'Toutes les séries chronométrées d’écoute et de lecture',
       'Toutes les leçons de méthode et leurs quiz',
       'Combinaisons d’expression écrite avec corrigés',
       'Examens blancs et tableau de bord',
-      'Corrections par l’IA : 1 écrite et 1 orale par jour',
-      'Tuteur IA : 10 questions par jour',
     ],
   },
   {
     id: 'essentiel',
+    mockExams: 4,
     name: 'Essentiel',
     prices: { cm: 15000, ca: 32.99, intl: 24.99 },
     days: 30,
     tagline: 'Pour s’entraîner seul, à son rythme.',
-    ai: { writing: 2, speaking: 1, tutor: 20 },
+    ai: { writing: 1, speaking: 1, tutor: 5 },
     includes: [
       'Tout le parcours : les leçons de méthode et leurs quiz',
       'Toutes les séries chronométrées d’écoute et de lecture',
       'Combinaisons d’expression écrite avec corrigés',
       'Examen blanc et tableau de bord',
-      'Corrections par l’IA : 2 écrites et 1 orale par jour',
-      'Tuteur IA : 20 questions par jour',
     ],
   },
   {
     id: 'silver',
+    mockExams: 8,
     name: 'Silver',
     prices: { cm: 27500, ca: 59.99, intl: 44.99 },
     days: 60,
     tagline: 'Plus de temps et plus de corrections.',
-    ai: { writing: 5, speaking: 3, tutor: 60 },
+    ai: { writing: 2, speaking: 1, tutor: 10 },
     includes: [
       'Tout le pack Essentiel, pendant 2 mois',
-      'Corrections par l’IA : 5 écrites et 3 orales par jour',
-      'Tuteur IA : 60 questions par jour',
       '2 productions relues et notées par un formateur',
       'Attestation de parcours',
     ],
   },
   {
     id: 'gold',
+    mockExams: 12,
     name: 'Gold',
     prices: { cm: 75000, ca: 189, intl: 139.99 },
     days: 90,
     tagline: 'L’accompagnement d’un formateur, en ligne.',
-    ai: { writing: 8, speaking: 5, tutor: 100 },
+    ai: { writing: 3, speaking: 2, tutor: 15 },
     featured: true,
     includes: [
       'Tout le pack Silver, pendant 3 mois',
@@ -104,23 +104,22 @@ export const packs: Pack[] = [
       '8 productions relues et notées par un formateur',
       'Un examen blanc corrigé par un formateur',
       'Suivi personnalisé sur WhatsApp',
-      'Corrections par l’IA : 8 écrites et 5 orales par jour',
     ],
   },
   {
     id: 'platinum',
+    mockExams: 24,
     name: 'Platinum',
     prices: { cm: 135000, ca: 309, intl: 229.99 },
     days: 90,
     tagline: 'La préparation complète, avec un formateur.',
-    ai: { writing: 12, speaking: 8, tutor: 150 },
+    ai: { writing: 4, speaking: 2, tutor: 20 },
     includes: [
       'Tout le pack Gold',
       `Cours en salle, ${inPersonPlaces}`,
       'Simulations d’expression orale face à un examinateur',
       '2 séances de coaching individuel',
       'Aide à l’inscription au TCF Canada',
-      'Corrections par l’IA : 12 écrites et 8 orales par jour',
     ],
     includesAbroad: [
       'Tout le pack Gold',
@@ -128,16 +127,14 @@ export const packs: Pack[] = [
       'Simulations d’expression orale face à un examinateur, en visio',
       '2 séances de coaching individuel',
       'Aide à l’inscription au TCF Canada',
-      'Corrections par l’IA : 12 écrites et 8 orales par jour',
     ],
   },
 ];
 
 /*
- * What a free account gets, once, before choosing a pack. Change the numbers
- * here: they drive the limits (src/lib/ai/access.ts) and every message.
+ * Free accounts have no AI access. Zero quotas are retained for compatibility.
  */
-export const FREE_TRIAL = { writing: 3, speaking: 2, tutor: 20 };
+export const FREE_TRIAL = { writing: 0, speaking: 0, tutor: 0 };
 
 /** Practice series open without a pack, with a free account (numbers 1..FREE_SERIES of each épreuve). */
 export const FREE_SERIES: number = 1;
@@ -173,7 +170,12 @@ export const packDuration = (pack: Pick<Pack, 'days'>) =>
 
 export const isPackId = (id: unknown): id is PackId => packs.some((p) => p.id === id);
 
-export const packIncludes = (pack: Pack, zone: Zone) => (zone !== 'cm' && pack.includesAbroad) || pack.includes;
+export const packIncludes = (pack: Pack, zone: Zone) => [
+  ...((zone !== 'cm' && pack.includesAbroad) || pack.includes),
+  `${pack.mockExams} examen${pack.mockExams > 1 ? 's' : ''} blanc${pack.mockExams > 1 ? 's' : ''} entièrement corrigé${pack.mockExams > 1 ? 's' : ''} par l’IA sur ${pack.days} jours (3 écrits + 3 oraux par examen)`,
+  `Corrections IA par 24 h : ${pack.ai.writing} écrite${pack.ai.writing > 1 ? 's' : ''}, ${pack.ai.speaking} orale${pack.ai.speaking > 1 ? 's' : ''}`,
+  `Tuteur IA : ${pack.ai.tutor} questions par 24 h`,
+];
 
 export const objectifs = ['NCLC 4', 'NCLC 5', 'NCLC 6', 'NCLC 7', 'NCLC 8', 'NCLC 9', 'NCLC 10 et plus', 'Je ne sais pas encore'];
 

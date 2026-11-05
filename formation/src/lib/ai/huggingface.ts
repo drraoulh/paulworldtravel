@@ -16,7 +16,7 @@ async function viaOpenAI(audio: ArrayBuffer, contentType: string, withLanguage =
   const type = (contentType || 'audio/webm').split(';')[0].trim();
   const form = new FormData();
   form.append('file', new Blob([audio], { type }), `oral.${EXTENSIONS[type] ?? 'webm'}`);
-  form.append('model', process.env.OPENAI_TRANSCRIBE_MODEL || 'gpt-transcribe');
+  form.append('model', process.env.OPENAI_MODEL_TRANSCRIPTION || 'gpt-transcribe');
   form.append('response_format', 'json');
   if (withLanguage) form.append('languages[]', 'fr');
   const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {

@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Quota from '@/components/ai/Quota';
-import SignInPrompt from '@/components/ai/SignInPrompt';
-import { useSignedIn } from '@/components/ai/useSignedIn';
+import AiGate from '@/components/access/AiGate';
 import TrialBanner from '@/components/access/TrialBanner';
 import { refreshAccess } from '@/components/access/useAccess';
 
@@ -17,7 +16,10 @@ const SUGGESTIONS = [
 ];
 
 export default function Tutor({ compact = false, next = '/entrainement/tuteur/' }: { compact?: boolean; next?: string }) {
-  const signedIn = useSignedIn();
+  return <AiGate next={next} title="Un tuteur pour vous accompagner"><TutorChat compact={compact} /></AiGate>;
+}
+
+function TutorChat({ compact }: { compact: boolean }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -53,9 +55,6 @@ export default function Tutor({ compact = false, next = '/entrainement/tuteur/' 
 
   const submit = (e: FormEvent) => { e.preventDefault(); ask(input); };
 
-  if (signedIn === false) return <SignInPrompt next={next} title="Un tuteur pour vous accompagner" text="Demandez une explication, un exemple ou un conseil de méthode. Connectez-vous avec votre compte gratuit pour utiliser vos essais IA." />;
-  if (signedIn === null) return <p role="status" className="p-5 text-sm text-slate">Vérification de votre accès…</p>;
-
   return (
     <div className="space-y-4">
     {!compact && <TrialBanner feature="tutor" />}
@@ -66,7 +65,7 @@ export default function Tutor({ compact = false, next = '/entrainement/tuteur/' 
             <p className="text-slate">Posez une question sur la grammaire, le vocabulaire ou la méthode du TCF Canada. Par exemple :</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {(compact ? SUGGESTIONS.slice(0, 2) : SUGGESTIONS).map((s) => (
-                <button key={s} onClick={() => ask(s)} disabled={signedIn === null} className="rounded-full border border-rule px-4 py-2 text-left text-sm hover:border-ocean hover:text-ocean">{s}</button>
+                <button key={s} onClick={() => ask(s)} className="rounded-full border border-rule px-4 py-2 text-left text-sm hover:border-ocean hover:text-ocean">{s}</button>
               ))}
             </div>
           </div>
@@ -86,7 +85,7 @@ export default function Tutor({ compact = false, next = '/entrainement/tuteur/' 
             <span className="sr-only">Votre question</span>
             <input value={input} onChange={(e) => setInput(e.target.value)} maxLength={1500} placeholder="Votre question…" className="min-w-0 w-full rounded-full border border-rule px-4 py-3 focus:border-ocean focus:outline-none" />
           </label>
-          <button disabled={busy || !input.trim() || signedIn !== true} className="rounded-full bg-container px-5 py-3 font-bold text-night hover:bg-container-hover disabled:opacity-50">Envoyer</button>
+          <button disabled={busy || !input.trim()} className="rounded-full bg-container px-5 py-3 font-bold text-night hover:bg-container-hover disabled:opacity-50">Envoyer</button>
         </div>
         <div className="mt-2"><Quota remaining={quota.remaining} plan={quota.plan} unit="question" /></div>
       </form>

@@ -5,6 +5,8 @@ import { supabaseConfigured } from '@/lib/supabase/config';
 import { cardPaymentFor, createCheckout, stripeConfigured } from '@/lib/stripe';
 import { SITE } from '@/lib/email-layout';
 import { packDuration, packs, zones } from '@/content/offers';
+import { hasAcceptedTerms } from '@/lib/legal-acceptance';
+import { LEGAL_VERSION } from '@/content/legal';
 import { visitorZone } from '@/lib/zone';
 
 export const runtime = 'nodejs';
@@ -31,6 +33,7 @@ export async function POST(request: Request) {
   if (!admin) return fail(503, 'Le paiement par carte n’est pas encore disponible.');
 
   const body = await request.json().catch(() => ({}));
+  if (!hasAcceptedTerms(body.legalAcceptance)) return fail(422, 'Acceptez les conditions d’utilisation et de vente pour payer.');
   const pack = packs.find((p) => p.id === body.pack);
   if (!pack) return fail(400, 'Pack inconnu.');
   // The price zone comes from the server (visitor's country), never from the request.
@@ -66,7 +69,7 @@ export async function POST(request: Request) {
       currency,
       successUrl: `${SITE}/espace/?paiement=ok`,
       cancelUrl: `${SITE}/espace/?paiement=annule`,
-      metadata: { payment_id: payment.id, enrollment_id: enrollmentId!, user_id: user.id, pack: pack.id },
+      metadata: { legal_version: LEGAL_VERSION, legal_accepted_at: new Date().toISOString(), payment_id: payment.id, enrollment_id: enrollmentId!, user_id: user.id, pack: pack.id },
     });
     await admin.from('payments').update({ provider_reference: session.id }).eq('id', payment.id);
     return NextResponse.json({ url: session.url });

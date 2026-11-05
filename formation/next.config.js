@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   trailingSlash: true,
+  async headers() {
+    return [{ source: '/:path*', headers: [{ key: 'Referrer-Policy', value: 'strict-origin' }] }];
+  },
   eslint: { ignoreDuringBuilds: true },
   // Old addresses, kept working after the site was reorganised by épreuve.
   async redirects() {

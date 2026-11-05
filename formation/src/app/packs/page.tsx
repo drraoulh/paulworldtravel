@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
 import PackGrid from '@/components/packs/PackGrid';
-import { FREE_TRIAL, freeSeriesRange } from '@/content/offers';
+import { freeSeriesRange } from '@/content/offers';
 import { visitorZone } from '@/lib/zone';
 import { contact } from '@/content/contact';
 import { stripeConfigured, stripeTestMode } from '@/lib/stripe';
@@ -27,7 +27,7 @@ export default async function Packs() {
         <Container>
           <PackGrid zone={zone} />
           <p className="mt-8 text-slate">
-            Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, {freeSeriesRange} de chaque compréhension (avec un compte gratuit) et un essai de l’IA : {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur.{' '}
+            Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, {freeSeriesRange} de chaque compréhension (avec un compte gratuit) sans accès à l’IA. Les corrections et le tuteur nécessitent un pack payant actif.{' '}
             <Link href="/test-de-niveau/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Commencer par le test de niveau</Link>
           </p>
         </Container>
