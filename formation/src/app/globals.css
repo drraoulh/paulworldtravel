@@ -97,6 +97,10 @@ input[type='radio'], input[type='checkbox'] { accent-color: var(--night); }
 .academy-dialog[open] { animation: drawer-fade .15s ease-out; }
 .tutor-panel:not([open]) { display: none; }
 .tutor-panel[open] { display: block; animation: drawer-fade .2s ease-out; }
-@media print { #main-content { background: white; } }
+@media print {
+  @page { margin: 1.5cm; }
+  body, #main-content { background: white; }
+  body { font-size: 11pt; }
+}
 
 .academy-menu { margin: 0; }
