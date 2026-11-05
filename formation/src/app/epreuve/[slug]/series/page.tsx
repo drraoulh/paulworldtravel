@@ -22,7 +22,7 @@ export default async function SeriesPage({ params }: Props) {
   const e = getEpreuve((await params).slug);
   if (!e || e.kind !== 'comprehension') notFound();
   const id = e.module.id as 'ce' | 'co';
-  const free = `${freeSeriesRange.charAt(0).toUpperCase() + freeSeriesRange.slice(1)} ${freeSeriesAreFree}, sans compte ; les suivantes nécessitent un pack.`;
+  const free = `${freeSeriesRange.charAt(0).toUpperCase() + freeSeriesRange.slice(1)} ${freeSeriesAreFree} avec un compte gratuit ; les suivantes nécessitent un pack.`;
   const series = seriesFor(id).map((s) => ({ number: s.number, count: s.questions.length }));
 
   return (

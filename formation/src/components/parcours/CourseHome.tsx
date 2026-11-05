@@ -157,7 +157,7 @@ export default function CourseHome({ course, totalMinutes, quizCount }: { course
                               <span className={`block font-semibold ${ok ? 'text-slate' : 'text-night'} hover:text-ocean`}>{it.title}</span>
                               <span className="block text-sm text-slate">{KIND_LABEL[it.kind]}, {it.minutes} min</span>
                               {it.kind === 'lecon' && it.id !== 'guide' && <span className={`mt-1 block text-xs ${ok ? 'text-green-700' : 'text-slate'}`}>{ok ? '✓ Quiz réussi' : isRead(it.id) ? 'Leçon consultée · quiz à réussir' : 'À découvrir'}</span>}
-                              <span className="mt-1 block text-xs font-semibold text-ocean">{it.kind === 'examen' || (it.id.startsWith('serie:') && Number(it.href.split('/').filter(Boolean).at(-1)) > FREE_SERIES) ? 'Pack requis' : it.kind === 'simulation' ? 'Compte gratuit · essai IA limité' : 'Gratuit sans compte'}</span>
+                              <span className="mt-1 block text-xs font-semibold text-ocean">{it.kind === 'examen' || (it.id.startsWith('serie:') && Number(it.href.split('/').filter(Boolean).at(-1)) > FREE_SERIES) ? 'Pack requis' : it.kind === 'simulation' ? 'Compte gratuit · essai IA limité' : it.id.startsWith('serie:') ? 'Gratuit avec un compte' : 'Gratuit sans compte'}</span>
                             </Link>
                             {it.kind === 'simulation' && !ok && ready && (
                               <button onClick={() => markDone(it.id)} className="hidden shrink-0 rounded-lg border border-rule px-3 py-1.5 text-xs font-semibold text-slate hover:border-ocean hover:text-ocean sm:block">
