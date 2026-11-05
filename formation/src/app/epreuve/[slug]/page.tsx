@@ -31,6 +31,7 @@ export default async function EpreuvePage({ params }: Props) {
       ? [{ href: `/epreuve/${e.slug}/series/`, title: 'Séries d’entraînement', text: `${series.length} séries complètes de 39 questions, du A1 au C2, en conditions d’examen ou en mode entraînement.` }]
       : [
           { href: `/epreuve/${e.slug}/sujets/`, title: 'Sujets et corrigés', text: `${subjects} sujets originaux, chacun avec un corrigé commenté.` },
+          { href: `/modeles-de-reponses/#${e.slug}`, title: 'Modèles de réponses', text: m.id === 'ee' ? 'Un squelette à compléter pour chaque tâche, les expressions utiles et un exemple commenté. À copier ou imprimer.' : 'Un plan pour chaque tâche, une banque de questions pour la tâche 2 et les expressions pour argumenter. À copier ou imprimer.' },
           { href: `/epreuve/${e.slug}/simulateur/`, title: 'Simulateur IA', text: m.id === 'ee' ? 'Rédigez dans les conditions de l’examen : note sur 20, erreurs expliquées et version améliorée.' : 'Parlez au micro, dialoguez avec un interlocuteur IA en tâche 2 : note sur 20 et modèle.' },
         ]),
     { href: `/epreuve/${e.slug}/tableau-de-bord/`, title: 'Tableau de bord', text: 'Vos résultats et votre progression sur cette épreuve.' },
