@@ -1,5 +1,6 @@
 'use server';
 
+import { allowUser, TOO_MANY } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { ReportContent } from '@/lib/combinaisons';
@@ -13,6 +14,7 @@ export async function submitReport(_: ReportState, form: FormData): Promise<Repo
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, message: 'Connectez-vous pour partager vos sujets.' };
+  if (!(await allowUser('sujets', user.id, 10))) return { ok: false, message: TOO_MANY };
   const admin = createAdminClient();
   if (!admin) return { ok: false, message: 'Le partage de sujets n’est pas encore activé. Réessayez bientôt.' };
 

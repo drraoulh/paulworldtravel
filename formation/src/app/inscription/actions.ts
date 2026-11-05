@@ -1,5 +1,6 @@
 'use server';
 
+import { allowUser, TOO_MANY } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
 import { formatPrice, packDuration, packs } from '@/content/offers';
 import { hasAcceptedTerms, type LegalAcceptance } from '@/lib/legal-acceptance';
@@ -18,6 +19,7 @@ export async function requestPack(packId: string, acceptance: LegalAcceptance): 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'Connectez-vous pour choisir un pack.' };
+  if (!(await allowUser('pack', user.id, 5))) return { ok: false, error: TOO_MANY };
 
   // Row level security lets a candidate create their own pending enrollment.
   const { error } = await supabase.from('enrollments').insert({ user_id: user.id, formule: pack.id });

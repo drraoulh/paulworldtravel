@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { freeSeriesRange } from '@/content/offers';
 import { hasPack, useAccess } from './useAccess';
+import SignInRequired from './SignInRequired';
 
 /**
  * Shows its children to candidates with an active pack (and staff); others see what
@@ -13,6 +14,15 @@ export default function PackGate({ what, next, children }: { what: string; next:
   const access = useAccess();
   if (access === null) return <div className="h-64 animate-pulse rounded-2xl bg-white" aria-label="Chargement" />;
   if (hasPack(access)) return <>{children}</>;
+  if (!access.signedIn) {
+    return (
+      <SignInRequired
+        next={next}
+        title="Connectez-vous pour continuer"
+        text={`${what} fait partie des packs. Connectez-vous avec le compte de votre pack, ou créez un compte gratuit puis choisissez votre pack.`}
+      />
+    );
+  }
 
   return (
     <div className="rounded-2xl bg-white p-6 sm:p-10">
@@ -27,14 +37,6 @@ export default function PackGate({ what, next, children }: { what: string; next:
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/packs/" className="rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover">Voir les packs</Link>
-        {!access.signedIn && (
-          <Link href="/inscription/" className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">Créer un compte gratuit</Link>
-        )}
-        {!access.signedIn && (
-          <Link href={`/connexion/?suite=${encodeURIComponent(next)}`} className="rounded-full border border-rule px-6 py-3.5 font-semibold text-night hover:border-night">
-            J’ai déjà un pack : me connecter
-          </Link>
-        )}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import ForAudience from '@/components/access/ForAudience';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -102,7 +103,11 @@ export default function TcfCanada() {
               </details>
             ))}
           </div>
-          <ButtonLink href="/test-de-niveau/" variant="dark" className="mt-10">Faire le test de niveau gratuit</ButtonLink>
+          <ForAudience
+            visitor={<ButtonLink href="/test-de-niveau/" variant="dark" className="mt-10">Faire le test de niveau gratuit</ButtonLink>}
+            free={<ButtonLink href="/test-de-niveau/" variant="dark" className="mt-10">Faire le test de niveau gratuit</ButtonLink>}
+            pack={<ButtonLink href="/parcours/" variant="dark" className="mt-10">Reprendre mon parcours</ButtonLink>}
+          />
           </div>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper"><Image src="/images/famille.jpg" alt="Une famille se serre dans les bras, réunie et souriante" fill sizes="(min-width: 1024px) 320px, 50vw" className="object-cover" /></div>

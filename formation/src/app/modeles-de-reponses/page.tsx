@@ -1,3 +1,4 @@
+import ForAudience from '@/components/access/ForAudience';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
@@ -145,11 +146,14 @@ export default function ModelesPage() {
       <section className="bg-night py-12 text-white print:hidden">
         <Container>
           <h2 className="heading text-2xl">Un modèle ne suffit pas : il faut le remplir vite et bien</h2>
-          <p className="mt-3 max-w-2xl text-white/80">Entraînez-vous sur des sujets du type de l’examen et faites corriger vos productions. Commencez par le test de niveau gratuit, puis choisissez un pack si la plateforme vous convient.</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <ButtonLink href="/test-de-niveau/">Faire le test de niveau gratuit</ButtonLink>
-            <ButtonLink href="/packs/" variant="outline">Voir les packs</ButtonLink>
-          </div>
+          <ForAudience
+            visitor={<><p className="mt-3 max-w-2xl text-white/80">Entraînez-vous sur des sujets du type de l’examen et faites corriger vos productions. Commencez par le test de niveau gratuit, puis choisissez un pack si la plateforme vous convient.</p>
+              <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/test-de-niveau/">Faire le test de niveau gratuit</ButtonLink><ButtonLink href="/packs/" variant="outline">Voir les packs</ButtonLink></div></>}
+            free={<><p className="mt-3 max-w-2xl text-white/80">Entraînez-vous sur des sujets du type de l’examen. Avec un pack, vos productions écrites et orales sont corrigées chaque jour.</p>
+              <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/packs/">Voir les packs</ButtonLink><ButtonLink href="/epreuve/expression-ecrite/sujets/" variant="outline">Voir les sujets corrigés</ButtonLink></div></>}
+            pack={<><p className="mt-3 max-w-2xl text-white/80">Remplissez un modèle sur un sujet du type de l’examen, puis faites corriger votre production avec votre pack.</p>
+              <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/epreuve/expression-ecrite/simulateur/">Faire corriger un texte</ButtonLink><ButtonLink href="/epreuve/expression-orale/simulateur/" variant="outline">M’entraîner à l’oral</ButtonLink></div></>}
+          />
         </Container>
       </section>
     </>

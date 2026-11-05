@@ -1,3 +1,4 @@
+import ForAudience from '@/components/access/ForAudience';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui';
@@ -30,7 +31,7 @@ export default async function SeriesPage({ params }: Props) {
       epreuve={e}
       active="series"
       title="Séries d’entraînement"
-      intro={`Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. ${free}${id === 'co' ? ' Une seule écoute par document en conditions d’examen.' : ''}`}
+      intro={<>Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. <ForAudience visitor={free} free={free} pack="Toutes les séries sont incluses dans votre pack." />{id === 'co' ? ' Une seule écoute par document en conditions d’examen.' : ''}</>}
     >
       <Container className="space-y-12">
         <SeriesList epreuve={id} slug={e.slug} series={series} />

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { allowSignup } from '@/lib/rate-limit';
 import { contact } from '@/content/contact';
 import { formatPrice, freeSeriesFirst, packDuration, packs, zones } from '@/content/offers';
 import { hasAcceptedTerms } from '@/lib/legal-acceptance';
@@ -73,6 +74,7 @@ export async function POST(request: Request) {
   if (!f.firstName || (f.formule && !formule) || !isEmail(f.email ?? '')) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 422 });
   }
+  if (!(await allowSignup(f.email))) return NextResponse.json({ ok: false, error: 'rate_limited' }, { status: 429 });
   f.legal = `Version ${LEGAL_VERSION}, demande reçue le ${new Date().toISOString()}`;
   const zone = await visitorZone();
   const price = formule ? formatPrice(formule, zone) : '';

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { allowUser, TOO_MANY } from '@/lib/rate-limit';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { supabaseConfigured } from '@/lib/supabase/config';
@@ -44,6 +45,7 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) return fail(401, 'Connectez-vous pour payer votre pack.');
+  if (!(await allowUser('paiement', user.id, 10))) return fail(429, TOO_MANY);
   const { data: me } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
   if (!cardPaymentFor(me?.role)) return fail(503, 'Le paiement par carte n’est pas encore disponible.');
 

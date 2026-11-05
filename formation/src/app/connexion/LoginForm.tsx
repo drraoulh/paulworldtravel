@@ -7,7 +7,9 @@ import { getSupabase } from '@/lib/supabase/client';
 
 const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3 text-ink focus:border-ocean focus:outline-none';
 
-export default function LoginForm() {
+/** `next`: where to go after signing in (the current page when shown in the sign-in popup). */
+export default function LoginForm({ next, inDialog = false }: { next?: string; inDialog?: boolean } = {}) {
+  const Title = inDialog ? 'h2' : 'h1';
   const supabase = getSupabase();
   const params = useSearchParams();
   const [mode, setMode] = useState<'login' | 'reset'>('login');
@@ -42,7 +44,7 @@ export default function LoginForm() {
             : 'Email ou mot de passe incorrect.',
         });
       }
-      let wanted = params.get('suite');
+      let wanted = next ?? params.get('suite');
       if (!wanted) {
         const { data: { user } } = await supabase.auth.getUser();
         const { data: profile } = user ? await supabase.from('profiles').select('role').eq('id', user.id).single() : { data: null };
@@ -65,7 +67,7 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={submit}>
-      <h1 className="heading text-2xl text-night">{mode === 'login' ? 'Connexion' : 'Mot de passe oublié'}</h1>
+      <Title className="heading text-2xl text-night">{mode === 'login' ? 'Connexion' : 'Mot de passe oublié'}</Title>
       <label className="mt-6 block">
         <span className="font-semibold text-night">Email</span>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className={inputCls} />
