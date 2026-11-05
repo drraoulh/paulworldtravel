@@ -63,7 +63,7 @@ const tips = [
 export default function Guide() {
   return (
     <>
-      <PageHeader image={{ src: '/images/study.jpg', alt: 'Un cahier de révision pour organiser sa préparation' }}
+      <PageHeader image={{ src: '/images/revision-maison.jpg', alt: 'Une jeune femme révise chez elle, entourée de cahiers et de livres' }}
         title="Bien démarrer sur la plateforme"
         intro="Huit étapes pour passer de la première visite au jour de l’examen. Lisez-les une fois : ensuite, la page Parcours vous guide toute seule."
       />
