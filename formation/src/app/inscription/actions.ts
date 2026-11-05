@@ -2,13 +2,16 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { formatPrice, packDuration, packs } from '@/content/offers';
+import { hasAcceptedTerms, type LegalAcceptance } from '@/lib/legal-acceptance';
+import { LEGAL_VERSION } from '@/content/legal';
 import { visitorZone } from '@/lib/zone';
 
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /** A signed-in candidate asks for a pack: a pending enrollment, and an email to the team. */
-export async function requestPack(packId: string): Promise<{ ok: boolean; error?: string }> {
+export async function requestPack(packId: string, acceptance: LegalAcceptance): Promise<{ ok: boolean; error?: string }> {
+  if (!hasAcceptedTerms(acceptance)) return { ok: false, error: 'Acceptez les conditions d’utilisation et de vente pour continuer.' };
   const pack = packs.find((p) => p.id === packId);
   if (!pack) return { ok: false, error: 'Pack inconnu.' };
   const zone = await visitorZone();
@@ -34,7 +37,7 @@ export async function requestPack(packId: string): Promise<{ ok: boolean; error?
           to: (process.env.SIGNUP_TO_EMAIL || 'infos@paulworldtravel.com').split(',').map((e) => ({ email: e.trim() })).filter((e) => e.email),
           replyTo: user.email ? { email: user.email } : undefined,
           subject: `Demande de pack ${pack.name} : ${name}`.slice(0, 200),
-          htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px"><p>${esc(name)} (${esc(user.email ?? '')}, ${esc(profile?.phone ?? 'téléphone non renseigné')}) demande le pack <strong>${pack.name}</strong> : ${formatPrice(pack, zone)}, ${packDuration(pack)}.</p><p>Contactez-le pour le paiement puis activez l’inscription dans l’admin.${error ? ' Attention : l’inscription n’a pas pu être enregistrée en base, créez-la à la main.' : ''}</p></div>`,
+          htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px"><p>${esc(name)} (${esc(user.email ?? '')}, ${esc(profile?.phone ?? 'téléphone non renseigné')}) demande le pack <strong>${pack.name}</strong> : ${formatPrice(pack, zone)}, ${packDuration(pack)}.</p><p>Conditions acceptées : version ${LEGAL_VERSION}. Demande reçue le ${new Date().toISOString()}.</p><p>Contactez-le pour le paiement puis activez l’inscription dans l’admin.${error ? ' Attention : l’inscription n’a pas pu être enregistrée en base, créez-la à la main.' : ''}</p></div>`,
         }),
       });
     } catch (e) {

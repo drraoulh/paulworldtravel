@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { contact } from '@/content/contact';
 import { formatPrice, freeSeriesFirst, packDuration, packs, zones } from '@/content/offers';
+import { hasAcceptedTerms } from '@/lib/legal-acceptance';
+import { LEGAL_VERSION } from '@/content/legal';
 import { visitorZone } from '@/lib/zone';
 
 /*
@@ -35,6 +37,7 @@ const LABELS: Record<string, string> = {
   goal: 'NCLC visé',
   examDate: 'Date d’examen prévue',
   message: 'Message',
+  legal: 'Conditions acceptées',
 };
 
 const escapeHtml = (v: string) =>
@@ -60,6 +63,7 @@ export async function POST(request: Request) {
 
   if (typeof body.website === 'string' && body.website.trim()) return NextResponse.json({ ok: true });
 
+  if (!hasAcceptedTerms(body.legalAcceptance)) return NextResponse.json({ ok: false, error: 'terms_required' }, { status: 422 });
   const f: Record<string, string> = {};
   for (const key of Object.keys(LABELS)) {
     const value = body[key] == null ? '' : String(body[key]).trim().slice(0, MAX);
@@ -69,6 +73,7 @@ export async function POST(request: Request) {
   if (!f.firstName || (f.formule && !formule) || !isEmail(f.email ?? '')) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 422 });
   }
+  f.legal = `Version ${LEGAL_VERSION}, demande reçue le ${new Date().toISOString()}`;
   const zone = await visitorZone();
   const price = formule ? formatPrice(formule, zone) : '';
   f.zone = zones.find((z) => z.id === zone)!.label;

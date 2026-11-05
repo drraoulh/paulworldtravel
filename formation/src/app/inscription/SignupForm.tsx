@@ -2,6 +2,8 @@
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
+import TermsAcceptance from '@/components/legal/TermsAcceptance';
+import { LEGAL_VERSION } from '@/content/legal';
 import { contact } from '@/content/contact';
 import { formatPrice, freeSeriesFirstTo, packDuration, packs, objectifs, type Zone } from '@/content/offers';
 import { getSupabase } from '@/lib/supabase/client';
@@ -34,6 +36,7 @@ const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3
 export default function SignupForm({ zone }: { zone: Zone }) {
   const params = useSearchParams();
   const [form, setForm] = useState({ ...empty, zone });
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [submitted, setSubmitted] = useState<{ email: string; formule: string; zone: Zone } | null>(null);
   const [status, setStatus] = useState<Status>('idle');
   const [formError, setFormError] = useState('');
@@ -45,6 +48,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
 
   // Prefill from the packs page (?formule=) and the level test (?niveau=).
   useEffect(() => {
+    setTermsAccepted(false);
     const formule = params.get('formule');
     const niveau = params.get('niveau');
     setForm((f) => ({
@@ -54,12 +58,15 @@ export default function SignupForm({ zone }: { zone: Zone }) {
     }));
   }, [params]);
 
-  const set = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+  const set = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    if (e.target.name === 'formule' && e.target.value !== form.formule) setTermsAccepted(false);
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setFormError('');
+    if (!termsAccepted) return setFormError('Acceptez les conditions pour poursuivre votre inscription.');
     if (supabase && form.password.length < 8) return setFormError('Le mot de passe doit contenir au moins 8 caractères.');
     if (supabase && form.password !== form.password2) return setFormError('Les deux mots de passe ne correspondent pas.');
     setStatus('sending');
@@ -73,6 +80,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
         options: {
           emailRedirectTo: `${window.location.origin}/auth/confirm/?suite=${encodeURIComponent(suite ?? '/espace/')}`,
           data: {
+            legal_acceptance: { version: LEGAL_VERSION, accepted: true, accepted_at: new Date().toISOString() },
             first_name: form.firstName,
             last_name: form.lastName,
             phone: form.phone,
@@ -98,7 +106,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
       accountCreated = true;
     }
 
-    // 2. Tell the team by email (the password never leaves the browser).
+    // 2. Tell the team by email (the password is never included in this notification).
     const { password, password2, ...details } = form;
     void password;
     void password2;
@@ -106,7 +114,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
       const res = await fetch('/api/inscription/', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(details),
+        body: JSON.stringify({ ...details, legalAcceptance: { accepted: termsAccepted, version: LEGAL_VERSION } }),
       });
       if (res.ok || accountCreated) {
         setSubmitted({ email: form.email, formule: form.formule, zone: form.zone });
@@ -258,6 +266,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
         </p>
       )}
 
+      <TermsAcceptance checked={termsAccepted} onChange={setTermsAccepted} paid={!!form.formule} />
       <button type="submit" disabled={status === 'sending'} className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-60 sm:w-auto">
         {status === 'sending' ? 'Envoi en cours…' : form.formule ? 'Créer mon compte et demander ce pack' : 'Créer mon compte gratuit'}
       </button>

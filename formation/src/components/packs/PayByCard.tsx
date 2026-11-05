@@ -1,13 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import TermsAcceptance from '@/components/legal/TermsAcceptance';
+import { LEGAL_VERSION } from '@/content/legal';
 import type { Zone } from '@/content/offers';
 
 /**
  * Opens the Stripe payment page for a pack. Hidden while card payment is not set
  * up. `enabled` can come from the server; otherwise the button asks the API.
  */
-export default function PayByCard({ pack, zone, enabled, label = 'Payer par carte maintenant', className = '' }: { pack: string; zone: Zone; enabled?: boolean; label?: string; className?: string }) {
+export default function PayByCard({ pack, zone, enabled, legalAccepted, label = 'Payer par carte maintenant', className = '' }: { pack: string; zone: Zone; enabled?: boolean; legalAccepted?: boolean; label?: string; className?: string }) {
+  const [ownAccepted, setOwnAccepted] = useState(false);
+  const accepted = legalAccepted ?? ownAccepted;
   const [available, setAvailable] = useState(enabled ?? false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -20,10 +24,11 @@ export default function PayByCard({ pack, zone, enabled, label = 'Payer par cart
   if (!available) return null;
 
   const pay = async () => {
+    if (!accepted) { setError('Acceptez les conditions d’utilisation et de vente pour payer.'); return; }
     setBusy(true);
     setError('');
     try {
-      const res = await fetch('/api/paiement/stripe/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pack, zone }) });
+      const res = await fetch('/api/paiement/stripe/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pack, zone, legalAcceptance: { accepted, version: LEGAL_VERSION } }) });
       const data = await res.json();
       if (res.ok && data.url) return window.location.assign(data.url);
       setError(data.error ?? 'Le paiement n’a pas pu démarrer. Réessayez.');
@@ -35,7 +40,8 @@ export default function PayByCard({ pack, zone, enabled, label = 'Payer par cart
 
   return (
     <div className={className}>
-      <button type="button" onClick={pay} disabled={busy} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
+      {legalAccepted === undefined && <TermsAcceptance checked={ownAccepted} onChange={setOwnAccepted} paid />}
+      <button type="button" onClick={pay} disabled={busy || !accepted} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
         {busy ? 'Ouverture du paiement…' : label}
       </button>
       <p className="mt-2 text-sm text-slate">Visa, Mastercard ou Apple Pay, sur la page sécurisée de Stripe. Votre accès s’ouvre dès le paiement accepté.</p>

@@ -9,7 +9,7 @@ const feedback = { score:12, level:'B2', nclc:'NCLC 7', summary:'Votre réponse 
 (async()=>{
  const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
  try {
-  const context=await browser.newContext({permissions:['microphone']});
+  const context=await browser.newContext({permissions:['microphone']});await context.addCookies([require('./fixtures/cookies.cjs')(base)]);
   await context.addCookies([sessionCookie(LEARNER,base)]);
   await context.route(`${supabase}/**`,r=>r.fulfill({json:r.request().url().includes('/rest/')?[]:{id:LEARNER,email:'camille@example.invalid',aud:'authenticated',app_metadata:{},user_metadata:{}}}));
   let credits=1,starts=0,writings=0,monologues=0,interactions=0;

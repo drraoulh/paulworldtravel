@@ -9,7 +9,7 @@ const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
   try {
-    const context = await browser.newContext();
+    const context = await browser.newContext();await context.addCookies([require('./fixtures/cookies.cjs')(base)]);
     await context.route(`${supabaseUrl}/**`, (r) => r.fulfill({ json: r.request().url().includes('/rest/') ? [] : {} }));
     const page = await context.newPage();
     const errors = [];
@@ -83,7 +83,7 @@ const answers = ['Une fois', 'Noter mentalement chaque heure entendue et à quoi
     console.log('PASS: catalog/search, reading vs quiz, failed quiz/retry/success/reload, floating tutor signed out/Escape, mobile menu, module filter, three viewport sizes.');
     await context.close();
     // Signed-in tutor uses the existing API, preserves failed questions, and renders a retry.
-    const signed = await browser.newContext();
+    const signed = await browser.newContext();await signed.addCookies([require('./fixtures/cookies.cjs')(base)]);
     const user = { id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', email: 'test@example.com', user_metadata: {}, app_metadata: {}, identities: [], created_at: new Date().toISOString() };
     const encode = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
     const token = `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: user.id, exp: Math.floor(Date.now()/1000)+3600, aud: 'authenticated' })}.test-signature`;

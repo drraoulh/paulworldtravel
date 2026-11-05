@@ -280,3 +280,60 @@ l’appartenance du compte, l’annulation du pack et le renouvellement.
 `tests/ai-exams.sql` vérifie les réservations SQL, le quota, les appels simultanés,
 le cache et les privilèges, dans une transaction annulée. Le test navigateur couvre
 le parcours des quatre épreuves et les six corrections, avec micro et IA factices.
+
+
+## Documents légaux et choix de confidentialité
+
+Les pages `/mentions-legales/`, `/conditions-utilisation/`, `/conditions-vente/`,
+`/confidentialite/` et `/cookies/` utilisent l’identité publique de PW3T SARL,
+communiquée par son représentant : nom juridique, capital, siège, RCCM et gérant.
+Les informations personnelles des associés ne sont pas publiées. Les documents
+sont reliés au pied de page, au sitemap et aux formulaires et peuvent être imprimés
+ou enregistrés en PDF depuis le navigateur. L’identité et la version commune sont
+dans `src/content/legal.ts` ; modifier la version lors d’une nouvelle publication
+contractuelle importante, puis actualiser les tests de version correspondants.
+
+`CookieConsent` mémorise un choix explicite dans le cookie `pwt-cookie-consent`,
+pour 180 jours, avec `Path=/`, `SameSite=Lax` et `Secure` en HTTPS. Les statistiques
+sont désactivées par défaut. Les boutons Accepter et Refuser ont la même visibilité,
+les préférences détaillées ne précochent pas les statistiques, et le choix peut
+être changé dans le pied de page. Le dialogue est utilisable au clavier.
+
+Vercel Analytics est chargé seulement après accord. `beforeSend` revérifie aussi
+le choix courant : le retrait bloque les futurs événements même si le script a
+déjà été chargé. Les paramètres et fragments sont retirés des URL ; les espaces
+privés, paiements, pages d’authentification, conversations et simulateurs IA sont
+exclus. L’en-tête `Referrer-Policy: strict-origin` réduit les informations contenues
+dans le référent HTTP. Les cookies de session et le stockage pédagogique demandé
+ne sont pas supprimés lorsqu’on refuse uniquement les statistiques.
+
+L’inscription requiert une case non précochée d’acceptation des CGU (et des CGV si
+un pack est demandé). La version et l’horodatage déclarés accompagnent la création
+du compte dans ses métadonnées ; ces métadonnées ne servent pas à l’autorisation
+et ne constituent pas un journal immuable. La notification Brevo ajoute sa propre
+date serveur et la version. Les demandes de pack et le démarrage d’un paiement
+refusent aussi les conditions absentes, refusées ou d’une ancienne version côté
+serveur. Le paiement Stripe conserve la version et la date serveur dans ses
+métadonnées. Aucune acceptation rétroactive n’est ajoutée aux comptes existants.
+L’acceptation des conditions est distincte de l’accord aux statistiques et ne vaut
+pas inscription publicitaire ou renonciation automatique à un droit légal.
+
+Les politiques décrivent le service actuel et les droits impératifs applicables ;
+elles ne définissent pas de nouveau délai commercial de remboursement ni de
+suppression automatique des comptes. Les demandes de droits et réclamations sont
+traitées via l’adresse de contact publiée. Les engagements particuliers restent à
+confirmer avec le client avant son règlement.
+
+Vérifications locales sans données réelles ni paiement :
+
+```bash
+node --experimental-strip-types --test tests/*.test.mjs
+# Avec le build de test, le serveur Next et la fixture locale documentés plus haut :
+node tests/legal.browser.cjs
+```
+
+Le test navigateur utilise un script de statistiques factice pour vérifier le
+chargement après accord, le retrait, les URL nettoyées, le refus persistant, les
+pages et liens légaux sur deux largeurs, l’identité publiée, la case d’inscription
+et l’acceptation avant un paiement simulé. Les autres scénarios navigateur refusent
+explicitement les statistiques pour se concentrer sur leurs parcours respectifs.

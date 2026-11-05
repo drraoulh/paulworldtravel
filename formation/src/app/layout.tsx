@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Atkinson_Hyperlegible_Next, Literata } from 'next/font/google';
 import './globals.css';
-import { Analytics } from '@vercel/analytics/next';
+import CookieConsent from '@/components/legal/CookieConsent';
 import SiteFrame from '@/components/academy/SiteFrame';
 import { publishedModules } from '@/lib/training-content';
 
@@ -27,7 +27,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <div className="flex min-h-screen flex-col">
           <SiteFrame lessons={modules.flatMap((m) => m.lessons.map((l) => ({ title: l.title, module: m.name, href: `/epreuve/${m.slug}/methodologie/${l.slug}/` })))}>{children}</SiteFrame>
         </div>
-        <Analytics />
+        <CookieConsent />
       </body>
     </html>
   );

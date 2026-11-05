@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import TermsAcceptance from '@/components/legal/TermsAcceptance';
+import { LEGAL_VERSION } from '@/content/legal';
 import { useState } from 'react';
 import { formatPrice, packDuration, packs, type Zone } from '@/content/offers';
 import { requestPack } from './actions';
@@ -9,12 +11,14 @@ import PayByCard from '@/components/packs/PayByCard';
 /** For a signed-in candidate: pick a pack and send the request in one step. */
 export default function ChoosePack({ initialPack, zone }: { initialPack: string; zone: Zone }) {
   const [pack, setPack] = useState(packs.some((p) => p.id === initialPack) ? initialPack : 'gold');
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
   const send = async () => {
+    if (!termsAccepted) { setState('error'); setMessage('Acceptez les conditions d’utilisation et de vente pour continuer.'); return; }
     setState('sending');
-    const res = await requestPack(pack);
+    const res = await requestPack(pack, { accepted: termsAccepted, version: LEGAL_VERSION });
     setState(res.ok ? 'done' : 'error');
     setMessage(res.error ?? '');
   };
@@ -46,8 +50,9 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
         ))}
       </fieldset>
       {state === 'error' && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-maple">{message || 'La demande a échoué. Réessayez.'}</p>}
-      <PayByCard pack={pack} zone={zone} className="mt-6" />
-      <button onClick={send} disabled={state === 'sending'} className="mt-6 rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
+      <TermsAcceptance checked={termsAccepted} onChange={setTermsAccepted} paid />
+      <PayByCard pack={pack} zone={zone} legalAccepted={termsAccepted} className="mt-6" />
+      <button onClick={send} disabled={state === 'sending' || !termsAccepted} className="mt-6 rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
         {state === 'sending' ? 'Envoi…' : 'Payer avec un conseiller (Mobile Money, bureau)'}
       </button>
     </div>
