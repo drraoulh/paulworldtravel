@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     if (!claimed) return NextResponse.json({ received: true });
     const pack = packs.find((p) => p.id === payment.pack);
     if (payment.enrollment_id && pack) {
-      const opened = await openEnrollment(admin, payment.enrollment_id, pack.months * 30, null);
+      const opened = await openEnrollment(admin, payment.enrollment_id, pack.days, null);
       if (!opened) console.error('Card payment: activation failed', payment.id);
     }
     await notifyTeam(payment.pack, Number(payment.amount), payment.currency, s.customer_details?.email ?? '');

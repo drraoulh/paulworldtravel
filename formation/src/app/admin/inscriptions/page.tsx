@@ -6,6 +6,7 @@ import AdminNav from '@/components/admin/AdminNav';
 import { createClient } from '@/lib/supabase/server';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { effectiveStatus, formatDate, formuleName, statusLabel, statusTone, type Enrollment, type Profile } from '@/lib/labels';
+import { packs } from '@/content/offers';
 import { activateEnrollment, saveNotes, setEnrollmentStatus } from '../actions';
 
 export const metadata: Metadata = { title: 'Administration', robots: { index: false } };
@@ -106,7 +107,8 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                       <input type="hidden" name="id" value={r.id} />
                       <label className="text-sm">
                         <span className="block font-semibold text-night">Durée</span>
-                        <select name="days" defaultValue="30" className="mt-1 rounded-md border border-rule px-3 py-2">
+                        <select name="days" defaultValue={String(packs.find((p) => p.id === r.formule)?.days ?? 30)} className="mt-1 rounded-md border border-rule px-3 py-2">
+                          <option value="7">7 jours</option>
                           <option value="30">1 mois</option>
                           <option value="60">2 mois</option>
                           <option value="90">3 mois</option>

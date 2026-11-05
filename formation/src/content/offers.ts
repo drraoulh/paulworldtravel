@@ -2,10 +2,10 @@
 import { inPersonPlaces } from './contact';
 
 /*
- * The four packs, priced per zone. The AI allowances below are enforced by
+ * The five packs, priced per zone (Express first, the cheapest way in). The AI allowances below are enforced by
  * src/lib/ai/access.ts (per day, while the pack is active).
  */
-export type PackId = 'essentiel' | 'silver' | 'gold' | 'platinum';
+export type PackId = 'express' | 'essentiel' | 'silver' | 'gold' | 'platinum';
 
 /** Price zones: Cameroon and Central Africa in FCFA, Canada in CAD, elsewhere in USD. */
 export type Zone = 'cm' | 'ca' | 'intl';
@@ -28,7 +28,8 @@ export interface Pack {
   id: PackId;
   name: string;
   prices: Record<Zone, number>;
-  months: number;
+  /** Length of the access, in days (drives the activation after payment). */
+  days: number;
   tagline: string;
   includes: string[];
   /** Replaces `includes` outside Cameroon, where classes in our offices are not practical. */
@@ -36,14 +37,33 @@ export interface Pack {
   /** Daily AI allowance while the pack is active. */
   ai: { writing: number; speaking: number; tutor: number };
   featured?: boolean;
+  /** Short entry pack, shown as a wide card above the others. */
+  starter?: boolean;
 }
 
 export const packs: Pack[] = [
   {
+    id: 'express',
+    name: 'Express',
+    prices: { cm: 5000, ca: 12.99, intl: 9.99 },
+    days: 7,
+    tagline: 'Une semaine intensive, juste avant l’examen.',
+    ai: { writing: 1, speaking: 1, tutor: 10 },
+    starter: true,
+    includes: [
+      'Toutes les séries chronométrées d’écoute et de lecture',
+      'Toutes les leçons de méthode et leurs quiz',
+      'Combinaisons d’expression écrite avec corrigés',
+      'Examens blancs et tableau de bord',
+      'Corrections par l’IA : 1 écrite et 1 orale par jour',
+      'Tuteur IA : 10 questions par jour',
+    ],
+  },
+  {
     id: 'essentiel',
     name: 'Essentiel',
     prices: { cm: 15000, ca: 32.99, intl: 24.99 },
-    months: 1,
+    days: 30,
     tagline: 'Pour s’entraîner seul, à son rythme.',
     ai: { writing: 2, speaking: 1, tutor: 20 },
     includes: [
@@ -59,7 +79,7 @@ export const packs: Pack[] = [
     id: 'silver',
     name: 'Silver',
     prices: { cm: 27500, ca: 59.99, intl: 44.99 },
-    months: 2,
+    days: 60,
     tagline: 'Plus de temps et plus de corrections.',
     ai: { writing: 5, speaking: 3, tutor: 60 },
     includes: [
@@ -74,7 +94,7 @@ export const packs: Pack[] = [
     id: 'gold',
     name: 'Gold',
     prices: { cm: 75000, ca: 189, intl: 139.99 },
-    months: 3,
+    days: 90,
     tagline: 'L’accompagnement d’un formateur, en ligne.',
     ai: { writing: 8, speaking: 5, tutor: 100 },
     featured: true,
@@ -91,7 +111,7 @@ export const packs: Pack[] = [
     id: 'platinum',
     name: 'Platinum',
     prices: { cm: 135000, ca: 309, intl: 229.99 },
-    months: 3,
+    days: 90,
     tagline: 'La préparation complète, avec un formateur.',
     ai: { writing: 12, speaking: 8, tutor: 150 },
     includes: [
@@ -119,8 +139,18 @@ export const packs: Pack[] = [
  */
 export const FREE_TRIAL = { writing: 3, speaking: 2, tutor: 20 };
 
-/** Practice series open without a pack (numbers 1..FREE_SERIES of each épreuve). */
-export const FREE_SERIES = 1;
+/** Practice series open without a pack and without an account (numbers 1..FREE_SERIES of each épreuve). */
+export const FREE_SERIES: number = 3;
+
+const NUMBER_WORDS = ['', 'une', 'deux', 'trois', 'quatre', 'cinq', 'six'];
+/** « les séries 1 à 3 » (or « la série 1 »), for the messages. */
+export const freeSeriesRange = FREE_SERIES === 1 ? 'la série 1' : `les séries 1 à ${FREE_SERIES}`;
+/** « les trois premières séries » (or « la première série »). */
+export const freeSeriesFirst = FREE_SERIES === 1 ? 'la première série' : `les ${NUMBER_WORDS[FREE_SERIES] ?? FREE_SERIES} premières séries`;
+/** « aux trois premières séries » (or « à la première série »). */
+export const freeSeriesFirstTo = FREE_SERIES === 1 ? 'à la première série' : `aux ${NUMBER_WORDS[FREE_SERIES] ?? FREE_SERIES} premières séries`;
+/** Agrees the verb: « est gratuite » or « sont gratuites ». */
+export const freeSeriesAreFree = FREE_SERIES === 1 ? 'est gratuite' : 'sont gratuites';
 
 /** Formules sold before the packs, still shown for existing enrollments. */
 const legacyNames: Record<string, string> = { 'en-ligne': 'En ligne', presentiel: 'En présentiel', hybride: 'Hybride' };
@@ -136,6 +166,12 @@ export function formatPrice(pack: Pack, zone: Zone) {
   const amount = nbsp(n.toLocaleString('fr-FR', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }));
   return `${amount} ${zone === 'ca' ? '$ CA' : '$ US'}`;
 }
+
+/** « 7 jours », « 1 mois », « 3 mois ». */
+export const packDuration = (pack: Pick<Pack, 'days'>) =>
+  pack.days % 30 === 0 ? `${pack.days / 30} mois` : `${pack.days} jour${pack.days > 1 ? 's' : ''}`;
+
+export const isPackId = (id: unknown): id is PackId => packs.some((p) => p.id === id);
 
 export const packIncludes = (pack: Pack, zone: Zone) => (zone !== 'cm' && pack.includesAbroad) || pack.includes;
 

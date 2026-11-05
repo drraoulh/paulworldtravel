@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Container, PageHeader } from '@/components/ui';
-import { FREE_SERIES, FREE_TRIAL } from '@/content/offers';
+import { FREE_TRIAL, freeSeriesAreFree, freeSeriesRange } from '@/content/offers';
 import GuideDone from './GuideDone';
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ const steps: { title: string; text: string; link: { href: string; label: string 
   },
   {
     title: 'Entraînez-vous sur les séries chronométrées',
-    text: `Chaque série reprend le format officiel : 39 questions du niveau A1 au C2, 35 minutes en compréhension orale, 60 minutes en compréhension écrite. Choisissez « Conditions d’examen » pour une seule écoute et le chronomètre, ou « Mode entraînement » pour réécouter, lire la transcription et voir la correction après chaque question. La série ${FREE_SERIES} de chaque épreuve est gratuite.`,
+    text: `Chaque série reprend le format officiel : 39 questions du niveau A1 au C2, 35 minutes en compréhension orale, 60 minutes en compréhension écrite. Choisissez « Conditions d’examen » pour une seule écoute et le chronomètre, ou « Mode entraînement » pour réécouter, lire la transcription et voir la correction après chaque question. ${freeSeriesRange.charAt(0).toUpperCase() + freeSeriesRange.slice(1)} de chaque épreuve ${freeSeriesAreFree}, sans compte. À la fin de chaque série, vous voyez un score estimé sur 699 et le NCLC correspondant.`,
     link: { href: '/epreuve/comprehension-orale/series/', label: 'Voir les séries d’écoute' },
   },
   {
@@ -63,7 +63,7 @@ const tips = [
 export default function Guide() {
   return (
     <>
-      <PageHeader image={{ src: '/images/study.jpg', alt: 'Un cahier de révision pour organiser sa préparation' }}
+      <PageHeader image={{ src: '/images/revision-maison.jpg', alt: 'Une jeune femme révise chez elle, entourée de cahiers et de livres' }}
         title="Bien démarrer sur la plateforme"
         intro="Huit étapes pour passer de la première visite au jour de l’examen. Lisez-les une fois : ensuite, la page Parcours vous guide toute seule."
       />

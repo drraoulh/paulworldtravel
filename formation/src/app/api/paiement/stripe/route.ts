@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { createCheckout, stripeConfigured } from '@/lib/stripe';
 import { SITE } from '@/lib/email-layout';
-import { isZone, packs, zones, type Zone } from '@/content/offers';
+import { isZone, packDuration, packs, zones, type Zone } from '@/content/offers';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     const session = await createCheckout({
       paymentId: payment.id,
       email: user.email,
-      productName: `Pack ${pack.name} : préparation au TCF Canada (${pack.months} mois)`,
+      productName: `Pack ${pack.name} : préparation au TCF Canada (${packDuration(pack)})`,
       amount,
       currency,
       successUrl: `${SITE}/espace/?paiement=ok`,

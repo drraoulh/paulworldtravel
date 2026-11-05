@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { formatPrice, packs, type Zone } from '@/content/offers';
+import { formatPrice, packDuration, packs, type Zone } from '@/content/offers';
 import { requestPack } from './actions';
 import PayByCard from '@/components/packs/PayByCard';
 
@@ -41,7 +41,7 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
           <label key={p.id} className={`cursor-pointer rounded-xl border-2 p-4 ${pack === p.id ? 'border-ocean bg-blue-50' : 'border-rule hover:border-ocean/50'}`}>
             <input type="radio" name="pack" className="sr-only" checked={pack === p.id} onChange={() => setPack(p.id)} />
             <span className="heading block text-lg text-night">{p.name}</span>
-            <span className="block text-slate">{formatPrice(p, zone)}, {p.months} mois</span>
+            <span className="block text-slate">{formatPrice(p, zone)}, {packDuration(p)}</span>
           </label>
         ))}
       </fieldset>

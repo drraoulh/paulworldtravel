@@ -3,7 +3,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { contact } from '@/content/contact';
-import { formatPrice, isZone, packs, objectifs, zones, type Zone } from '@/content/offers';
+import { formatPrice, freeSeriesFirstTo, packDuration, isZone, packs, objectifs, zones, type Zone } from '@/content/offers';
 import { getSupabase } from '@/lib/supabase/client';
 import { useSignedIn } from '@/components/ai/useSignedIn';
 import ChoosePack from './ChoosePack';
@@ -130,7 +130,7 @@ export default function SignupForm() {
         <p className="mt-4 text-slate">
           {submitted?.formule
             ? 'Un conseiller vous contacte sous 24 h ouvrées pour le paiement de votre pack. Votre accès est activé dès réception.'
-            : 'Votre compte gratuit vous donne accès au test de niveau, aux leçons, à la première série de chaque épreuve et à un essai des corrections par l’IA.'}
+            : `Votre compte gratuit vous donne accès au test de niveau, aux leçons, ${freeSeriesFirstTo} de chaque compréhension et à un essai des corrections par l’IA.`}
         </p>
         {submitted?.formule && <p className="mt-4 font-semibold text-night">Pack {packs.find((p) => p.id === submitted.formule)?.name} · {formatPrice(packs.find((p) => p.id === submitted.formule)!, submitted.zone)}. Demande reçue → paiement avec un conseiller → activation.</p>}
         <p className="mt-4 text-sm text-slate">Pensez à vérifier les courriers indésirables si le message n’apparaît pas.</p>
@@ -209,7 +209,7 @@ export default function SignupForm() {
           <span className="font-semibold text-night">Pack</span>
           <select name="formule" value={form.formule} onChange={set} className={inputCls}>
             <option value="">Compte gratuit, je choisis un pack plus tard</option>
-            {packs.map((f) => <option key={f.id} value={f.id}>{f.name}, {formatPrice(f, form.zone)}, {f.months} mois</option>)}
+            {packs.map((f) => <option key={f.id} value={f.id}>{f.name}, {formatPrice(f, form.zone)}, {packDuration(f)}</option>)}
           </select>
         </label>
         <label className="block">

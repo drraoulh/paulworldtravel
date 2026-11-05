@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { contact } from '@/content/contact';
-import { formatPrice, isZone, packs, zones } from '@/content/offers';
+import { formatPrice, freeSeriesFirst, isZone, packDuration, packs, zones } from '@/content/offers';
 
 /*
  * Sends a sign-up to the team by email (Brevo), with the candidate in reply-to,
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
   const zone = isZone(f.zone) ? f.zone : 'cm';
   const price = formule ? formatPrice(formule, zone) : '';
   f.zone = zones.find((z) => z.id === zone)!.label;
-  f.formule = formule ? `${formule.name} (${price}, ${formule.months} mois)` : 'Essai gratuit, pas encore de pack';
+  f.formule = formule ? `${formule.name} (${price}, ${packDuration(formule)})` : 'Essai gratuit, pas encore de pack';
 
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
@@ -111,9 +111,9 @@ export async function POST(request: Request) {
       htmlContent:
         `<div style="font-family:Arial,sans-serif;font-size:15px;color:#0e1726">${EMAIL_LOGO}<p>Bonjour ${escapeHtml(f.firstName)},</p>` +
         (formule
-          ? `<p>Nous avons bien reçu votre inscription au pack <strong>${escapeHtml(formule.name)}</strong> (${price}, ${formule.months} mois).</p>` +
+          ? `<p>Nous avons bien reçu votre inscription au pack <strong>${escapeHtml(formule.name)}</strong> (${price}, ${packDuration(formule)}).</p>` +
             `<p>Un conseiller vous contacte sous 24 h ouvrées pour le paiement${zone === 'cm' ? ', par Mobile Money ou dans nos bureaux' : ''}. Votre accès est activé dès réception.</p>`
-          : `<p>Votre compte gratuit est prêt : test de niveau, leçons de méthode, première série de chaque épreuve et essai des corrections par l’IA.</p>` +
+          : `<p>Votre compte gratuit est prêt : test de niveau, leçons de méthode, ${freeSeriesFirst} de chaque compréhension et essai des corrections par l’IA.</p>` +
             `<p>Quand vous le souhaitez, choisissez un pack sur https://formation.paulworldtravel.com/packs/ pour tout débloquer.</p>`) +
         `<p>À très bientôt,<br>Paul World Travel Formation<br>WhatsApp : ${contact.phone}</p></div>`,
       tags: ['formation', 'confirmation-tcf'],
