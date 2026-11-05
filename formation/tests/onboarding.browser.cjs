@@ -7,7 +7,8 @@ const supabaseUrl = process.env.FORMATION_SUPABASE_URL || 'https://formation-tes
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
   try {
-    const context = await browser.newContext();
+    // Pin the pricing region: production derives it from Vercel geolocation.
+    const context = await browser.newContext({ extraHTTPHeaders: { 'x-vercel-ip-country': 'CM' } });
     const errors = [];
     const page = await context.newPage();
     page.on('pageerror', (error) => (errors.push(error.message), console.log('BROWSER ERROR', error.message)));
@@ -37,7 +38,11 @@ const supabaseUrl = process.env.FORMATION_SUPABASE_URL || 'https://formation-tes
       const result = await page.locator('main').innerText();
       assert.match(result, /candidate@example.com/);
       if (pack) assert.match(result, /Pack Gold · 75 000 FCFA/);
-      else assert.match(result, /Votre compte gratuit vous donne accès/);
+      else {
+        assert.match(result, /Votre compte gratuit vous donne accès/);
+        assert.match(result, /sans accès à l’IA/);
+        assert.doesNotMatch(result, /essai des corrections/);
+      }
     }
     await page.goto(`${base}/test-de-niveau/`);
     for (let i = 0; i < 15; i++) {

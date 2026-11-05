@@ -1,13 +1,12 @@
-// Speech-to-text with Whisper on Hugging Face (HF_TOKEN). The OpenRouter path is kept
-// for later (an OpenAI key will replace it) but is not used for now.
+// Speech-to-text: direct OpenAI when configured, otherwise Whisper on Hugging Face.
 
 import { chat, MODELS } from './openrouter';
 
-export const transcriptionConfigured = () => Boolean(process.env.HF_TOKEN);
+export const transcriptionConfigured = () => Boolean(process.env.OPENAI_API_KEY || process.env.HF_TOKEN);
 
 const FORMATS: Record<string, string> = {
   'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/wav': 'wav', 'audio/x-wav': 'wav',
-  'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/flac': 'flac',
+  'audio/webm': 'webm', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/flac': 'flac',
 };
 
 async function viaHuggingFace(audio: ArrayBuffer, contentType: string) {
@@ -45,15 +44,31 @@ async function viaOpenRouter(audio: ArrayBuffer, contentType: string) {
 export class TranscriptionError extends Error {}
 
 export async function transcribe(audio: ArrayBuffer, contentType: string) {
-  if (!process.env.HF_TOKEN) throw new TranscriptionError('La transcription de l’oral n’est pas encore activée.');
+  if (!transcriptionConfigured()) throw new TranscriptionError('La transcription de l’oral n’est pas encore activée.');
   try {
+    if (process.env.OPENAI_API_KEY) {
+      const form = new FormData();
+      const extension = FORMATS[contentType.split(';')[0]] ?? 'mp3';
+      form.set('file', new Blob([audio], { type: contentType || 'audio/mpeg' }), `oral.${extension}`);
+      form.set('model', process.env.OPENAI_MODEL_TRANSCRIPTION || 'gpt-transcribe');
+      form.set('language', 'fr');
+      const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: { authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+        body: form,
+        signal: AbortSignal.timeout(55_000),
+      });
+      if (!response.ok) throw new Error(`Transcription failed (${response.status})`);
+      const result = await response.json();
+      return String(result.text ?? '').trim();
+    }
     return await viaHuggingFace(audio, contentType);
   } catch (e) {
-    console.error('Hugging Face transcription failed', e);
+    console.error('Audio transcription failed', e);
     const msg = String((e as Error).message);
     throw new TranscriptionError(
       /402|credit/i.test(msg)
-        ? 'La transcription est momentanément indisponible (crédit Hugging Face épuisé). Réessayez plus tard.'
+        ? 'La transcription est momentanément indisponible (crédit du service épuisé). Réessayez plus tard.'
         : 'La transcription a échoué. Réessayez dans quelques instants.',
     );
   }

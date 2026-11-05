@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   const zone = await visitorZone();
   const price = formule ? formatPrice(formule, zone) : '';
   f.zone = zones.find((z) => z.id === zone)!.label;
-  f.formule = formule ? `${formule.name} (${price}, ${packDuration(formule)})` : 'Essai gratuit, pas encore de pack';
+  f.formule = formule ? `${formule.name} (${price}, ${packDuration(formule)})` : 'Compte gratuit, pas encore de pack';
 
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       sender,
       to: (process.env.SIGNUP_TO_EMAIL || DEFAULT_TO).split(',').map((e) => e.trim()).filter(Boolean).map((email) => ({ email })),
       replyTo: { email: f.email, name: name.slice(0, 70) },
-      subject: `Inscription TCF Canada — ${name} (${formule ? formule.name : 'essai gratuit'})`.slice(0, 200),
+      subject: `Inscription TCF Canada — ${name} (${formule ? formule.name : 'compte gratuit'})`.slice(0, 200),
       htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px">${EMAIL_LOGO}<h2 style="color:#1452c8">Nouvelle inscription TCF Canada</h2><table style="border-collapse:collapse">${rows}</table></div>`,
       textContent: Object.entries(f).map(([k, v]) => `${LABELS[k]} : ${v}`).join('\n'),
       tags: ['formation', 'inscription-tcf'],
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
         (formule
           ? `<p>Nous avons bien reçu votre inscription au pack <strong>${escapeHtml(formule.name)}</strong> (${price}, ${packDuration(formule)}).</p>` +
             `<p>Un conseiller vous contacte sous 24 h ouvrées pour le paiement${zone === 'cm' ? ', par Mobile Money ou dans nos bureaux' : ''}. Votre accès est activé dès réception.</p>`
-          : `<p>Votre compte gratuit est prêt : test de niveau, leçons de méthode, ${freeSeriesFirst} de chaque compréhension et essai des corrections par l’IA.</p>` +
+          : `<p>Votre compte gratuit est prêt : test de niveau, leçons de méthode, ${freeSeriesFirst} de chaque compréhension sans accès à l’IA. Un pack payant actif est nécessaire pour les corrections et le tuteur IA.</p>` +
             `<p>Quand vous le souhaitez, choisissez un pack sur https://formation.paulworldtravel.com/packs/ pour tout débloquer.</p>`) +
         `<p>À très bientôt,<br>Paul World Travel Formation<br>WhatsApp : ${contact.phone}</p></div>`,
       tags: ['formation', 'confirmation-tcf'],

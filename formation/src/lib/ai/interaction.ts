@@ -1,7 +1,8 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { AccessError } from './access';
+import { requireAiEntitlement, AccessError } from './access';
+import { examAccess } from './exams';
 import type { Turn } from './prompts';
 
 /*
@@ -19,8 +20,8 @@ const secret = () => {
 };
 const sign = (payload: string) => createHmac('sha256', secret()).update(payload).digest('base64url');
 
-export function issueTicket(userId: string, taskId: string) {
-  const payload = Buffer.from(JSON.stringify({ u: userId, t: taskId, e: Date.now() + TTL_MS })).toString('base64url');
+export function issueTicket(userId: string, taskId: string, examSessionId?: string) {
+  const payload = Buffer.from(JSON.stringify({ u: userId, t: taskId, x: examSessionId, e: Date.now() + TTL_MS })).toString('base64url');
   return `${payload}.${sign(payload)}`;
 }
 
@@ -31,7 +32,7 @@ export async function verifyTicket(ticket: unknown, taskId: string) {
   if (!payload || !mac || mac.length !== expected.length || !timingSafeEqual(Buffer.from(mac), Buffer.from(expected))) {
     throw new AccessError(403, 'Échange invalide. Recommencez la tâche.');
   }
-  const data = JSON.parse(Buffer.from(payload, 'base64url').toString()) as { u: string; t: string; e: number };
+  const data = JSON.parse(Buffer.from(payload, 'base64url').toString()) as { u: string; t: string; x?: string; e: number };
   if (data.t !== taskId) throw new AccessError(403, 'Échange invalide. Recommencez la tâche.');
   if (Date.now() > data.e) throw new AccessError(410, 'Cet échange a expiré. Recommencez la tâche.');
 
@@ -40,7 +41,9 @@ export async function verifyTicket(ticket: unknown, taskId: string) {
   if (!user || user.id !== data.u) throw new AccessError(401, 'Connectez-vous pour utiliser cette fonction.');
   const admin = createAdminClient();
   if (!admin) throw new AccessError(503, 'Cette fonction n’est pas encore activée.');
-  return { user, admin };
+  if (data.x) await examAccess(data.x, 'speaking', taskId);
+  else await requireAiEntitlement();
+  return { user, admin, examSessionId: data.x };
 }
 
 /** Validates the dialogue sent back by the browser. */

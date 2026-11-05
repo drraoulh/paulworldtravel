@@ -7,6 +7,8 @@ import { PROGRESS_EVENT } from '@/components/parcours/useCourse';
 
 export interface Access {
   signedIn: boolean;
+  aiAllowed?: boolean;
+  exams?: { remaining: number; limit: number; days: number };
   plan?: 'trial' | 'active' | 'staff';
   pack?: string | null;
   remaining?: { writing: number; speaking: number; tutor: number };

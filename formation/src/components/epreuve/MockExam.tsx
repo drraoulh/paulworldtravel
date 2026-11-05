@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { speakingTasks, writingTasks, wordCount, type SpeakingTask, type WritingTask } from '@/content/expression';
+import { wordCount, type SpeakingTask, type WritingTask } from '@/content/expression';
+import ExamCredits from '@/components/access/ExamCredits';
+import { useAccess, refreshAccess } from '@/components/access/useAccess';
+import { mockWritingTasks, mockSpeakingTasks } from '@/content/mock-exam';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
 import MonologuePractice from '@/components/simulator/MonologuePractice';
@@ -19,16 +22,6 @@ type Phase = 'intro' | 'co' | 'break-ce' | 'ce' | 'break-ee' | 'ee' | 'break-eo'
 const EE_SECONDS = 60 * 60;
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
 
-/** One subject per task, different for each mock exam number. */
-const subjectsFor = (serie: number) => ([1, 2, 3] as const).map((n) => {
-  const list = writingTasks.filter((t) => t.task === n);
-  return list[(serie - 1) % list.length];
-});
-const speakingFor = (serie: number) => ([1, 2, 3] as const).map((n) => {
-  const list = speakingTasks.filter((t) => t.task === n);
-  return list[(serie - 1) % list.length];
-});
-
 export default function MockExam({ series }: { series: number[] }) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [serie, setSerie] = useState(series[0]);
@@ -36,8 +29,26 @@ export default function MockExam({ series }: { series: number[] }) {
   const [ce, setCe] = useState(0);
   const [tcf, setTcf] = useState({ co: 0, ce: 0 });
   const [texts, setTexts] = useState(['', '', '']);
+  const access = useAccess();
+  const [sessionId, setSessionId] = useState('');
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState('');
+  const [oralResults, setOralResults] = useState<Record<string, { feedback: Feedback; transcript?: string }>>({});
+  const requestId = useRef<string | null>(null);
+  const start = async () => {
+    if (starting) return;
+    setStarting(true); setStartError('');
+    requestId.current ??= crypto.randomUUID();
+    try {
+      const response = await fetch('/api/ai/exam/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ serie, requestId: requestId.current }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? 'L’examen n’a pas pu démarrer.');
+      setSessionId(data.sessionId); refreshAccess(); setPhase('co');
+    } catch (e) { setStartError(e instanceof Error ? e.message : 'L’examen n’a pas pu démarrer.'); }
+    finally { setStarting(false); }
+  };
   const top = useRef<HTMLDivElement>(null);
-  const subjects = subjectsFor(serie);
+  const subjects = mockWritingTasks(serie);
 
   useEffect(() => { top.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [phase]);
   useEffect(() => () => stopSpeaking(), []);
@@ -56,6 +67,7 @@ export default function MockExam({ series }: { series: number[] }) {
     <div ref={top} className="scroll-mt-24">
       {phase === 'intro' && (
         <div className="space-y-6">
+          <ExamCredits />
           <div className="rounded-2xl bg-white p-6 sm:p-8">
             <h2 className="heading text-2xl text-night">Le déroulement</h2>
             <ol className="mt-5 space-y-4">
@@ -73,7 +85,7 @@ export default function MockExam({ series }: { series: number[] }) {
             </ol>
             <p className="mt-6 text-slate">
               Durée totale : environ 2 h 50, avec une pause possible entre les épreuves. Prévoyez des écouteurs, un micro, un endroit calme et ne fermez pas la page.
-              L’expression orale demande d’être connecté à votre compte.
+              Un crédit est réservé au démarrage de l’examen. Il couvre les six productions corrigées pendant 24 heures, tant que le pack reste actif. Gardez cette page ouverte jusqu’à la fin.
             </p>
           </div>
           <fieldset className="rounded-2xl bg-white p-6 sm:p-8">
@@ -82,12 +94,13 @@ export default function MockExam({ series }: { series: number[] }) {
             <div className="mt-4 flex flex-wrap gap-3">
               {series.map((n) => (
                 <label key={n} className={`cursor-pointer rounded-xl border-2 px-5 py-3 font-semibold ${serie === n ? 'border-ocean bg-blue-50 text-night' : 'border-rule text-slate hover:border-ocean/50'}`}>
-                  <input type="radio" name="serie" className="sr-only" checked={serie === n} onChange={() => setSerie(n)} />
+                  <input type="radio" name="serie" className="sr-only" checked={serie === n} disabled={starting} onChange={() => { setSerie(n); requestId.current = null; }} />
                   Examen blanc {n}
                 </label>
               ))}
             </div>
-            <button onClick={() => setPhase('co')} className="mt-6 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">Commencer l’examen</button>
+            <button onClick={start} disabled={starting || !access?.aiAllowed || !access.exams?.remaining} className="mt-6 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">{starting ? 'Réservation de votre examen…' : 'Commencer l’examen (1 crédit)'}</button>
+            {startError && <p role="alert" className="mt-3 text-maple">{startError}</p>}
           </fieldset>
         </div>
       )}
@@ -125,7 +138,10 @@ export default function MockExam({ series }: { series: number[] }) {
 
       {phase === 'eo' && (
         <MockSpeaking
-          tasks={speakingFor(serie)}
+          tasks={mockSpeakingTasks(serie)}
+          sessionId={sessionId}
+          results={oralResults}
+          onResult={(id, result) => setOralResults((previous) => ({ ...previous, [id]: result }))}
           onFinish={() => {
             saveMockResult({ serie, co, ce, total: 39, date: new Date().toISOString() });
             setPhase('results');
@@ -133,7 +149,7 @@ export default function MockExam({ series }: { series: number[] }) {
         />
       )}
 
-      {phase === 'results' && <MockResults serie={serie} co={co} ce={ce} tcf={tcf} subjects={subjects} texts={texts} />}
+      {phase === 'results' && <MockResults sessionId={sessionId} oralResults={oralResults} serie={serie} co={co} ce={ce} tcf={tcf} subjects={subjects} texts={texts} />}
     </div>
   );
 }
@@ -203,7 +219,7 @@ function MockWriting({ subjects, texts, setTexts, onFinish }: {
   );
 }
 
-function MockSpeaking({ tasks, onFinish }: { tasks: SpeakingTask[]; onFinish: () => void }) {
+function MockSpeaking({ tasks, onFinish, sessionId, results, onResult }: { tasks: SpeakingTask[]; onFinish: () => void; sessionId: string; results: Record<string, { feedback: Feedback; transcript?: string }>; onResult: (id: string, result: { feedback: Feedback; transcript?: string }) => void }) {
   const signedIn = useSignedIn();
   const [tab, setTab] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -225,8 +241,8 @@ function MockSpeaking({ tasks, onFinish }: { tasks: SpeakingTask[]; onFinish: ()
         <p className="mt-3 text-lg text-ink">{t.prompt}</p>
         {signedIn === false && <div className="mt-6"><SignInPrompt next="/examen-blanc/" title="Connectez-vous pour passer l’oral" text="L’expression orale est enregistrée et corrigée par l’IA : elle demande un compte. Vos résultats écrits sont déjà enregistrés sur cet appareil." /></div>}
         {signedIn && (t.mode === 'interaction'
-          ? <InteractionPractice key={t.id} task={t} onBusy={setBusy} />
-          : <MonologuePractice key={t.id} task={t} onBusy={setBusy} />)}
+          ? <InteractionPractice key={t.id} task={t} onBusy={setBusy} examSessionId={sessionId} initialResult={results[t.id]} onResult={(result) => onResult(t.id, result)} />
+          : <MonologuePractice key={t.id} task={t} onBusy={setBusy} examSessionId={sessionId} initialResult={results[t.id]?.transcript !== undefined ? { transcript: results[t.id].transcript!, feedback: results[t.id].feedback } : undefined} onResult={(result) => onResult(t.id, result)} />)}
         <div className="mt-8 flex flex-wrap gap-3 border-t border-rule pt-5">
           {tab < 2 && <button onClick={() => setTab(tab + 1)} disabled={busy} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">Tâche suivante</button>}
           <button onClick={() => { if (tab === 2 || confirm('Terminer l’examen maintenant ?')) onFinish(); }} disabled={busy}
@@ -239,7 +255,7 @@ function MockSpeaking({ tasks, onFinish }: { tasks: SpeakingTask[]; onFinish: ()
   );
 }
 
-function MockResults({ serie, co, ce, tcf, subjects, texts }: { serie: number; co: number; ce: number; tcf: { co: number; ce: number }; subjects: WritingTask[]; texts: string[] }) {
+function MockResults({ sessionId, oralResults, serie, co, ce, tcf, subjects, texts }: { sessionId: string; oralResults: Record<string, { feedback: Feedback }>; serie: number; co: number; ce: number; tcf: { co: number; ce: number }; subjects: WritingTask[]; texts: string[] }) {
   const [grades, setGrades] = useState<(Feedback | string | null)[]>([null, null, null]);
   const [busy, setBusy] = useState(false);
 
@@ -247,9 +263,10 @@ function MockResults({ serie, co, ce, tcf, subjects, texts }: { serie: number; c
     setBusy(true);
     const out: (Feedback | string | null)[] = [...grades];
     for (let i = 0; i < 3; i++) {
+      if (out[i] && typeof out[i] !== 'string') continue;
       if (wordCount(texts[i]) < 20) { out[i] = 'Texte trop court pour être corrigé.'; continue; }
       try {
-        const res = await fetch('/api/ai/writing/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ taskId: subjects[i].id, text: texts[i] }) });
+        const res = await fetch('/api/ai/writing/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ taskId: subjects[i].id, text: texts[i], examSessionId: sessionId }) });
         const data = await res.json();
         out[i] = res.ok ? data.feedback : data.error ?? 'La correction a échoué.';
       } catch {
@@ -268,14 +285,14 @@ function MockResults({ serie, co, ce, tcf, subjects, texts }: { serie: number; c
           <div><p className="text-blue-100">Compréhension orale</p><p className="display text-4xl text-container">{co}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.co} / 699, {nclcLabel(nclcFor('co', tcf.co))}</p></div>
           <div><p className="text-blue-100">Compréhension écrite</p><p className="display text-4xl text-container">{ce}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.ce} / 699, {nclcLabel(nclcFor('ce', tcf.ce))}</p></div>
           <div><p className="text-blue-100">Expression écrite</p><p className="mt-2 text-blue-100">{texts.filter((t) => wordCount(t) > 0).length} / 3 tâches rédigées</p></div>
-          <div><p className="text-blue-100">Expression orale</p><p className="mt-2 text-blue-100">Notes affichées dans chaque tâche et dans votre espace</p></div>
+          <div><p className="text-blue-100">Expression orale</p><p className="mt-2 text-blue-100">{Object.keys(oralResults).length} / 3 tâches corrigées — détail dans votre espace</p></div>
         </div>
         <p className="mt-6 text-sm text-blue-100">Les scores sur 699 et les NCLC des compréhensions sont des estimations, pas des scores officiels. Le détail de chaque question est dans le tableau de bord de chaque épreuve.</p>
       </div>
 
       <div className="rounded-2xl bg-white p-6 sm:p-8">
         <h2 className="heading text-xl text-night">Votre expression écrite</h2>
-        <p className="mt-2 text-slate">Faites corriger vos trois textes par l’IA : cela utilise trois corrections d’écrit de votre compte.</p>
+        <p className="mt-2 text-slate">Faites corriger vos trois textes par l’IA : les trois corrections sont incluses dans le crédit de cet examen, sans utiliser vos quotas d’entraînement.</p>
         <button onClick={correct} disabled={busy} className="mt-4 rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
           {busy ? 'Correction en cours…' : 'Faire corriger mes trois textes'}
         </button>

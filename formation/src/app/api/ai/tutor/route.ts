@@ -11,14 +11,14 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const history: ChatMessage[] = (Array.isArray(body.messages) ? body.messages : [])
       .filter((m: ChatMessage) => (m?.role === 'user' || m?.role === 'assistant') && typeof m.content === 'string')
-      .slice(-10)
-      .map((m: ChatMessage) => ({ role: m.role, content: m.content.slice(0, 2000) }));
+      .slice(-6)
+      .map((m: ChatMessage) => ({ role: m.role, content: m.content.slice(0, 1500) }));
     if (history.length === 0 || history[history.length - 1].role !== 'user') {
       return Response.json({ error: 'Posez votre question.' }, { status: 422 });
     }
 
     const access = await checkAccess('tutor');
-    const reply = await chat(MODELS.fast(), [{ role: 'system', content: TUTOR_SYSTEM }, ...history], { maxTokens: 700, temperature: 0.4 });
+    const reply = await chat(MODELS.fast(), [{ role: 'system', content: TUTOR_SYSTEM }, ...history], { maxTokens: 500, temperature: 0.4 });
     await access.record();
     return Response.json({ reply: reply.trim(), remaining: access.remaining, plan: access.plan });
   } catch (error) {

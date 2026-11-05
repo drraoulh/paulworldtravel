@@ -12,13 +12,13 @@ import { refreshAccess } from '@/components/access/useAccess';
 
 type Phase = 'idle' | 'recording' | 'recorded' | 'sending';
 
-export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask; onBusy: (busy: boolean) => void }) {
+export default function MonologuePractice({ task, onBusy, examSessionId, initialResult, onResult }: { task: SpeakingTask; onBusy: (busy: boolean) => void; examSessionId?: string; initialResult?: { transcript: string; feedback: Feedback }; onResult?: (result: { transcript: string; feedback: Feedback }) => void }) {
   const rec = useRecorder();
   const [phase, setPhase] = useState<Phase>('idle');
   const [elapsed, setElapsed] = useState(0);
   const [audio, setAudio] = useState<{ blob: Blob; url: string; seconds: number } | null>(null);
   const [error, setError] = useState('');
-  const [result, setResult] = useState<{ transcript: string; feedback: Feedback } | null>(null);
+  const [result, setResult] = useState<{ transcript: string; feedback: Feedback } | null>(initialResult ?? null);
   const [quota, setQuota] = useState<{ remaining: number | null; plan: string | null }>({ remaining: null, plan: null });
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -63,12 +63,15 @@ export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask
       try { file = await toMp3(audio.blob); } catch { /* fall back to the original recording */ }
       const form = new FormData();
       form.append('taskId', task.id);
+      if (examSessionId) form.append('examSessionId', examSessionId);
       form.append('seconds', String(audio.seconds));
       form.append('audio', file, file.type === 'audio/mpeg' ? 'reponse.mp3' : 'reponse.m4a');
       const res = await fetch('/api/ai/speaking/', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'La correction a échoué.');
-      setResult({ transcript: data.transcript, feedback: data.feedback });
+      const corrected = { transcript: data.transcript, feedback: data.feedback };
+      setResult(corrected);
+      onResult?.(corrected);
       markDone(`eo/simulation-${task.task}`);
       refreshAccess();
       setQuota({ remaining: data.remaining, plan: data.plan });
@@ -83,7 +86,7 @@ export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-4">
           {phase !== 'recording' ? (
-            <button onClick={start} disabled={phase === 'sending'} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
+            <button onClick={start} disabled={phase === 'sending' || Boolean(examSessionId && result)} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
               <span className="h-3 w-3 rounded-full bg-white" aria-hidden="true" /> {audio ? 'Recommencer l’enregistrement' : 'Commencer l’enregistrement'}
             </button>
           ) : (
@@ -101,7 +104,7 @@ export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask
           <>
             <audio controls src={audio.url} className="w-full max-w-md" />
             <div className="flex flex-wrap items-center gap-4">
-              <button onClick={send} disabled={phase === 'sending'} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
+              <button onClick={send} disabled={phase === 'sending' || Boolean(examSessionId && result)} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
                 {phase === 'sending' ? 'Transcription et correction (1 min environ)…' : 'Faire corriger mon oral'}
               </button>
               <Quota remaining={quota.remaining} plan={quota.plan} unit="correction" />
@@ -110,8 +113,9 @@ export default function MonologuePractice({ task, onBusy }: { task: SpeakingTask
         )}
       </div>
       {error && <p role="alert" className="mt-4 rounded-xl bg-red-50 p-4 text-maple">{error}</p>}
-      <p className="mt-6 text-sm text-slate">Votre enregistrement sert uniquement à la correction : il est transcrit puis supprimé. Seule la transcription est conservée dans votre espace.</p>
+      <p className="mt-6 text-sm text-slate">Le site ne conserve pas le fichier audio. La transcription et la correction sont enregistrées dans votre espace.</p>
 
+      {examSessionId && <p className="mt-4 text-sm text-ocean">Correction incluse dans votre examen blanc. Aucun crédit d’entraînement utilisé. Une fois corrigée, la réponse est conservée pour cet examen.</p>}
       {result && (
         <div className="mt-8 space-y-8">
           <details className="rounded-2xl border border-rule bg-paper p-6" open>

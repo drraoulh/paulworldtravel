@@ -131,7 +131,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
         <p className="mt-4 text-slate">
           {submitted?.formule
             ? 'Un conseiller vous contacte sous 24 h ouvrées pour le paiement de votre pack. Votre accès est activé dès réception.'
-            : `Votre compte gratuit vous donne accès au test de niveau, aux leçons, ${freeSeriesFirstTo} de chaque compréhension et à un essai des corrections par l’IA.`}
+            : `Votre compte gratuit vous donne accès au test de niveau, aux leçons, ${freeSeriesFirstTo} de chaque compréhension sans accès à l’IA. Un pack payant actif est nécessaire pour les corrections et le tuteur IA.`}
         </p>
         {submitted?.formule && <p className="mt-4 font-semibold text-night">Pack {packs.find((p) => p.id === submitted.formule)?.name} · {formatPrice(packs.find((p) => p.id === submitted.formule)!, submitted.zone)}. Demande reçue → paiement avec un conseiller → activation.</p>}
         <p className="mt-4 text-sm text-slate">Pensez à vérifier les courriers indésirables si le message n’apparaît pas.</p>
