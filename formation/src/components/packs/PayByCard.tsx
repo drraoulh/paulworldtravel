@@ -9,7 +9,7 @@ import type { Zone } from '@/content/offers';
  * Opens the Stripe payment page for a pack. Hidden while card payment is not set
  * up. `enabled` can come from the server; otherwise the button asks the API.
  */
-export default function PayByCard({ pack, zone, enabled, legalAccepted, label = 'Payer par carte maintenant', className = '' }: { pack: string; zone: Zone; enabled?: boolean; legalAccepted?: boolean; label?: string; className?: string }) {
+export default function PayByCard({ pack, zone, enabled, legalAccepted, label = 'Payer par carte maintenant', className = '', fallback = null }: { pack: string; zone: Zone; enabled?: boolean; legalAccepted?: boolean; label?: string; className?: string; fallback?: React.ReactNode }) {
   const [ownAccepted, setOwnAccepted] = useState(false);
   const accepted = legalAccepted ?? ownAccepted;
   const [available, setAvailable] = useState(enabled ?? false);
@@ -21,7 +21,7 @@ export default function PayByCard({ pack, zone, enabled, legalAccepted, label = 
     fetch('/api/paiement/stripe/').then((r) => r.json()).then((d) => setAvailable(Boolean(d.enabled))).catch(() => setAvailable(false));
   }, [enabled]);
 
-  if (!available) return null;
+  if (!available) return <>{fallback}</>;
 
   const pay = async () => {
     if (!accepted) { setError('Acceptez les conditions d’utilisation et de vente pour payer.'); return; }
@@ -41,7 +41,7 @@ export default function PayByCard({ pack, zone, enabled, legalAccepted, label = 
   return (
     <div className={className}>
       {legalAccepted === undefined && <TermsAcceptance checked={ownAccepted} onChange={setOwnAccepted} paid />}
-      <button type="button" onClick={pay} disabled={busy || !accepted} className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
+      <button type="button" onClick={pay} disabled={busy || !accepted} className="inline-flex w-full items-center justify-center rounded-lg bg-ocean px-5 py-3.5 font-bold text-white shadow-[0_4px_14px_rgba(36,66,199,.35)] transition hover:-translate-y-0.5 hover:bg-night disabled:opacity-50">
         {busy ? 'Ouverture du paiement…' : label}
       </button>
       <p className="mt-2 text-sm text-slate">Visa, Mastercard ou Apple Pay, sur la page sécurisée de Stripe. Votre accès s’ouvre dès le paiement accepté.</p>

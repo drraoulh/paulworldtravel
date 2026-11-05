@@ -1,4 +1,5 @@
-// Speech-to-text: direct OpenAI when configured, otherwise Whisper on Hugging Face.
+// Speech-to-text: OpenAI gpt-transcribe when OPENAI_API_KEY is set, Whisper on
+// Hugging Face (HF_TOKEN) as fallback. The OpenRouter path is kept but not used.
 
 import { chat, MODELS } from './openrouter';
 
@@ -6,8 +7,33 @@ export const transcriptionConfigured = () => Boolean(process.env.OPENAI_API_KEY 
 
 const FORMATS: Record<string, string> = {
   'audio/mpeg': 'mp3', 'audio/mp3': 'mp3', 'audio/wav': 'wav', 'audio/x-wav': 'wav',
-  'audio/webm': 'webm', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/flac': 'flac',
+  'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/flac': 'flac',
 };
+
+const EXTENSIONS: Record<string, string> = { ...FORMATS, 'audio/webm': 'webm', 'video/webm': 'webm' };
+
+async function viaOpenAI(audio: ArrayBuffer, contentType: string, withLanguage = true): Promise<string> {
+  const type = (contentType || 'audio/webm').split(';')[0].trim();
+  const form = new FormData();
+  form.append('file', new Blob([audio], { type }), `oral.${EXTENSIONS[type] ?? 'webm'}`);
+  form.append('model', process.env.OPENAI_MODEL_TRANSCRIPTION || 'gpt-transcribe');
+  form.append('response_format', 'json');
+  if (withLanguage) form.append('languages[]', 'fr');
+  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+    body: form,
+    signal: AbortSignal.timeout(55_000),
+  });
+  if (!res.ok) {
+    const detail = (await res.text()).slice(0, 300);
+    // If the language hint is refused, retry once without it.
+    if (res.status === 400 && withLanguage && /language/i.test(detail)) return viaOpenAI(audio, contentType, false);
+    throw new Error(`OpenAI ${res.status}: ${detail}`);
+  }
+  const data = await res.json();
+  return String(data?.text ?? '').trim();
+}
 
 async function viaHuggingFace(audio: ArrayBuffer, contentType: string) {
   const model = process.env.HF_WHISPER_MODEL || 'openai/whisper-large-v3-turbo';
@@ -45,33 +71,28 @@ export class TranscriptionError extends Error {}
 
 export async function transcribe(audio: ArrayBuffer, contentType: string) {
   if (!transcriptionConfigured()) throw new TranscriptionError('La transcription de l’oral n’est pas encore activée.');
-  try {
-    if (process.env.OPENAI_API_KEY) {
-      const form = new FormData();
-      const extension = FORMATS[contentType.split(';')[0]] ?? 'mp3';
-      form.set('file', new Blob([audio], { type: contentType || 'audio/mpeg' }), `oral.${extension}`);
-      form.set('model', process.env.OPENAI_MODEL_TRANSCRIPTION || 'gpt-transcribe');
-      form.set('language', 'fr');
-      const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-        body: form,
-        signal: AbortSignal.timeout(55_000),
-      });
-      if (!response.ok) throw new Error(`Transcription failed (${response.status})`);
-      const result = await response.json();
-      return String(result.text ?? '').trim();
+  let lastError = '';
+  if (process.env.OPENAI_API_KEY) {
+    try {
+      return await viaOpenAI(audio, contentType);
+    } catch (e) {
+      console.error('OpenAI transcription failed', e);
+      lastError = String((e as Error).message);
     }
-    return await viaHuggingFace(audio, contentType);
-  } catch (e) {
-    console.error('Audio transcription failed', e);
-    const msg = String((e as Error).message);
-    throw new TranscriptionError(
-      /402|credit/i.test(msg)
-        ? 'La transcription est momentanément indisponible (crédit du service épuisé). Réessayez plus tard.'
-        : 'La transcription a échoué. Réessayez dans quelques instants.',
-    );
   }
+  if (process.env.HF_TOKEN) {
+    try {
+      return await viaHuggingFace(audio, contentType);
+    } catch (e) {
+      console.error('Hugging Face transcription failed', e);
+      lastError = String((e as Error).message);
+    }
+  }
+  throw new TranscriptionError(
+    /402|429|credit|quota/i.test(lastError)
+      ? 'La transcription est momentanément indisponible (crédit épuisé). Réessayez plus tard.'
+      : 'La transcription a échoué. Réessayez dans quelques instants.',
+  );
 }
 
 /** Kept for the future switch to another provider. */
