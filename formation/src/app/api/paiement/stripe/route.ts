@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { supabaseConfigured } from '@/lib/supabase/config';
-import { createCheckout, stripeConfigured } from '@/lib/stripe';
+import { cardPaymentFor, createCheckout, stripeConfigured } from '@/lib/stripe';
 import { SITE } from '@/lib/email-layout';
 import { packDuration, packs, zones } from '@/content/offers';
 import { visitorZone } from '@/lib/zone';
@@ -11,8 +11,12 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /** Whether card payment is available (the pack pages show the button only then). */
-export function GET() {
-  return NextResponse.json({ enabled: stripeConfigured() });
+export async function GET() {
+  if (!stripeConfigured() || !supabaseConfigured) return NextResponse.json({ enabled: false });
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: me } = user ? await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle() : { data: null };
+  return NextResponse.json({ enabled: cardPaymentFor(me?.role) });
 }
 
 /**
@@ -37,6 +41,8 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) return fail(401, 'Connectez-vous pour payer votre pack.');
+  const { data: me } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+  if (!cardPaymentFor(me?.role)) return fail(503, 'Le paiement par carte n’est pas encore disponible.');
 
   const { data: existing } = await supabase.from('enrollments').select('id').eq('user_id', user.id).eq('formule', pack.id).eq('status', 'pending').order('created_at', { ascending: false }).limit(1).maybeSingle();
   let enrollmentId = existing?.id as string | undefined;
