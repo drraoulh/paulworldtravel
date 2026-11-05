@@ -13,7 +13,7 @@ export default async function TestDeNiveau() {
   const reading = modules.find((m) => m.id === 'ce')!;
   return (
     <>
-      <PageHeader image={{ src: '/images/study.jpg', alt: 'Prise de notes pendant une révision' }}
+      <PageHeader image={{ src: '/images/test-niveau.jpg', alt: 'Une jeune femme note ses réponses dans un cahier devant son ordinateur' }}
         title="Test de niveau gratuit"
         intro="Quinze questions de grammaire, de vocabulaire et de lecture, de la plus simple à la plus difficile. Chaque réponse est expliquée. Comptez environ dix minutes."
       />

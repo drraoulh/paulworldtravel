@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
@@ -20,7 +21,7 @@ export default async function Packs({ searchParams }: Props) {
   const zone = isZone(asked) ? asked : zoneForCountry((await headers()).get('x-vercel-ip-country'));
   return (
     <>
-      <PageHeader image={{ src: '/images/classroom.jpg', alt: 'Participants dans une salle de cours' }}
+      <PageHeader image={{ src: '/images/groupe-tuteur.jpg', alt: 'Deux étudiants préparent un examen sur ordinateur avec l’aide d’une formatrice' }}
         title="Choisissez votre pack"
         intro="Tous les packs donnent accès à la plateforme complète. Plus le pack est élevé, plus vous avez de temps, de corrections et d’accompagnement par un formateur."
       />
@@ -46,10 +47,13 @@ export default async function Packs({ searchParams }: Props) {
               ? <p className="mt-4 text-slate">Vous pouvez aussi payer par carte bancaire en ligne (Visa, Mastercard, Apple Pay) depuis votre espace, après la création de votre compte : l’accès s’ouvre immédiatement.</p>
               : <p className="mt-4 text-slate">Le paiement par carte en ligne arrive bientôt.</p>}
           </div>
-          <div className="rounded-2xl bg-paper p-6 sm:p-8">
+          <div className="overflow-hidden rounded-2xl bg-paper">
+            <div className="relative aspect-[16/9]"><Image src="/images/classe-groupe.jpg" alt="Un formateur accompagne des étudiants qui travaillent sur ordinateur en salle de cours" fill sizes="(min-width: 1024px) 540px, 100vw" className="object-cover" /></div>
+            <div className="p-6 sm:p-8">
             <h3 className="heading text-xl text-night">Une question avant de choisir ?</h3>
             <p className="mt-2 text-slate">Écrivez-nous, nous vous aidons à choisir le pack adapté à votre niveau et à la date de votre examen.</p>
             <ButtonLink href={contact.whatsapp} className="mt-5">Nous écrire sur WhatsApp</ButtonLink>
+            </div>
           </div>
         </Container>
       </section>

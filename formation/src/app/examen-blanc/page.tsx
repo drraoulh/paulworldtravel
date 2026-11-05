@@ -15,7 +15,7 @@ export default function ExamenBlanc() {
   const numbers = seriesFor('co').map((s) => s.number).filter((n) => ce.has(n));
   return (
     <>
-      <PageHeader image={{ src: '/images/examen.jpg', alt: 'Étudiants concentrés pendant un examen écrit' }}
+      <PageHeader image={{ src: '/images/salle-examen.jpg', alt: 'Des candidats composent dans une salle d’examen sous la surveillance d’un examinateur' }}
         title="Examen blanc, en conditions réelles."
         intro="Les quatre épreuves du TCF Canada enchaînées, avec les durées officielles : compréhension orale, compréhension écrite, expression écrite, puis expression orale."
       />

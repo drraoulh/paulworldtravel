@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
 import { epreuves, nclcTable, totalMinutes } from '@/content/tcf';
@@ -19,7 +20,7 @@ const faq = [
 export default function TcfCanada() {
   return (
     <>
-      <PageHeader image={{ src: '/images/toronto.jpg', alt: 'Toronto et la tour CN au coucher du soleil' }}
+      <PageHeader image={{ src: '/images/hiver-canada.jpg', alt: 'Un couple souriant se promène dans une rue enneigée, au Canada en hiver' }}
         title="Le TCF Canada, épreuve par épreuve"
         intro="Le Test de connaissance du français pour le Canada évalue quatre compétences. Chacune reçoit un score, converti ensuite en niveau NCLC par l’immigration canadienne."
       />
@@ -87,7 +88,8 @@ export default function TcfCanada() {
       </section>
 
       <section className="bg-white py-16 sm:py-20">
-        <Container className="max-w-4xl">
+        <Container className="grid gap-10 lg:grid-cols-[1fr_20rem] lg:items-start">
+          <div>
           <h2 className="heading mb-8 text-3xl text-night sm:text-4xl">Questions fréquentes</h2>
           <div className="divide-y divide-rule overflow-hidden rounded-lg border border-rule">
             {faq.map(([q, a]) => (
@@ -101,6 +103,11 @@ export default function TcfCanada() {
             ))}
           </div>
           <ButtonLink href="/test-de-niveau/" variant="dark" className="mt-10">Faire le test de niveau gratuit</ButtonLink>
+          </div>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper"><Image src="/images/famille.jpg" alt="Une famille se serre dans les bras, réunie et souriante" fill sizes="(min-width: 1024px) 320px, 50vw" className="object-cover" /></div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper"><Image src="/images/diplomes.jpg" alt="De jeunes diplômés en toge célèbrent leur réussite" fill sizes="(min-width: 1024px) 320px, 50vw" className="object-cover" /></div>
+          </div>
         </Container>
       </section>
     </>
