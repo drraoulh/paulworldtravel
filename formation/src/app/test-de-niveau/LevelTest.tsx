@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { estimateLevel, levelAdvice, questions } from '@/content/levelTest';
 import { getSupabase } from '@/lib/supabase/client';
-import { useSignedIn } from '@/components/ai/useSignedIn';
+import { audienceOf, useAccess } from '@/components/access/useAccess';
 import { markDone } from '@/components/parcours/useCourse';
 
 export default function LevelTest({ firstLessonHref }: { firstLessonHref: string }) {
-  const signedIn = useSignedIn();
+  const audience = audienceOf(useAccess());
+  const signedIn = audience === null ? null : audience !== 'visitor';
+  const withPack = audience === 'pack';
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => questions.map(() => null));
   const [checked, setChecked] = useState(false);
@@ -72,8 +74,10 @@ export default function LevelTest({ firstLessonHref }: { firstLessonHref: string
         </p>
         <div className="mt-6 rounded-xl bg-paper p-5">
           <h2 className="heading text-xl text-night">Votre première séance : découvrir la méthode de lecture</h2>
-          <p className="mt-2 text-slate">Commencez par une leçon gratuite, puis essayez les séries gratuites. Travaillez ensuite les autres compétences pour compléter ce premier bilan.</p>
-          <Link href={firstLessonHref} className="mt-4 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">Commencer ma première leçon gratuite</Link>
+          <p className="mt-2 text-slate">{withPack
+            ? 'Commencez par la leçon de méthode, puis faites les séries de lecture et d’écoute de votre pack. Travaillez ensuite les autres compétences pour compléter ce premier bilan.'
+            : 'Commencez par une leçon gratuite, puis faites la série gratuite. Travaillez ensuite les autres compétences pour compléter ce premier bilan.'}</p>
+          <Link href={firstLessonHref} className="mt-4 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">{withPack ? 'Commencer ma première leçon' : 'Commencer ma première leçon gratuite'}</Link>
         </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link href={signedIn ? '/parcours/' : `/inscription/?niveau=${level}`} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">

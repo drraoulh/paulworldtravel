@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { EPREUVE_IMAGES } from '@/lib/epreuve-images';
 import { FREE_SERIES } from '@/content/offers';
 import type { CourseItem, CourseModule, ItemKind } from '@/content/parcours/course';
-import { useSignedIn } from '@/components/ai/useSignedIn';
+import { audienceOf, useAccess } from '@/components/access/useAccess';
 import { markDone, percent, setWeeklyGoal, useCourse } from './useCourse';
 
 export const KIND_LABEL: Record<ItemKind, string> = {
@@ -69,7 +69,9 @@ function weekDays() {
 
 export default function CourseHome({ course, totalMinutes, quizCount }: { course: CourseModule[]; totalMinutes: number; quizCount: number }) {
   const { ready, isDone, isRead, last, goal, days } = useCourse();
-  const signedIn = useSignedIn();
+  const audience = audienceOf(useAccess());
+  const signedIn = audience === null ? null : audience !== 'visitor';
+  const withPack = audience === 'pack';
   const [filter, setFilter] = useState<'all' | 'pending' | 'done'>('all');
   const items = course.flatMap((m) => m.items);
   const doneCount = items.filter((it) => isDone(it.id)).length;
@@ -94,7 +96,7 @@ export default function CourseHome({ course, totalMinutes, quizCount }: { course
             <p className="text-[10px] font-bold uppercase tracking-[.15em] text-ocean">Mon apprentissage · TCF Canada</p>
             <h1 className="display mt-3 max-w-2xl text-3xl text-night sm:text-4xl">Chaque séance est un pas de plus.</h1>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate">{course.length} modules, {items.length} activités, environ {Math.round(totalMinutes / 60)} heures. Retrouvez vos cours, entraînez-vous et validez vos acquis à votre rythme.</p>
-            <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold text-slate"><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="book" className="h-4 w-4 text-ocean" />{items.filter((it) => it.kind === 'lecon' && it.id !== 'guide').length} leçons gratuites</span><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="check" className="h-4 w-4 text-ocean" />{quizCount} questions de quiz</span></div>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold text-slate"><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="book" className="h-4 w-4 text-ocean" />{items.filter((it) => it.kind === 'lecon' && it.id !== 'guide').length} leçons{withPack ? '' : ' gratuites'}</span><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="check" className="h-4 w-4 text-ocean" />{quizCount} questions de quiz</span></div>
           </div>
           <div className="min-w-0 rounded-2xl border border-rule bg-paper p-6">
             <div className="flex items-baseline justify-between">
@@ -157,7 +159,7 @@ export default function CourseHome({ course, totalMinutes, quizCount }: { course
                               <span className={`block font-semibold ${ok ? 'text-slate' : 'text-night'} hover:text-ocean`}>{it.title}</span>
                               <span className="block text-sm text-slate">{KIND_LABEL[it.kind]}, {it.minutes} min</span>
                               {it.kind === 'lecon' && it.id !== 'guide' && <span className={`mt-1 block text-xs ${ok ? 'text-green-700' : 'text-slate'}`}>{ok ? '✓ Quiz réussi' : isRead(it.id) ? 'Leçon consultée · quiz à réussir' : 'À découvrir'}</span>}
-                              <span className="mt-1 block text-xs font-semibold text-ocean">{it.kind === 'examen' || (it.id.startsWith('serie:') && Number(it.href.split('/').filter(Boolean).at(-1)) > FREE_SERIES) ? 'Pack requis' : it.kind === 'simulation' ? 'Pack actif requis · quota selon formule' : it.id.startsWith('serie:') ? 'Gratuit avec un compte' : 'Gratuit sans compte'}</span>
+                              {audience !== null && <span className="mt-1 block text-xs font-semibold text-ocean">{withPack ? 'Inclus dans votre pack' : it.kind === 'examen' || (it.id.startsWith('serie:') && Number(it.href.split('/').filter(Boolean).at(-1)) > FREE_SERIES) ? 'Pack requis' : it.kind === 'simulation' ? 'Pack actif requis · quota selon formule' : it.id.startsWith('serie:') ? 'Gratuit avec un compte' : 'Gratuit sans compte'}</span>}
                             </Link>
                             {it.kind === 'simulation' && !ok && ready && (
                               <button onClick={() => markDone(it.id)} className="hidden shrink-0 rounded-lg border border-rule px-3 py-1.5 text-xs font-semibold text-slate hover:border-ocean hover:text-ocean sm:block">

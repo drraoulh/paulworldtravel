@@ -80,7 +80,7 @@ export async function accessStatus() {
     if (e instanceof AccessError && e.status === 401) return null;
     throw e;
   }
-  const { admin, user, plan, pack } = access;
+  const { admin, user, plan, pack, enrollment, firstName } = access;
   const remaining = { writing: 0, speaking: 0, tutor: 0 };
   if (plan === 'staff' || pack) {
     await Promise.all((['writing', 'speaking', 'tutor'] as const).map(async (feature) => {
@@ -92,7 +92,7 @@ export async function accessStatus() {
     }));
   }
   const exams = plan === 'staff' || pack ? await examStatus(access) : { remaining: 0, limit: 0, days: 0 };
-  return { plan, pack: pack?.id ?? null, remaining, exams, configured: true, aiAllowed: plan === 'staff' || Boolean(pack) };
+  return { plan, pack: pack?.id ?? null, endsAt: enrollment?.ends_at ?? null, firstName, remaining, exams, configured: true, aiAllowed: plan === 'staff' || Boolean(pack) };
 }
 
 export async function checkAccess(feature: Feature) {

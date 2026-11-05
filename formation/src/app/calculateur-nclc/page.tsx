@@ -1,3 +1,4 @@
+import ForAudience from '@/components/access/ForAudience';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
@@ -72,8 +73,11 @@ export default function CalculateurNclc() {
             <Link href="/niveaux-nclc/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Le tableau complet des niveaux NCLC</Link>
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <ButtonLink href="/epreuve/comprehension-orale/series/">Faire une série d’écoute gratuite</ButtonLink>
-            <ButtonLink href="/epreuve/comprehension-ecrite/series/" variant="dark">Faire une série de lecture gratuite</ButtonLink>
+            <ForAudience
+              visitor={<><ButtonLink href="/epreuve/comprehension-orale/series/">Faire une série d’écoute gratuite</ButtonLink><ButtonLink href="/epreuve/comprehension-ecrite/series/" variant="dark">Faire une série de lecture gratuite</ButtonLink></>}
+              free={<><ButtonLink href="/epreuve/comprehension-orale/series/">Faire une série d’écoute gratuite</ButtonLink><ButtonLink href="/epreuve/comprehension-ecrite/series/" variant="dark">Faire une série de lecture gratuite</ButtonLink></>}
+              pack={<><ButtonLink href="/epreuve/comprehension-orale/series/">Faire une série d’écoute</ButtonLink><ButtonLink href="/epreuve/comprehension-ecrite/series/" variant="dark">Faire une série de lecture</ButtonLink></>}
+            />
           </div>
         </Container>
       </section>

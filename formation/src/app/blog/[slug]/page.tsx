@@ -1,3 +1,4 @@
+import ForAudience from '@/components/access/ForAudience';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -102,12 +103,17 @@ export default async function ArticlePage({ params }: Props) {
             )}
 
             <section aria-labelledby="cta-title" className="mt-10 rounded-2xl bg-night p-7 text-white sm:p-9">
-              <h2 id="cta-title" className="heading text-2xl">Où en êtes-vous avant l’examen ?</h2>
-              <p className="mt-3 max-w-xl text-white/80">Le test de niveau gratuit vous situe en une dizaine de minutes. Ensuite, un pack vous donne toutes les séries, les examens blancs et des corrections chaque jour.</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href="/test-de-niveau/">Faire le test de niveau gratuit</ButtonLink>
-                <ButtonLink href="/packs/" variant="outline">Voir les packs</ButtonLink>
-              </div>
+              <ForAudience
+                visitor={<><h2 id="cta-title" className="heading text-2xl">Où en êtes-vous avant l’examen ?</h2>
+                  <p className="mt-3 max-w-xl text-white/80">Le test de niveau gratuit vous situe en une dizaine de minutes. Ensuite, un pack vous donne toutes les séries, les examens blancs et des corrections chaque jour.</p>
+                  <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/test-de-niveau/">Faire le test de niveau gratuit</ButtonLink><ButtonLink href="/packs/" variant="outline">Voir les packs</ButtonLink></div></>}
+                free={<><h2 id="cta-title" className="heading text-2xl">Passez à la vitesse supérieure</h2>
+                  <p className="mt-3 max-w-xl text-white/80">Un pack vous donne toutes les séries, les examens blancs et des corrections par l’IA chaque jour.</p>
+                  <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/packs/">Voir les packs</ButtonLink><ButtonLink href="/parcours/" variant="outline">Reprendre mon parcours</ButtonLink></div></>}
+                pack={<><h2 id="cta-title" className="heading text-2xl">Mettez cet article en pratique</h2>
+                  <p className="mt-3 max-w-xl text-white/80">Votre pack vous donne toutes les séries, les examens blancs et des corrections chaque jour.</p>
+                  <div className="mt-6 flex flex-wrap gap-3"><ButtonLink href="/parcours/">Reprendre mon parcours</ButtonLink><ButtonLink href="/examen-blanc/" variant="outline">Faire un examen blanc</ButtonLink></div></>}
+              />
             </section>
           </div>
 

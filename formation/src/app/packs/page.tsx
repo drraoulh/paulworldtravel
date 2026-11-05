@@ -1,3 +1,4 @@
+import ForAudience, { PackStatus } from '@/components/access/ForAudience';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -25,11 +26,21 @@ export default async function Packs() {
 
       <section className="bg-paper py-14 sm:py-20">
         <Container>
+          <ForAudience pack={(
+            <div className="mb-8 rounded-2xl border-2 border-green-600 bg-white p-5 sm:p-6" role="status">
+              <p className="flex items-center gap-2 font-bold text-night"><span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-green-600" /><PackStatus /></p>
+              <p className="mt-2 text-slate">Pour prolonger votre accès ou passer à un pack supérieur, choisissez-le ci-dessous ou écrivez-nous sur WhatsApp.</p>
+              <Link href="/espace/" className="mt-3 inline-flex font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Voir mon espace</Link>
+            </div>
+          )} />
           <PackGrid zone={zone} />
-          <p className="mt-8 text-slate">
+          <ForAudience visitor={<p className="mt-8 text-slate">
             Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, {freeSeriesRange} de chaque compréhension (avec un compte gratuit) sans accès à l’IA. Les corrections et le tuteur nécessitent un pack payant actif.{' '}
             <Link href="/test-de-niveau/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Commencer par le test de niveau</Link>
-          </p>
+          </p>} free={<p className="mt-8 text-slate">
+            Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, {freeSeriesRange} de chaque compréhension (avec un compte gratuit) sans accès à l’IA. Les corrections et le tuteur nécessitent un pack payant actif.{' '}
+            <Link href="/test-de-niveau/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Commencer par le test de niveau</Link>
+          </p>} />
         </Container>
       </section>
 

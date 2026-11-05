@@ -1,3 +1,4 @@
+import ForAudience from '@/components/access/ForAudience';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Container } from '@/components/ui';
@@ -33,10 +34,13 @@ export default async function Parcours() {
               </li>
             ))}
           </ol>
-          <p className="mt-10 max-w-2xl text-slate">
+          <ForAudience visitor={<p className="mt-10 max-w-2xl text-slate">
             Vous préférez être accompagné ? Nos formateurs suivent ce parcours avec vous, en ligne ou {inPersonPlaces}.{' '}
             <Link href="/packs/" className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Voir les packs</Link>
-          </p>
+          </p>} free={<p className="mt-10 max-w-2xl text-slate">
+            Vous préférez être accompagné ? Nos formateurs suivent ce parcours avec vous, en ligne ou {inPersonPlaces}.{' '}
+            <Link href="/packs/" className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Voir les packs</Link>
+          </p>} />
         </Container>
       </section>
     </>
