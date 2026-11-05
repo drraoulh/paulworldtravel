@@ -72,7 +72,7 @@ export default function LevelTest({ firstLessonHref }: { firstLessonHref: string
         </p>
         <div className="mt-6 rounded-xl bg-paper p-5">
           <h2 className="heading text-xl text-night">Votre première séance : découvrir la méthode de lecture</h2>
-          <p className="mt-2 text-slate">Commencez par une leçon gratuite, puis essayez la série 1. Travaillez ensuite les autres compétences pour compléter ce premier bilan.</p>
+          <p className="mt-2 text-slate">Commencez par une leçon gratuite, puis essayez les séries gratuites. Travaillez ensuite les autres compétences pour compléter ce premier bilan.</p>
           <Link href={firstLessonHref} className="mt-4 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">Commencer ma première leçon gratuite</Link>
         </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">

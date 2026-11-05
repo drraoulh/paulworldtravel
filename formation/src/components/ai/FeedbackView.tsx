@@ -1,5 +1,10 @@
 import type { Feedback } from '@/lib/ai/prompts';
+import Link from 'next/link';
 import { expressionBand } from '@/content/tcf';
+import { NCLC_TABLE, nclcLabel } from '@/lib/nclc';
+
+/** « 4-5 = NCLC 4, 6 = NCLC 5, … », from the IRCC table. */
+const scale = [...NCLC_TABLE].reverse().map((r) => `${r.ee[0] === r.ee[1] ? r.ee[0] : `${r.ee[0]}-${r.ee[1]}`} = ${nclcLabel(r.nclc)}`).join(', ');
 
 export default function FeedbackView({ feedback, improvedLabel = 'Version améliorée' }: { feedback: Feedback; improvedLabel?: string }) {
   // Always read from the official table, also for corrections saved before this rule.
@@ -7,12 +12,18 @@ export default function FeedbackView({ feedback, improvedLabel = 'Version améli
   return (
     <div className="space-y-6" aria-live="polite">
       <div className="flex flex-col gap-6 rounded-2xl bg-night p-6 text-white sm:flex-row sm:items-center sm:p-8">
-        <div className="flex flex-col-reverse">
-          <p className="text-sm text-blue-200">Note estimée</p>
-          <p className="display text-6xl text-container">{feedback.score}<span className="text-2xl text-blue-200"> / 20</span></p>
+        <div className="flex items-end gap-8">
+          <div className="flex flex-col-reverse">
+            <p className="text-sm text-blue-200">Note estimée</p>
+            <p className="display text-6xl text-container">{feedback.score}<span className="text-2xl text-blue-200"> / 20</span></p>
+          </div>
+          <div className="flex flex-col-reverse">
+            <p className="text-sm text-blue-200">Niveau {band.cecr}</p>
+            <p className="display text-3xl text-white sm:text-4xl">{band.nclc}</p>
+          </div>
         </div>
         <div className="sm:border-l sm:border-white/15 sm:pl-6">
-          <p className="font-semibold">Correspondance indicative : {band.nclc}, niveau {band.cecr}</p>
+          <p className="font-semibold">Correspondance indicative avec le barème d’IRCC : {band.nclc}, niveau {band.cecr}</p>
           <p className="mt-2 text-blue-100">{feedback.summary}</p>
         </div>
       </div>
@@ -22,8 +33,8 @@ export default function FeedbackView({ feedback, improvedLabel = 'Version améli
         <p className="mt-1.5 text-slate">
           Seul le TCF Canada passé dans un centre agréé donne une note et un NCLC officiels. La note ci-dessus est estimée par une IA avec
           la grille pédagogique de Paul World Travel, qui n’est pas le barème officiel de France Éducation international. Le NCLC et le niveau
-          sont lus dans le tableau de correspondance officiel du TCF Canada (France Éducation international et IRCC) : 4-5 = NCLC 4, 6 = NCLC 5,
-          7-9 = NCLC 6, 10-11 = NCLC 7, 12-13 = NCLC 8, 14-15 = NCLC 9, 16-20 = NCLC 10 et plus.
+          sont lus dans le tableau de correspondance officiel du TCF Canada (France Éducation international et IRCC) : {scale}.{' '}
+          <Link href="/calculateur-nclc/" className="font-semibold text-ocean hover:underline">Calculer mon NCLC sur les quatre épreuves</Link>
         </p>
       </div>
 

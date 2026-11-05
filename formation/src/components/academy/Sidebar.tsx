@@ -17,6 +17,7 @@ const groups: { title: string; links: { href: string; label: string; icon: IconN
   { title: 'Aller plus loin', links: [
     { href: '/examen-blanc/', label: 'Examens blancs', icon: 'clock' },
     { href: '/entrainement/tuteur/', label: 'Mon tuteur IA', icon: 'sparkles' },
+    { href: '/calculateur-nclc/', label: 'Calculateur NCLC', icon: 'chart' },
     { href: '/packs/', label: 'Les packs', icon: 'award' },
   ] },
 ];

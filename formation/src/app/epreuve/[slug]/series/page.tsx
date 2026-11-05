@@ -4,6 +4,7 @@ import { Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import SeriesList from '@/components/epreuve/SeriesList';
 import TeamSeries from '@/components/epreuve/TeamSeries';
+import { freeSeriesAreFree, freeSeriesRange } from '@/content/offers';
 import { seriesFor } from '@/content/series';
 import { comprehensionConfigs, getEpreuve } from '@/lib/epreuves';
 
@@ -21,6 +22,7 @@ export default async function SeriesPage({ params }: Props) {
   const e = getEpreuve((await params).slug);
   if (!e || e.kind !== 'comprehension') notFound();
   const id = e.module.id as 'ce' | 'co';
+  const free = `${freeSeriesRange.charAt(0).toUpperCase() + freeSeriesRange.slice(1)} ${freeSeriesAreFree}, sans compte ; les suivantes nécessitent un pack.`;
   const series = seriesFor(id).map((s) => ({ number: s.number, count: s.questions.length }));
 
   return (
@@ -28,7 +30,7 @@ export default async function SeriesPage({ params }: Props) {
       epreuve={e}
       active="series"
       title="Séries d’entraînement"
-      intro={`Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. ${id === 'co' ? 'La série 1 est gratuite sans compte ; les suivantes nécessitent un pack. Une seule écoute par document en conditions d’examen.' : 'La série 1 est gratuite sans compte ; les suivantes nécessitent un pack.'}`}
+      intro={`Des séries complètes de 39 questions, de difficulté croissante comme à l’examen. ${free}${id === 'co' ? ' Une seule écoute par document en conditions d’examen.' : ''}`}
     >
       <Container className="space-y-12">
         <SeriesList epreuve={id} slug={e.slug} series={series} />

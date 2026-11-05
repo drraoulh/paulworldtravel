@@ -154,7 +154,7 @@ export async function saveLearner(form: FormData) {
     case 'extend': {
       const enrollment = String(form.get('enrollment'));
       const days = Number(form.get('days'));
-      if (!validUuid(enrollment) || ![30, 60, 90].includes(days) || !(await extendEnrollment(supabase, enrollment, days))) fail('prolongation');
+      if (!validUuid(enrollment) || ![7, 30, 60, 90].includes(days) || !(await extendEnrollment(supabase, enrollment, days))) fail('prolongation');
       break;
     }
     case 'payment': {

@@ -6,7 +6,7 @@
  */
 const KEY = 'pwt-results';
 
-export interface SeriesResult { score: number; total: number; mode: 'exam' | 'training'; date: string; bands: Record<string, [number, number]> }
+export interface SeriesResult { score: number; total: number; mode: 'exam' | 'training'; date: string; bands: Record<string, [number, number]>; /** Estimated TCF score (100-699), see src/lib/nclc.ts. */ tcf?: number }
 export interface MockResult { serie: number; co: number; ce: number; total: number; date: string }
 interface Store { series: Record<string, { last: SeriesResult; best: number; attempts: number }>; mocks: MockResult[] }
 
