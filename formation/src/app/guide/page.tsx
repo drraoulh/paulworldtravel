@@ -27,7 +27,7 @@ const steps: { title: string; text: string; link: { href: string; label: string 
   },
   {
     title: 'Entraînez-vous sur les séries chronométrées',
-    text: `Chaque série reprend le format officiel : 39 questions du niveau A1 au C2, 35 minutes en compréhension orale, 60 minutes en compréhension écrite. Choisissez « Conditions d’examen » pour une seule écoute et le chronomètre, ou « Mode entraînement » pour réécouter, lire la transcription et voir la correction après chaque question. ${freeSeriesRange.charAt(0).toUpperCase() + freeSeriesRange.slice(1)} de chaque épreuve ${freeSeriesAreFree}, sans compte. À la fin de chaque série, vous voyez un score estimé sur 699 et le NCLC correspondant.`,
+    text: `Chaque série reprend le format officiel : 39 questions du niveau A1 au C2, 35 minutes en compréhension orale, 60 minutes en compréhension écrite. Choisissez « Conditions d’examen » pour une seule écoute et le chronomètre, ou « Mode entraînement » pour réécouter, lire la transcription et voir la correction après chaque question. ${freeSeriesRange.charAt(0).toUpperCase() + freeSeriesRange.slice(1)} de chaque épreuve ${freeSeriesAreFree} avec un compte gratuit. À la fin de chaque série, vous voyez un score estimé sur 699 et le NCLC correspondant.`,
     link: { href: '/epreuve/comprehension-orale/series/', label: 'Voir les séries d’écoute' },
   },
   {

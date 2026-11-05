@@ -39,6 +39,9 @@ export default function SignupForm({ zone }: { zone: Zone }) {
   const [formError, setFormError] = useState('');
   const supabase = getSupabase();
   const signedIn = useSignedIn();
+  // Where to go after confirming the account (e.g. back to the free series).
+  const suiteParam = params.get('suite');
+  const suite = suiteParam && suiteParam.startsWith('/') && !suiteParam.startsWith('//') ? suiteParam : null;
 
   // Prefill from the packs page (?formule=) and the level test (?niveau=).
   useEffect(() => {
@@ -68,7 +71,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
         email: form.email.trim(),
         password: form.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/confirm/?suite=/espace/`,
+          emailRedirectTo: `${window.location.origin}/auth/confirm/?suite=${encodeURIComponent(suite ?? '/espace/')}`,
           data: {
             first_name: form.firstName,
             last_name: form.lastName,
@@ -132,7 +135,7 @@ export default function SignupForm({ zone }: { zone: Zone }) {
         </p>
         {submitted?.formule && <p className="mt-4 font-semibold text-night">Pack {packs.find((p) => p.id === submitted.formule)?.name} · {formatPrice(packs.find((p) => p.id === submitted.formule)!, submitted.zone)}. Demande reçue → paiement avec un conseiller → activation.</p>}
         <p className="mt-4 text-sm text-slate">Pensez à vérifier les courriers indésirables si le message n’apparaît pas.</p>
-        <a href="/connexion/?suite=/parcours/" className="mt-6 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">Me connecter après confirmation</a>
+        <a href={`/connexion/?suite=${encodeURIComponent(suite ?? '/parcours/')}`} className="mt-6 inline-flex rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean">Me connecter après confirmation</a>
       </div>
     );
   }

@@ -139,8 +139,8 @@ export const packs: Pack[] = [
  */
 export const FREE_TRIAL = { writing: 3, speaking: 2, tutor: 20 };
 
-/** Practice series open without a pack and without an account (numbers 1..FREE_SERIES of each épreuve). */
-export const FREE_SERIES: number = 3;
+/** Practice series open without a pack, with a free account (numbers 1..FREE_SERIES of each épreuve). */
+export const FREE_SERIES: number = 1;
 
 const NUMBER_WORDS = ['', 'une', 'deux', 'trois', 'quatre', 'cinq', 'six'];
 /** « les séries 1 à 3 » (or « la série 1 »), for the messages. */
