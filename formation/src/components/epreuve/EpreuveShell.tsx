@@ -36,13 +36,13 @@ export default function EpreuveShell({ epreuve, active, title, intro, action, ch
           </div>
           </div>
           <nav aria-label={`Sections : ${m.name}`} className="-mx-4 mt-9 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-            <ul className="flex min-w-max gap-7">
+            <ul className="flex min-w-max gap-2 pb-3">
               {epreuve.sections.map((s) => (
                 <li key={s.key}>
                   <Link
                     href={s.href}
                     aria-current={s.key === active ? 'page' : undefined}
-                    className={`block border-b-[3px] pb-3 text-[0.95rem] transition-colors ${s.key === active ? 'border-container font-bold text-night' : 'border-transparent text-slate hover:text-night'}`}
+                    className={`block rounded-full px-4 py-2 text-[0.95rem] font-semibold transition-colors ${s.key === active ? 'bg-night text-white' : 'border border-rule bg-white text-night hover:border-ocean hover:bg-sky/40 hover:text-ocean'}`}
                   >
                     {s.label}
                   </Link>

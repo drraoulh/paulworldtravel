@@ -21,7 +21,7 @@ export default function Connexion() {
           <LoginForm />
         </Suspense>
         <p className="mt-6 text-center text-slate">
-          Pas encore de compte ? <Link href="/inscription/" className="font-semibold text-ocean hover:underline">Inscrivez-vous</Link>
+          Pas encore de compte ? <Link href="/inscription/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Inscrivez-vous</Link>
         </p>
         </div>
       </Container>

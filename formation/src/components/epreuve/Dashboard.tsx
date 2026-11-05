@@ -54,7 +54,7 @@ export default function Dashboard({ epreuve, slug, lessonIds, series }: {
         <div className="rounded-2xl bg-white p-6">
           <p className="font-semibold text-night">Méthodologie</p>
           <div className="mt-4"><ProgressBar ids={lessonIds} /></div>
-          <Link href={`/epreuve/${slug}/methodologie/`} className="mt-4 inline-block text-sm font-bold text-ocean hover:underline">Continuer les leçons</Link>
+          <Link href={`/epreuve/${slug}/methodologie/`} className="mt-4 inline-block text-sm font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Continuer les leçons</Link>
         </div>
         {expression ? (
           <>
@@ -78,7 +78,7 @@ export default function Dashboard({ epreuve, slug, lessonIds, series }: {
             <div className="rounded-2xl bg-white p-6">
               <p className="font-semibold text-night">Examens blancs</p>
               <p className="display mt-2 text-4xl text-night">{mocks.length}</p>
-              <Link href="/examen-blanc/" className="mt-1 inline-block text-sm font-bold text-ocean hover:underline">Passer un examen blanc</Link>
+              <Link href="/examen-blanc/" className="mt-1 inline-block text-sm font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Passer un examen blanc</Link>
             </div>
           </>
         )}
@@ -99,7 +99,7 @@ export default function Dashboard({ epreuve, slug, lessonIds, series }: {
                   const band = (k: string) => (r?.last.bands[k] ? `${r.last.bands[k][0]} / ${r.last.bands[k][1]}` : '–');
                   return (
                     <tr key={s.number}>
-                      <td className="px-5 py-3"><Link href={`/epreuve/${slug}/series/${s.number}/`} className="font-semibold text-ocean hover:underline">Série {s.number}</Link></td>
+                      <td className="px-5 py-3"><Link href={`/epreuve/${slug}/series/${s.number}/`} className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Série {s.number}</Link></td>
                       <td className="px-5 py-3 text-ink">{r ? `${r.last.score} / ${r.last.total}, le ${date(r.last.date)}` : 'Pas encore faite'}</td>
                       <td className="px-5 py-3 text-ink">{tcf !== null ? <><span className="font-semibold text-night">{tcf} / 699</span><span className="block text-xs text-slate">{nclcLabel(nclcFor(epreuve as 'ce' | 'co', tcf))}</span></> : '–'}</td>
                       <td className="px-5 py-3">{band('A1-A2')}</td>
@@ -122,12 +122,12 @@ export default function Dashboard({ epreuve, slug, lessonIds, series }: {
           {subs === null && <p className="mt-4 text-slate">Chargement…</p>}
           {subs === 'signed-out' && (
             <p className="mt-4 rounded-2xl bg-white p-6 text-slate">
-              <Link href={`/connexion/?suite=/epreuve/${slug}/tableau-de-bord/`} className="font-semibold text-ocean hover:underline">Connectez-vous</Link> pour retrouver vos corrections.
+              <Link href={`/connexion/?suite=/epreuve/${slug}/tableau-de-bord/`} className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Connectez-vous</Link> pour retrouver vos corrections.
             </p>
           )}
           {Array.isArray(subs) && subs.length === 0 && (
             <p className="mt-4 rounded-2xl bg-white p-6 text-slate">
-              Aucune correction pour l’instant. <Link href={`/epreuve/${slug}/simulateur/`} className="font-semibold text-ocean hover:underline">Ouvrir le simulateur</Link>
+              Aucune correction pour l’instant. <Link href={`/epreuve/${slug}/simulateur/`} className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Ouvrir le simulateur</Link>
             </p>
           )}
           {Array.isArray(subs) && subs.length > 0 && (

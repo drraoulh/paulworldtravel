@@ -97,7 +97,7 @@ export default function NiveauxNclc() {
             <div className="mt-8"><LevelScale target={7} label="NCLC 7 : le seuil d’Entrée express" /></div>
             <ButtonLink href="/calculateur-nclc/" className="mt-8">Calculer mon NCLC</ButtonLink>
             <p className="mt-4 text-sm text-slate">
-              Pour le déroulement des épreuves, voir <Link href="/tcf-canada/" className="font-semibold text-ocean hover:underline">le TCF Canada, épreuve par épreuve</Link>.
+              Pour le déroulement des épreuves, voir <Link href="/tcf-canada/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">le TCF Canada, épreuve par épreuve</Link>.
             </p>
           </div>
         </Container>

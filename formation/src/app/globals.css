@@ -104,3 +104,7 @@ input[type='radio'], input[type='checkbox'] { accent-color: var(--night); }
 }
 
 .academy-menu { margin: 0; }
+
+/* Everything clickable shows it: pointer, visible keyboard focus. */
+button:not(:disabled), [role="button"], summary, label[for], select { cursor: pointer; }
+:where(a, button, summary, input, select, textarea, [tabindex]):focus-visible { outline: 3px solid var(--ocean); outline-offset: 2px; border-radius: 6px; }

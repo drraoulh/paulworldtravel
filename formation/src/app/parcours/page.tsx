@@ -35,7 +35,7 @@ export default async function Parcours() {
           </ol>
           <p className="mt-10 max-w-2xl text-slate">
             Vous préférez être accompagné ? Nos formateurs suivent ce parcours avec vous, en ligne ou {inPersonPlaces}.{' '}
-            <Link href="/packs/" className="font-bold text-ocean hover:underline">Voir les packs</Link>
+            <Link href="/packs/" className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Voir les packs</Link>
           </p>
         </Container>
       </section>

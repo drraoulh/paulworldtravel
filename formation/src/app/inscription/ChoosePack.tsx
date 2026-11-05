@@ -14,7 +14,7 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
 
   const send = async () => {
     setState('sending');
-    const res = await requestPack(pack, zone);
+    const res = await requestPack(pack);
     setState(res.ok ? 'done' : 'error');
     setMessage(res.error ?? '');
   };

@@ -69,7 +69,7 @@ export default function CalculateurNclc() {
           <p className="mt-8 max-w-3xl text-sm text-slate">
             Outil d’information, sans valeur officielle. Les règles d’Entrée express et les barèmes peuvent changer : vérifiez toujours sur canada.ca avant votre
             demande. Les résultats du TCF Canada sont acceptés par IRCC pendant deux ans.{' '}
-            <Link href="/niveaux-nclc/" className="font-semibold text-ocean hover:underline">Le tableau complet des niveaux NCLC</Link>
+            <Link href="/niveaux-nclc/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Le tableau complet des niveaux NCLC</Link>
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <ButtonLink href="/epreuve/comprehension-orale/series/">Faire une série d’écoute gratuite</ButtonLink>

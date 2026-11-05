@@ -92,7 +92,7 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
                     <li key={t.id} className="border-t border-rule pt-3">
                       <p className="text-sm font-bold text-night">Tâche {t.task}</p>
                       <p className="mt-1 line-clamp-3 text-sm text-ink">{t.prompt}</p>
-                      <Link href={`/epreuve/${e.slug}/simulateur/?sujet=${t.id}`} className="mt-1 inline-block text-sm font-bold text-ocean hover:underline">Rédiger cette tâche</Link>
+                      <Link href={`/epreuve/${e.slug}/simulateur/?sujet=${t.id}`} className="mt-1 inline-block text-sm font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Rédiger cette tâche</Link>
                     </li>
                   ))}
                 </ol>

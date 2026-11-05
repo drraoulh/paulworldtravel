@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
 import PackGrid from '@/components/packs/PackGrid';
-import { FREE_TRIAL, freeSeriesRange, isZone, zoneForCountry } from '@/content/offers';
+import { FREE_TRIAL, freeSeriesRange } from '@/content/offers';
+import { visitorZone } from '@/lib/zone';
 import { contact } from '@/content/contact';
 import { stripeConfigured } from '@/lib/stripe';
 
@@ -13,12 +13,9 @@ export const metadata: Metadata = {
   description: 'Cinq packs pour préparer le TCF Canada, dès 7 jours : Express, Essentiel, Silver, Gold et Platinum, avec des prix pour le Cameroun, le Canada et les autres pays.',
 };
 
-type Props = { searchParams: Promise<{ zone?: string }> };
-
-export default async function Packs({ searchParams }: Props) {
-  const asked = (await searchParams).zone;
-  // Prices follow the visitor's country (Vercel geolocation), unless a zone was chosen.
-  const zone = isZone(asked) ? asked : zoneForCountry((await headers()).get('x-vercel-ip-country'));
+export default async function Packs() {
+  // Prices follow the visitor's country (Vercel geolocation): FCFA, CAD, otherwise USD.
+  const zone = await visitorZone();
   return (
     <>
       <PageHeader image={{ src: '/images/groupe-tuteur.jpg', alt: 'Deux étudiants préparent un examen sur ordinateur avec l’aide d’une formatrice' }}
@@ -28,10 +25,10 @@ export default async function Packs({ searchParams }: Props) {
 
       <section className="bg-paper py-14 sm:py-20">
         <Container>
-          <PackGrid initialZone={zone} />
+          <PackGrid zone={zone} />
           <p className="mt-8 text-slate">
             Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, {freeSeriesRange} de chaque compréhension (accessibles même sans compte) et un essai de l’IA : {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur.{' '}
-            <Link href="/test-de-niveau/" className="font-semibold text-ocean hover:underline">Commencer par le test de niveau</Link>
+            <Link href="/test-de-niveau/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Commencer par le test de niveau</Link>
           </p>
         </Container>
       </section>

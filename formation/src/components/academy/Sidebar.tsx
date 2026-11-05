@@ -27,7 +27,7 @@ export function AcademyNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return <nav aria-label="Navigation de formation" className="space-y-7">{groups.map((g) => <div key={g.title}><p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[.14em] text-slate">{g.title}</p><ul className="space-y-1">{g.links.map((l) => {
     const active = l.href === '/' ? pathname === '/' : pathname.startsWith(l.href);
-    return <li key={l.href}><Link onClick={onNavigate} href={l.href} aria-current={active ? 'page' : undefined} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold transition-colors ${active ? 'bg-blue-50 text-ocean' : 'text-slate hover:bg-paper hover:text-night'}`}><Icon name={l.icon} className="h-[18px] w-[18px] shrink-0" />{l.label}</Link></li>;
+    return <li key={l.href}><Link onClick={onNavigate} href={l.href} aria-current={active ? 'page' : undefined} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold transition-colors ${active ? 'bg-ocean text-white shadow-sm' : 'text-night/80 hover:bg-sky/30 hover:text-ocean'}`}><Icon name={l.icon} className="h-[18px] w-[18px] shrink-0" />{l.label}</Link></li>;
   })}</ul></div>)}</nav>;
 }
 export default function Sidebar() {

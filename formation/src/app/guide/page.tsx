@@ -76,7 +76,7 @@ export default function Guide() {
                 <div>
                   <h2 className="heading text-xl text-night">{s.title}</h2>
                   <p className="reading mt-2 text-ink">{s.text}</p>
-                  <Link href={s.link.href} className="mt-3 inline-block font-bold text-ocean hover:underline">{s.link.label}</Link>
+                  <Link href={s.link.href} className="mt-3 inline-block font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">{s.link.label}</Link>
                 </div>
               </li>
             ))}

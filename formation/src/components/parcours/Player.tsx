@@ -63,7 +63,7 @@ export function NextBar({ id, next }: { id: string; next: CourseItem | null }) {
       <div className="flex items-center gap-3">
         <div className="min-w-0 text-xs sm:text-sm">
           <p className="font-semibold text-night">{isRead(id) ? 'Leçon consultée' : 'Lecture en cours'}</p>
-          {ok ? <p className="font-semibold text-green-700">✓ Quiz réussi</p> : <a href="#quiz" className="font-semibold text-ocean hover:underline">Réussir le quiz pour valider →</a>}
+          {ok ? <p className="font-semibold text-green-700">✓ Quiz réussi</p> : <a href="#quiz" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Réussir le quiz pour valider →</a>}
         </div>
         {next ? (
           <Link href={next.href}

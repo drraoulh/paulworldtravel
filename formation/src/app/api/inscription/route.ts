@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { contact } from '@/content/contact';
-import { formatPrice, freeSeriesFirst, isZone, packDuration, packs, zones } from '@/content/offers';
+import { formatPrice, freeSeriesFirst, packDuration, packs, zones } from '@/content/offers';
+import { visitorZone } from '@/lib/zone';
 
 /*
  * Sends a sign-up to the team by email (Brevo), with the candidate in reply-to,
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
   if (!f.firstName || (f.formule && !formule) || !isEmail(f.email ?? '')) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 422 });
   }
-  const zone = isZone(f.zone) ? f.zone : 'cm';
+  const zone = await visitorZone();
   const price = formule ? formatPrice(formule, zone) : '';
   f.zone = zones.find((z) => z.id === zone)!.label;
   f.formule = formule ? `${formule.name} (${price}, ${packDuration(formule)})` : 'Essai gratuit, pas encore de pack';

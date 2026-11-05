@@ -82,7 +82,7 @@ export default function TcfCanada() {
           </div>
           <p className="mt-4 text-sm text-slate">
             Barème publié par IRCC. Le NCLC 7, surligné, est le minimum pour les travailleurs qualifiés d’Entrée express. Vérifiez toujours le barème en vigueur sur canada.ca avant votre demande.{' '}
-            <Link href="/calculateur-nclc/" className="font-semibold text-ocean hover:underline">Calculer mon NCLC</Link> ou <Link href="/niveaux-nclc/" className="font-semibold text-ocean hover:underline">voir le détail des niveaux</Link>.
+            <Link href="/calculateur-nclc/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Calculer mon NCLC</Link> ou <Link href="/niveaux-nclc/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">voir le détail des niveaux</Link>.
           </p>
         </Container>
       </section>

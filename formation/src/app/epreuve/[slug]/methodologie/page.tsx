@@ -45,10 +45,10 @@ export default async function MethodologiePage({ params }: Props) {
           <div className="rounded-2xl bg-white p-6">
             <ProgressBar ids={ids} />
             {m.lessons[0] ? <ButtonLink href={`/epreuve/${e.slug}/methodologie/${m.lessons[0].slug}/`} variant="dark" className="mt-5 w-full">Commencer la première leçon</ButtonLink> : <p className="mt-4 text-sm">Aucune leçon publiée pour le moment.</p>}
-            <Link href={m.practice.href} className="mt-4 block text-center font-bold text-ocean hover:underline">{m.practice.label}</Link>
+            <Link href={m.practice.href} className="mt-4 block text-center font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">{m.practice.label}</Link>
           </div>
           <div className="rounded-2xl bg-white p-6 text-sm text-slate">
-            Une question de grammaire ou de méthode ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean hover:underline">Demandez au tuteur IA</Link>.
+            Une question de grammaire ou de méthode ? <Link href="/entrainement/tuteur/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Demandez au tuteur IA</Link>.
           </div>
         </aside>
       </Container>

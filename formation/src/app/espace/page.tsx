@@ -62,7 +62,7 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
             <div className="rounded-2xl bg-white p-6 sm:p-8">
               <h2 className="heading text-2xl text-night">Ma prochaine séance</h2>
               <p className="mt-2 text-slate">Retrouvez votre dernière activité et la prochaine étape de votre préparation.</p>
-              <ButtonLink href="/parcours/" variant="dark" className="mt-5">Reprendre ma préparation</ButtonLink>
+              <ButtonLink href="/parcours/" className="mt-5">Reprendre ma préparation</ButtonLink>
             </div>
             {paiement === 'ok' && (
               <p role="status" className="rounded-lg border border-green-200 bg-green-50 p-5 text-green-800">
@@ -157,7 +157,7 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
             <div className="rounded-2xl bg-container/30 p-6">
               <h2 className="heading text-lg text-night">Nouveau sur la plateforme ?</h2>
               <p className="mt-1 text-sm text-ink">Huit étapes pour bien démarrer, du test de niveau à l’examen blanc.</p>
-              <Link href="/guide/" className="mt-3 inline-block font-bold text-ocean hover:underline">Lire le guide</Link>
+              <Link href="/guide/" className="mt-3 inline-block font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Lire le guide</Link>
             </div>
             <CourseProgressCard ids={courseItems.map((it) => it.id)} />
             <div className="rounded-lg bg-white p-6">
@@ -174,12 +174,12 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
               ) : (
                 <p className="mt-2 text-slate">Vous n’avez pas encore passé le test connecté à votre compte.</p>
               )}
-              <Link href="/test-de-niveau/" className="mt-4 inline-block font-bold text-ocean hover:underline">Passer le test</Link>
+              <Link href="/test-de-niveau/" className="mt-4 inline-block font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Passer le test</Link>
             </div>
             <div className="rounded-lg bg-white p-6">
               <h2 className="heading text-lg text-night">Une question ?</h2>
               <p className="mt-2 text-slate">Votre conseiller répond sur WhatsApp et par email.</p>
-              <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-bold text-ocean hover:underline">WhatsApp {contact.phone}</a>
+              <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">WhatsApp {contact.phone}</a>
             </div>
           </aside>
         </Container>

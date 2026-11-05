@@ -40,7 +40,7 @@ export default async function LessonPage({ params }: Props) {
       <div className="border-b border-rule bg-white">
         <Container className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
           <nav aria-label="Fil d’Ariane" className="flex flex-wrap items-center gap-x-2 text-sm text-slate">
-            <Link href="/parcours/" className="font-semibold text-ocean hover:underline">Parcours</Link>
+            <Link href="/parcours/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Parcours</Link>
             <span aria-hidden="true">/</span>
             <span>Module {place.module.number} : {place.module.title}</span>
             <span aria-hidden="true">/</span>
@@ -105,7 +105,7 @@ export default async function LessonPage({ params }: Props) {
           </section>
 
           <p className="rounded-2xl bg-white p-6 text-slate">
-            Pour aller plus loin : <Link href={practice.href} className="font-bold text-ocean hover:underline">{practice.label}</Link>
+            Pour aller plus loin : <Link href={practice.href} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">{practice.label}</Link>
           </p>
 
           <NextBar id={id} next={place.next} />

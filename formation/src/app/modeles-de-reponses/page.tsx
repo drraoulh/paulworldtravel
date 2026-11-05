@@ -136,7 +136,7 @@ export default function ModelesPage() {
               {templatesFor(p.epreuve).map((t) => <TemplateCard key={t.id} t={t} breakBefore={t.id !== answerTemplates[0].id} />)}
             </div>
             <p className="mt-8 print:hidden">
-              <Link href={p.practice.href} className="font-bold text-ocean hover:underline">{p.practice.label}</Link>
+              <Link href={p.practice.href} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">{p.practice.label}</Link>
             </p>
           </Container>
         </section>

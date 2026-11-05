@@ -34,7 +34,7 @@ export default function FeedbackView({ feedback, improvedLabel = 'Version améli
           Seul le TCF Canada passé dans un centre agréé donne une note et un NCLC officiels. La note ci-dessus est estimée par une IA avec
           la grille pédagogique de Paul World Travel, qui n’est pas le barème officiel de France Éducation international. Le NCLC et le niveau
           sont lus dans le tableau de correspondance officiel du TCF Canada (France Éducation international et IRCC) : {scale}.{' '}
-          <Link href="/calculateur-nclc/" className="font-semibold text-ocean hover:underline">Calculer mon NCLC sur les quatre épreuves</Link>
+          <Link href="/calculateur-nclc/" className="font-semibold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Calculer mon NCLC sur les quatre épreuves</Link>
         </p>
       </div>
 

@@ -49,7 +49,7 @@ export default async function EpreuvePage({ params }: Props) {
           <h2 className="heading text-2xl text-night">Format de l’épreuve</h2>
           <dl className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
             {m.facts.map((f) => (
-              <div key={f.label} className="rounded-2xl bg-white p-5">
+              <div key={f.label} className="rounded-2xl border-l-4 border-container bg-white/60 p-5">
                 <dt className="text-sm text-slate">{f.label}</dt>
                 <dd className="heading mt-1 text-xl text-night">{f.value}</dd>
               </div>
