@@ -1,8 +1,10 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BANDS, rightChoice, SERIES_SECONDS, type SeriesQuestion } from '@/content/series';
+import { cefrForScore, estimateTcfScore, nclcFor, nclcLabel } from '@/lib/nclc';
 import { seededOrder } from '@/lib/shuffle';
 import { saveSeriesResult, seriesKey, type SeriesResult } from '@/lib/results';
 import { playDocument, stopSpeaking, warmUpVoices } from '@/lib/speech';
@@ -25,7 +27,8 @@ function grade(questions: SeriesQuestion[], answers: (number | null)[]) {
     if (right) score++;
     bands[band] = [ok + (right ? 1 : 0), total + 1];
   });
-  return { score, bands };
+  const tcf = estimateTcfScore(questions.map((q, i) => ({ level: q.level, correct: answers[i] === rightChoice(q) })));
+  return { score, bands, tcf };
 }
 
 function Transcript({ q }: { q: SeriesQuestion }) {
@@ -44,7 +47,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   questions: SeriesQuestion[];
   /** Mock exam: skip the mode choice and report the score. */
   forceMode?: Mode;
-  onFinish?: (score: number) => void;
+  onFinish?: (score: number, tcf: number) => void;
 }) {
   const isCo = epreuve === 'co';
   const total = SERIES_SECONDS[epreuve];
@@ -75,9 +78,9 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   // Save once, when the series ends.
   useEffect(() => {
     if (!done || !mode) return;
-    const { score, bands } = grade(questions, answers);
-    saveSeriesResult(seriesKey(epreuve, number), { score, total: questions.length, mode, date: new Date().toISOString(), bands });
-    onFinish?.(score);
+    const { score, bands, tcf } = grade(questions, answers);
+    saveSeriesResult(seriesKey(epreuve, number), { score, total: questions.length, mode, date: new Date().toISOString(), bands, tcf });
+    onFinish?.(score, tcf);
     top.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);
@@ -150,8 +153,17 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
     return (
       <div ref={top} className="scroll-mt-24 space-y-6">
         <div className="rounded-2xl bg-night p-6 text-white sm:p-8">
-          <p className="text-sm text-blue-200">Résultat, série {number}</p>
-          <p className="display mt-1 text-5xl text-container">{g.score}<span className="text-2xl text-blue-200"> / {questions.length}</span></p>
+          <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-end sm:gap-10">
+            <div>
+              <p className="text-sm text-blue-200">Résultat, série {number}</p>
+              <p className="display mt-1 text-5xl text-container">{g.score}<span className="text-2xl text-blue-200"> / {questions.length}</span></p>
+            </div>
+            <div className="sm:border-l sm:border-white/15 sm:pl-10">
+              <p className="text-sm text-blue-200">Score TCF estimé</p>
+              <p className="display mt-1 text-5xl text-white">{g.tcf}<span className="text-2xl text-blue-200"> / 699</span></p>
+              <p className="mt-2 font-semibold">{nclcLabel(nclcFor(epreuve, g.tcf))}{cefrForScore(g.tcf) ? `, niveau ${cefrForScore(g.tcf)}` : ''} <span className="font-normal text-blue-100">(estimation)</span></p>
+            </div>
+          </div>
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {BANDS.map((b) => {
               const [ok, n] = g.bands[b.label] ?? [0, 0];
@@ -165,7 +177,8 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
             })}
           </div>
           <p className="mt-6 text-sm text-blue-100">
-            Indication sur votre niveau de réussite par palier, pas un score officiel : le TCF pondère chaque question selon sa difficulté et calcule un score de 100 à 699. France Éducation international ne publie pas le poids de chaque question.
+            Estimation indicative, pas un score officiel : le TCF pondère chaque question selon sa difficulté, mais France Éducation international ne publie pas le poids de chaque question. Nous appliquons une grille par niveau (A1 3 points, A2 9, B1 15, B2 21, C1 26, C2 33) puis le barème NCLC d’IRCC.{' '}
+            <Link href="/calculateur-nclc/" className="font-semibold text-container hover:underline">Calculer mon NCLC sur les quatre épreuves</Link>
           </p>
         </div>
         <div className="rounded-2xl bg-white p-6 sm:p-8">

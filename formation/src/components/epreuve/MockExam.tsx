@@ -9,6 +9,7 @@ import MonologuePractice from '@/components/simulator/MonologuePractice';
 import InteractionPractice from '@/components/simulator/InteractionPractice';
 import { getSeries } from '@/content/series';
 import type { Feedback } from '@/lib/ai/prompts';
+import { nclcFor, nclcLabel } from '@/lib/nclc';
 import { saveMockResult } from '@/lib/results';
 import { stopSpeaking } from '@/lib/speech';
 import SeriesRunner from './SeriesRunner';
@@ -33,6 +34,7 @@ export default function MockExam({ series }: { series: number[] }) {
   const [serie, setSerie] = useState(series[0]);
   const [co, setCo] = useState(0);
   const [ce, setCe] = useState(0);
+  const [tcf, setTcf] = useState({ co: 0, ce: 0 });
   const [texts, setTexts] = useState(['', '', '']);
   const top = useRef<HTMLDivElement>(null);
   const subjects = subjectsFor(serie);
@@ -93,7 +95,7 @@ export default function MockExam({ series }: { series: number[] }) {
       {phase === 'co' && (
         <section>
           <p className="mb-4 font-semibold text-night">Épreuve 1 sur 4 : compréhension orale</p>
-          <SeriesRunner key="co" epreuve="co" number={serie} questions={coSeries.questions} forceMode="exam" onFinish={(s) => { setCo(s); setPhase('break-ce'); }} />
+          <SeriesRunner key="co" epreuve="co" number={serie} questions={coSeries.questions} forceMode="exam" onFinish={(s, t) => { setCo(s); setTcf((x) => ({ ...x, co: t })); setPhase('break-ce'); }} />
         </section>
       )}
 
@@ -108,7 +110,7 @@ export default function MockExam({ series }: { series: number[] }) {
       {phase === 'ce' && (
         <section>
           <p className="mb-4 font-semibold text-night">Épreuve 2 sur 4 : compréhension écrite</p>
-          <SeriesRunner key="ce" epreuve="ce" number={serie} questions={ceSeries.questions} forceMode="exam" onFinish={(s) => { setCe(s); setPhase('break-ee'); }} />
+          <SeriesRunner key="ce" epreuve="ce" number={serie} questions={ceSeries.questions} forceMode="exam" onFinish={(s, t) => { setCe(s); setTcf((x) => ({ ...x, ce: t })); setPhase('break-ee'); }} />
         </section>
       )}
 
@@ -131,7 +133,7 @@ export default function MockExam({ series }: { series: number[] }) {
         />
       )}
 
-      {phase === 'results' && <MockResults serie={serie} co={co} ce={ce} subjects={subjects} texts={texts} />}
+      {phase === 'results' && <MockResults serie={serie} co={co} ce={ce} tcf={tcf} subjects={subjects} texts={texts} />}
     </div>
   );
 }
@@ -237,7 +239,7 @@ function MockSpeaking({ tasks, onFinish }: { tasks: SpeakingTask[]; onFinish: ()
   );
 }
 
-function MockResults({ serie, co, ce, subjects, texts }: { serie: number; co: number; ce: number; subjects: WritingTask[]; texts: string[] }) {
+function MockResults({ serie, co, ce, tcf, subjects, texts }: { serie: number; co: number; ce: number; tcf: { co: number; ce: number }; subjects: WritingTask[]; texts: string[] }) {
   const [grades, setGrades] = useState<(Feedback | string | null)[]>([null, null, null]);
   const [busy, setBusy] = useState(false);
 
@@ -263,12 +265,12 @@ function MockResults({ serie, co, ce, subjects, texts }: { serie: number; co: nu
       <div className="rounded-2xl bg-night p-6 text-white sm:p-8">
         <p className="text-sm text-blue-200">Examen blanc {serie} terminé</p>
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div><p className="text-blue-100">Compréhension orale</p><p className="display text-4xl text-container">{co}<span className="text-xl text-blue-200"> / 39</span></p></div>
-          <div><p className="text-blue-100">Compréhension écrite</p><p className="display text-4xl text-container">{ce}<span className="text-xl text-blue-200"> / 39</span></p></div>
+          <div><p className="text-blue-100">Compréhension orale</p><p className="display text-4xl text-container">{co}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.co} / 699, {nclcLabel(nclcFor('co', tcf.co))}</p></div>
+          <div><p className="text-blue-100">Compréhension écrite</p><p className="display text-4xl text-container">{ce}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.ce} / 699, {nclcLabel(nclcFor('ce', tcf.ce))}</p></div>
           <div><p className="text-blue-100">Expression écrite</p><p className="mt-2 text-blue-100">{texts.filter((t) => wordCount(t) > 0).length} / 3 tâches rédigées</p></div>
           <div><p className="text-blue-100">Expression orale</p><p className="mt-2 text-blue-100">Notes affichées dans chaque tâche et dans votre espace</p></div>
         </div>
-        <p className="mt-6 text-sm text-blue-100">Les résultats des compréhensions indiquent votre réussite, pas un score officiel sur 699. Le détail de chaque question est dans le tableau de bord de chaque épreuve.</p>
+        <p className="mt-6 text-sm text-blue-100">Les scores sur 699 et les NCLC des compréhensions sont des estimations, pas des scores officiels. Le détail de chaque question est dans le tableau de bord de chaque épreuve.</p>
       </div>
 
       <div className="rounded-2xl bg-white p-6 sm:p-8">

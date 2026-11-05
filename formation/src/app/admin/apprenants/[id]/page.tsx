@@ -109,7 +109,7 @@ export default async function Learner({ params, searchParams }: { params: Promis
                     {isAdmin && e.state === 'active' && (
                       <form action={saveLearner} className="flex items-center gap-2">
                         <Hidden id={id} intent="extend" extra={{ enrollment: e.id }} />
-                        <select name="days" aria-label="Durée de la prolongation" className="rounded-lg border border-rule px-2 py-1.5 text-xs"><option value="30">+30 jours</option><option value="60">+60 jours</option><option value="90">+90 jours</option></select>
+                        <select name="days" aria-label="Durée de la prolongation" className="rounded-lg border border-rule px-2 py-1.5 text-xs"><option value="7">+7 jours</option><option value="30">+30 jours</option><option value="60">+60 jours</option><option value="90">+90 jours</option></select>
                         <button className={secondary}>Prolonger</button>
                       </form>
                     )}

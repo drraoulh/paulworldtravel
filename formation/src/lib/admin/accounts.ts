@@ -15,7 +15,7 @@ import { formatDate } from '@/lib/labels';
 export const validEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) && v.length <= 254;
 export const cleanText = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max);
 const isoDay = (d: Date) => d.toISOString().slice(0, 10);
-export const ACCESS_DAYS = [30, 60, 90, 180] as const;
+export const ACCESS_DAYS = [7, 30, 60, 90, 180] as const;
 
 export function service() {
   const admin = createAdminClient();

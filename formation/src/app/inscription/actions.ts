@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { formatPrice, isZone, packs } from '@/content/offers';
+import { formatPrice, isZone, packDuration, packs } from '@/content/offers';
 
 const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -33,7 +33,7 @@ export async function requestPack(packId: string, zoneId: string): Promise<{ ok:
           to: (process.env.SIGNUP_TO_EMAIL || 'infos@paulworldtravel.com').split(',').map((e) => ({ email: e.trim() })).filter((e) => e.email),
           replyTo: user.email ? { email: user.email } : undefined,
           subject: `Demande de pack ${pack.name} : ${name}`.slice(0, 200),
-          htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px"><p>${esc(name)} (${esc(user.email ?? '')}, ${esc(profile?.phone ?? 'téléphone non renseigné')}) demande le pack <strong>${pack.name}</strong> : ${formatPrice(pack, zone)}, ${pack.months} mois.</p><p>Contactez-le pour le paiement puis activez l’inscription dans l’admin.${error ? ' Attention : l’inscription n’a pas pu être enregistrée en base, créez-la à la main.' : ''}</p></div>`,
+          htmlContent: `<div style="font-family:Arial,sans-serif;font-size:14px"><p>${esc(name)} (${esc(user.email ?? '')}, ${esc(profile?.phone ?? 'téléphone non renseigné')}) demande le pack <strong>${pack.name}</strong> : ${formatPrice(pack, zone)}, ${packDuration(pack)}.</p><p>Contactez-le pour le paiement puis activez l’inscription dans l’admin.${error ? ' Attention : l’inscription n’a pas pu être enregistrée en base, créez-la à la main.' : ''}</p></div>`,
         }),
       });
     } catch (e) {

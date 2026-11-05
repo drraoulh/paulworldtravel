@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
 import PackGrid from '@/components/packs/PackGrid';
-import { FREE_SERIES, FREE_TRIAL, isZone, zoneForCountry } from '@/content/offers';
+import { FREE_TRIAL, freeSeriesRange, isZone, zoneForCountry } from '@/content/offers';
 import { contact } from '@/content/contact';
 import { stripeConfigured } from '@/lib/stripe';
 
 export const metadata: Metadata = {
   title: 'Packs de préparation au TCF Canada',
-  description: 'Quatre packs pour préparer le TCF Canada : Essentiel, Silver, Gold et Platinum, avec des prix pour le Cameroun, le Canada et les autres pays.',
+  description: 'Cinq packs pour préparer le TCF Canada, dès 7 jours : Express, Essentiel, Silver, Gold et Platinum, avec des prix pour le Cameroun, le Canada et les autres pays.',
 };
 
 type Props = { searchParams: Promise<{ zone?: string }> };
@@ -29,7 +29,7 @@ export default async function Packs({ searchParams }: Props) {
         <Container>
           <PackGrid initialZone={zone} />
           <p className="mt-8 text-slate">
-            Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, la série {FREE_SERIES} de chaque compréhension et un essai de l’IA : {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur.{' '}
+            Pas encore décidé ? Le compte gratuit comprend le test de niveau, les leçons, {freeSeriesRange} de chaque compréhension (accessibles même sans compte) et un essai de l’IA : {FREE_TRIAL.writing} corrections écrites, {FREE_TRIAL.speaking} corrections orales et {FREE_TRIAL.tutor} questions au tuteur.{' '}
             <Link href="/test-de-niveau/" className="font-semibold text-ocean hover:underline">Commencer par le test de niveau</Link>
           </p>
         </Container>

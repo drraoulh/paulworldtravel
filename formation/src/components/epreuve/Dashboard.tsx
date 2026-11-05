@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ProgressBar } from '@/components/parcours/Progress';
 import { expressionBand } from '@/content/tcf';
+import { estimateFromBands, nclcFor, nclcLabel } from '@/lib/nclc';
 import { readResults, seriesKey } from '@/lib/results';
 import { getSupabase } from '@/lib/supabase/client';
 
@@ -87,18 +88,20 @@ export default function Dashboard({ epreuve, slug, lessonIds, series }: {
         <section>
           <h2 className="heading text-xl text-night">Vos séries</h2>
           <div className="mt-4 overflow-x-auto rounded-2xl bg-white">
-            <table className="w-full min-w-[32rem] text-left text-sm">
+            <table className="w-full min-w-[40rem] text-left text-sm">
               <thead className="border-b border-rule text-slate">
-                <tr><th className="px-5 py-3 font-semibold">Série</th><th className="px-5 py-3 font-semibold">Dernier score</th><th className="px-5 py-3 font-semibold">A1-A2</th><th className="px-5 py-3 font-semibold">B1-B2</th><th className="px-5 py-3 font-semibold">C1-C2</th><th className="px-5 py-3 font-semibold">Meilleur</th></tr>
+                <tr><th className="px-5 py-3 font-semibold">Série</th><th className="px-5 py-3 font-semibold">Dernier score</th><th className="px-5 py-3 font-semibold">Score estimé</th><th className="px-5 py-3 font-semibold">A1-A2</th><th className="px-5 py-3 font-semibold">B1-B2</th><th className="px-5 py-3 font-semibold">C1-C2</th><th className="px-5 py-3 font-semibold">Meilleur</th></tr>
               </thead>
               <tbody className="divide-y divide-rule">
                 {series.map((s) => {
                   const r = results.series[seriesKey(epreuve as 'ce' | 'co', s.number)];
+                  const tcf = r ? r.last.tcf ?? estimateFromBands(r.last.bands) : null;
                   const band = (k: string) => (r?.last.bands[k] ? `${r.last.bands[k][0]} / ${r.last.bands[k][1]}` : '–');
                   return (
                     <tr key={s.number}>
                       <td className="px-5 py-3"><Link href={`/epreuve/${slug}/series/${s.number}/`} className="font-semibold text-ocean hover:underline">Série {s.number}</Link></td>
                       <td className="px-5 py-3 text-ink">{r ? `${r.last.score} / ${r.last.total}, le ${date(r.last.date)}` : 'Pas encore faite'}</td>
+                      <td className="px-5 py-3 text-ink">{tcf !== null ? <><span className="font-semibold text-night">{tcf} / 699</span><span className="block text-xs text-slate">{nclcLabel(nclcFor(epreuve as 'ce' | 'co', tcf))}</span></> : '–'}</td>
                       <td className="px-5 py-3">{band('A1-A2')}</td>
                       <td className="px-5 py-3">{band('B1-B2')}</td>
                       <td className="px-5 py-3">{band('C1-C2')}</td>
@@ -109,7 +112,7 @@ export default function Dashboard({ epreuve, slug, lessonIds, series }: {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-sm text-slate">Résultats enregistrés sur ce navigateur. Scores par palier indicatifs, pas des scores TCF officiels.</p>
+          <p className="mt-3 text-sm text-slate">Résultats enregistrés sur ce navigateur. Scores par palier, scores sur 699 et NCLC estimés à partir d’une grille par niveau : des indications, pas des scores TCF officiels.</p>
         </section>
       )}
 
@@ -137,8 +140,8 @@ export default function Dashboard({ epreuve, slug, lessonIds, series }: {
                   </div>
                   <div className="flex-shrink-0 text-right">
                     {s.trainer_score !== null
-                      ? <><span className="heading text-xl text-night">{s.trainer_score} / 20</span><span className="block text-sm text-green-700">relu par un formateur</span></>
-                      : <><span className="heading text-xl text-night">{s.ai_score ?? '–'} / 20</span><span className="block text-sm text-slate">estimation IA</span></>}
+                      ? <><span className="heading text-xl text-night">{s.trainer_score} / 20</span><span className="block text-sm text-green-700">relu par un formateur, {nclcLabel(nclcFor(epreuve, s.trainer_score))}</span></>
+                      : <><span className="heading text-xl text-night">{s.ai_score ?? '–'} / 20</span><span className="block text-sm text-slate">estimation IA{s.ai_score !== null ? `, ${nclcLabel(nclcFor(epreuve, s.ai_score))}` : ''}</span></>}
                   </div>
                 </li>
               ))}

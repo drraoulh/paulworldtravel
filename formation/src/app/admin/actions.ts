@@ -18,7 +18,7 @@ export async function activateEnrollment(formData: FormData) {
   if (!id) return;
 
   const { supabase, user } = await requireAdmin('/admin/inscriptions/');
-  if ((endInput && !isValidEndDate(endInput, isoDate(new Date()))) || (!endInput && ![30, 60, 90, 180].includes(days))) redirect('/admin/inscriptions/?erreur=date');
+  if ((endInput && !isValidEndDate(endInput, isoDate(new Date()))) || (!endInput && ![7, 30, 60, 90, 180].includes(days))) redirect('/admin/inscriptions/?erreur=date');
   // Activation and the email to the candidate.
   const done = await openEnrollment(supabase, id, days || 30, user.id, endInput || undefined);
   if (!done) redirect('/admin/inscriptions/?erreur=enregistrement');

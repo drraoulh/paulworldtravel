@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
 import CourseProgressCard from '@/components/parcours/CourseProgressCard';
 import { contact } from '@/content/contact';
-import { FREE_TRIAL } from '@/content/offers';
+import { FREE_TRIAL, freeSeriesRange, isPackId } from '@/content/offers';
 import TrialBanner from '@/components/access/TrialBanner';
 import { buildCourse } from '@/content/parcours/course';
 import { publishedModules } from '@/lib/training-content';
@@ -75,7 +75,7 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
             <h2 className="heading text-2xl text-night">Mon accès et mes packs</h2>
             {(enrollments ?? []).length === 0 && (
               <div className="rounded-lg bg-white p-6">
-                <p>Votre compte gratuit est prêt : commencez les leçons et la série 1 de chaque compréhension. Vous pourrez choisir un pack plus tard.</p>
+                <p>Votre compte gratuit est prêt : commencez les leçons et {freeSeriesRange} de chaque compréhension. Vous pourrez choisir un pack plus tard.</p>
                 <ButtonLink href="/packs/" variant="dark" className="mt-4">Choisir un pack</ButtonLink>
               </div>
             )}
@@ -87,7 +87,7 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
                     <h3 className="heading text-xl text-night">Pack {formuleName(e.formule)}</h3>
                     <span className={`rounded-full px-3 py-1 text-sm font-semibold ${statusTone[status]}`}>{statusLabel[status]}</span>
                   </div>
-                  {status === 'pending' && card && ['essentiel', 'silver', 'gold', 'platinum'].includes(e.formule) && <PayByCard pack={e.formule} zone={zone} enabled className="mt-4" />}
+                  {status === 'pending' && card && isPackId(e.formule) && <PayByCard pack={e.formule} zone={zone} enabled className="mt-4" />}
                   {status === 'pending' && (
                     <p className="mt-4 text-slate">
                       Inscription reçue le {formatDate(e.created_at)}. {card ? 'Payez par carte pour ouvrir votre accès tout de suite, ou un conseiller vous contacte pour le paiement par Mobile Money.' : 'Un conseiller vous contacte pour le paiement ; votre accès est activé dès réception.'}
