@@ -5,6 +5,7 @@ import Quota from '@/components/ai/Quota';
 import AiGate from '@/components/access/AiGate';
 import TrialBanner from '@/components/access/TrialBanner';
 import { refreshAccess } from '@/components/access/useAccess';
+import RichReply from '@/components/ai/RichReply';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -72,7 +73,9 @@ function TutorChat({ compact }: { compact: boolean }) {
         )}
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <p className={`max-w-[95%] whitespace-pre-line rounded-2xl px-4 py-3 ${m.role === 'user' ? 'bg-night text-white' : 'bg-paper text-ink'}`}>{m.content}</p>
+            {m.role === 'user'
+              ? <p className="max-w-[95%] whitespace-pre-line rounded-2xl bg-night px-4 py-3 text-white">{m.content}</p>
+              : <div className="max-w-[95%] rounded-2xl bg-paper px-4 py-3 text-ink"><RichReply text={m.content} /></div>}
           </div>
         ))}
         {busy && <p className="text-sm text-slate" aria-live="polite">Le tuteur rédige sa réponse…</p>}
