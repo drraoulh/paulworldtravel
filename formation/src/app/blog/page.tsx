@@ -25,7 +25,7 @@ export default function BlogIndex() {
       />
       <section className="bg-paper py-12 sm:py-16">
         <Container>
-          <Link href={`/blog/${first.slug}/`} className="group grid overflow-hidden rounded-2xl border border-rule bg-white transition-colors hover:border-ocean md:grid-cols-[1.1fr_1fr]">
+          <Link href={`/blog/${first.slug}/`} className="group grid overflow-hidden rounded-2xl card-link pr-0 md:grid-cols-[1.1fr_1fr]">
             <div className="relative aspect-[16/9] md:aspect-auto md:min-h-[18rem]">
               <Image src={first.image.src} alt={first.image.alt} fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             </div>
@@ -40,7 +40,7 @@ export default function BlogIndex() {
           <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((a) => (
               <li key={a.slug}>
-                <Link href={`/blog/${a.slug}/`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-rule bg-white transition-colors hover:border-ocean">
+                <Link href={`/blog/${a.slug}/`} className="group flex h-full flex-col overflow-hidden rounded-2xl card-link pr-0">
                   <div className="relative aspect-[16/9]">
                     <Image src={a.image.src} alt={a.image.alt} fill sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" className="object-cover" />
                   </div>

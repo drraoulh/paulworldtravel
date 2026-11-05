@@ -60,9 +60,10 @@ export default async function EpreuvePage({ params }: Props) {
         <div>
           <h2 className="heading text-2xl text-night">{e.kind === 'expression' ? 'Les trois tâches' : 'Comment l’épreuve progresse'}</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {m.tasks.map((t) => (
-              <div key={t.title} className="rounded-2xl border border-rule bg-white p-6">
-                <h3 className="heading text-lg text-night">{t.title}</h3>
+            {m.tasks.map((t, i) => (
+              <div key={t.title} className="rounded-2xl bg-white/60 p-6">
+                <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full bg-container text-sm font-bold text-night">{i + 1}</span>
+                <h3 className="heading mt-3 text-lg text-night">{t.title}</h3>
                 <p className="mt-2 text-slate">{t.detail}</p>
               </div>
             ))}
@@ -73,9 +74,10 @@ export default async function EpreuvePage({ params }: Props) {
           <h2 className="heading text-2xl text-night">Ce que vous trouvez dans cette épreuve</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {blocks.map((b) => (
-              <Link key={b.href} href={b.href} className="group rounded-2xl border border-rule bg-white p-6 transition-colors hover:border-ocean">
+              <Link key={b.href} href={b.href} className="card-link group rounded-2xl p-6">
                 <h3 className="heading text-xl text-night group-hover:text-ocean">{b.title}</h3>
                 <p className="mt-2 text-slate">{b.text}</p>
+                <span className="mt-4 inline-block text-sm font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 group-hover:decoration-ocean">Ouvrir</span>
               </Link>
             ))}
           </div>

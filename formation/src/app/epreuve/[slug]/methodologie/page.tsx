@@ -30,7 +30,7 @@ export default async function MethodologiePage({ params }: Props) {
         <ol className="space-y-3">
           {m.lessons.map((l, i) => (
             <li key={l.slug}>
-              <Link href={`/epreuve/${e.slug}/methodologie/${l.slug}/`} className="group flex items-start gap-4 rounded-2xl border border-rule bg-white p-5 transition-colors hover:border-ocean">
+              <Link href={`/epreuve/${e.slug}/methodologie/${l.slug}/`} className="group flex items-start gap-4 rounded-2xl card-link p-5">
                 <LessonMark id={ids[i]} />
                 <span className="flex-1">
                   <span className="block text-sm text-slate">Leçon {i + 1}, {l.minutes} min</span>

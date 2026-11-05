@@ -55,7 +55,7 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
             <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {months.map(({ m, count }) => (
                 <li key={m}>
-                  <Link href={`/epreuve/${e.slug}/combinaisons/${year}/${m}/`} className="group block rounded-2xl border border-rule bg-white p-6 transition-colors hover:border-night">
+                  <Link href={`/epreuve/${e.slug}/combinaisons/${year}/${m}/`} className="group block rounded-2xl card-link p-6 hover:border-night">
                     <span className="heading block text-2xl text-night group-hover:text-ocean">{MONTHS[m - 1]} {year}</span>
                     <span className="mt-2 block text-slate">{count} combinaison{count > 1 ? 's' : ''}</span>
                   </Link>
