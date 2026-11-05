@@ -13,7 +13,7 @@ import { supabaseConfigured } from '@/lib/supabase/config';
 import { effectiveStatus, formatDate, formuleName, statusLabel, statusTone, type Enrollment, type Profile } from '@/lib/labels';
 import { signOut } from './actions';
 import PayByCard from '@/components/packs/PayByCard';
-import { stripeConfigured } from '@/lib/stripe';
+import { cardPaymentFor } from '@/lib/stripe';
 import { headers } from 'next/headers';
 import { zoneForCountry } from '@/content/offers';
 
@@ -36,7 +36,7 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
   const courseItems = buildCourse(await publishedModules()).flatMap((m) => m.items);
   const isStaff = profile?.role === 'admin' || profile?.role === 'trainer';
   const active = enrollments?.find((e) => effectiveStatus(e) === 'active');
-  const card = stripeConfigured();
+  const card = cardPaymentFor(profile?.role);
   const zone = zoneForCountry((await headers()).get('x-vercel-ip-country'));
 
   return (

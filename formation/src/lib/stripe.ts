@@ -11,6 +11,13 @@ const API = 'https://api.stripe.com/v1';
 
 export const stripeConfigured = () => Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
 
+/** With a test key (sk_test_), card payment is shown to the team only: test cards must not open real packs. */
+export const stripeTestMode = () => Boolean(process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_'));
+
+/** Whether this visitor may pay by card: live key for everyone, test key for admins and trainers only. */
+export const cardPaymentFor = (role: string | null | undefined) =>
+  stripeConfigured() && (!stripeTestMode() || role === 'admin' || role === 'trainer');
+
 /** Currencies without cents (Stripe "zero-decimal"): the FCFA amount is sent as is. */
 const ZERO_DECIMAL = ['XAF', 'XOF'];
 export const toStripeAmount = (amount: number, currency: string) =>
