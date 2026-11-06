@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { requireStaff } from '@/lib/staff';
-import { AdminHeading, AdminBody, DataError, fieldClass, adminButton } from '@/components/admin/ui';
+import { AdminHeading, AdminBody, DataError, fieldClass, adminButton, adminSecondary, adminLink } from '@/components/admin/ui';
 import LearnerTable from '@/components/admin/LearnerTable';
 import { accessLabel, learnerPage, levels, PAGE_SIZE, type LearnerFilters } from '@/lib/admin/learners';
 import { packs } from '@/content/offers';
@@ -24,7 +24,7 @@ export default async function Learners({ searchParams }: { searchParams: Promise
         description="Retrouvez chaque candidat, son pack, son niveau et son activité. Ajoutez des apprenants inscrits au bureau ou par téléphone."
         action={isAdmin && (
           <div className="flex flex-wrap gap-2">
-            <Link href="/admin/apprenants/importer/" className="rounded-lg border border-rule bg-white px-4 py-2.5 text-sm font-bold text-night hover:border-ocean">Importer une liste</Link>
+            <Link href="/admin/apprenants/importer/" className={adminSecondary}>Importer une liste</Link>
             <Link href="/admin/apprenants/nouveau/" className={adminButton}>Ajouter un apprenant</Link>
           </div>
         )}
@@ -61,15 +61,15 @@ export default async function Learners({ searchParams }: { searchParams: Promise
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
           <p className="text-slate">
             {data.count} apprenant{data.count > 1 ? 's' : ''}{active ? ' correspondent aux filtres' : ''}
-            {active && <Link href="/admin/apprenants/" className="ml-3 font-bold text-ocean hover:underline">Effacer les filtres</Link>}
+            {active && <Link href="/admin/apprenants/" className={`ml-3 ${adminLink}`}>Effacer les filtres</Link>}
           </p>
-          <a href={`/admin/apprenants/export/?${query()}`} className="font-bold text-ocean hover:underline">Exporter vers Excel (CSV)</a>
+          <a href={`/admin/apprenants/export/?${query()}`} className={adminLink}>Exporter vers Excel (CSV)</a>
         </div>
 
         {data.error ? <DataError /> : data.rows.length ? <LearnerTable rows={data.rows} /> : (
           <p className="rounded-xl border border-rule bg-white p-8 text-sm text-slate">
             {active ? 'Aucun apprenant ne correspond à ces filtres.' : 'Aucun apprenant pour le moment.'}{' '}
-            {isAdmin && <Link href="/admin/apprenants/nouveau/" className="font-bold text-ocean hover:underline">Ajouter le premier apprenant</Link>}
+            {isAdmin && <Link href="/admin/apprenants/nouveau/" className={adminLink}>Ajouter le premier apprenant</Link>}
           </p>
         )}
 

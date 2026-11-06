@@ -2,7 +2,7 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { escapeHtml, sendEmail } from '@/lib/brevo';
-import { authLink, emailLayout, SITE } from '@/lib/email-layout';
+import { authLink, emailLayout, messageLayout, SITE } from '@/lib/email-layout';
 import { packName } from '@/content/offers';
 import { formatDate } from '@/lib/labels';
 
@@ -237,4 +237,38 @@ export const roleName: Record<Role, string> = { candidate: 'Apprenant', trainer:
 export async function setRole(id: string, role: Role) {
   const { error } = await service().from('profiles').update({ role }).eq('id', id);
   return !error;
+}
+
+export interface Recipient { email: string; first_name: string | null }
+
+/** « Bonjour {prénom} » in a team message becomes the learner's first name. */
+const personal = (text: string, firstName: string | null) =>
+  text.replace(/\{\s*pr[ée]nom\s*\}/gi, firstName?.trim() || '').replace(/Bonjour ,/g, 'Bonjour,').replace(/ +,/g, ',');
+
+/**
+ * Sends a message written by the team, one email per learner (nobody sees the
+ * other addresses). Returns how many went out and how many failed.
+ */
+export async function sendMessage(to: Recipient[], subject: string, text: string, button?: { label: string; href: string }) {
+  let sent = 0;
+  let failed = 0;
+  const queue = [...to];
+  const worker = async () => {
+    for (let r = queue.shift(); r; r = queue.shift()) {
+      try {
+        await sendEmail({
+          to: [{ email: r.email }],
+          subject: personal(subject, r.first_name),
+          htmlContent: messageLayout(personal(subject, r.first_name), personal(text, r.first_name), button),
+          tags: ['formation', 'message-equipe'],
+        });
+        sent++;
+      } catch (e) {
+        failed++;
+        console.error('Team message failed', r.email, e);
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(5, to.length) }, worker));
+  return { sent, failed };
 }

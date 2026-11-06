@@ -9,23 +9,24 @@ import { publishedModules } from '@/lib/training-content';
 import { progressSummary } from '@/lib/admin/progress';
 import { packs, packName } from '@/content/offers';
 import { effectiveStatus, formatDate, statusLabel, type Profile, type Enrollment } from '@/lib/labels';
-import { AdminHeading, AdminBody, DataError, fieldClass, adminButton } from '@/components/admin/ui';
+import { AdminHeading, AdminBody, DataError, fieldClass, adminButton, adminSecondary, adminDangerSolid, adminSmall, adminLink } from '@/components/admin/ui';
 import PaymentFields from '@/components/admin/PaymentFields';
 import { saveLearner } from '../actions';
+import SubmitButton from '@/components/admin/SubmitButton';
 
 const done: Record<string, string> = {
   cree: 'Le compte est créé.', profile: 'Coordonnées enregistrées.', notes: 'Note enregistrée.', pack: 'Demande de pack créée.',
   grant: 'Pack activé. L’apprenant a reçu un email de confirmation.', extend: 'Pack prolongé.', payment: 'Paiement enregistré.',
-  link: 'Lien de connexion envoyé par email.', remind: 'Relance envoyée par email.', disable: 'Compte désactivé : l’apprenant ne peut plus se connecter.', enable: 'Compte réactivé.',
+  link: 'Lien de connexion envoyé par email.', email: 'Email envoyé à l’apprenant.', remind: 'Relance envoyée par email.', disable: 'Compte désactivé : l’apprenant ne peut plus se connecter.', enable: 'Compte réactivé.',
 };
 const failed: Record<string, string> = {
   pack: 'Le pack n’a pas pu être créé ou activé.', paiement: 'Le paiement n’a pas pu être enregistré. Vérifiez le montant.',
-  prolongation: 'Le pack n’a pas pu être prolongé.', email: 'L’email n’a pas pu être envoyé. Réessayez ou contactez l’apprenant sur WhatsApp.',
+  prolongation: 'Le pack n’a pas pu être prolongé.', message: 'Écrivez un objet et un message avant d’envoyer.', email: 'L’email n’a pas pu être envoyé. Réessayez ou contactez l’apprenant sur WhatsApp.',
   confirmation: 'Pour supprimer le compte, recopiez exactement son adresse email.', compte: 'Le compte n’a pas pu être modifié.',
 };
 
 const card = 'rounded-xl border border-rule bg-white p-6';
-const secondary = 'inline-flex items-center justify-center rounded-lg border border-rule bg-white px-3 py-2 text-xs font-bold text-night hover:border-ocean';
+const secondary = `${adminSecondary} ${adminSmall}`;
 
 function Hidden({ id, intent, extra }: { id: string; intent: string; extra?: Record<string, string> }) {
   return <><input type="hidden" name="id" value={id} /><input type="hidden" name="intent" value={intent} />{Object.entries(extra ?? {}).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}</>;
@@ -70,7 +71,7 @@ export default async function Learner({ params, searchParams }: { params: Promis
         eyebrow="Apprenants / Fiche individuelle"
         title={learnerName(p)}
         description={`${p.email}${disabled ? ' · compte désactivé' : ''}`}
-        action={<Link href="/admin/apprenants/" className="text-sm font-bold text-ocean">← Tous les apprenants</Link>}
+        action={<Link href="/admin/apprenants/" className={`text-sm ${adminLink}`}>← Tous les apprenants</Link>}
       />
       <AdminBody>
         {state.erreur && <DataError>{failed[state.erreur] ?? 'La modification n’a pas pu être enregistrée. Rechargez la fiche et réessayez.'}</DataError>}
@@ -97,7 +98,7 @@ export default async function Learner({ params, searchParams }: { params: Promis
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
           <div className="space-y-6">
             <section className={card}>
-              <div className="flex flex-wrap justify-between gap-3"><h2 className="font-bold">Packs et accès</h2><Link href={`/admin/inscriptions/?apprenant=${id}&statut=all`} className="text-xs font-bold text-ocean">Voir dans les inscriptions</Link></div>
+              <div className="flex flex-wrap justify-between gap-3"><h2 className="font-bold">Packs et accès</h2><Link href={`/admin/inscriptions/?apprenant=${id}&statut=all`} className={`text-xs ${adminLink}`}>Voir dans les inscriptions</Link></div>
               {!enrollments.error && !list.length && <p className="mt-4 text-sm text-slate">Compte gratuit, aucun pack demandé.</p>}
               <ul className="mt-4 divide-y divide-rule">
                 {list.map((e) => (
@@ -188,7 +189,7 @@ export default async function Learner({ params, searchParams }: { params: Promis
                   </li>
                 ))}
               </ul>
-              <Link href={`/admin/corrections/?apprenant=${id}`} className="mt-4 inline-block text-sm font-bold text-ocean">Consulter les productions</Link>
+              <Link href={`/admin/corrections/?apprenant=${id}`} className={`mt-4 inline-block text-sm ${adminLink}`}>Consulter les productions</Link>
             </section>
 
             <section className={card}>
@@ -222,14 +223,25 @@ export default async function Learner({ params, searchParams }: { params: Promis
                 {waHello && <a href={waHello} target="_blank" rel="noopener" className={secondary}>WhatsApp</a>}
                 {waInactive && <a href={waInactive} target="_blank" rel="noopener" className={secondary}>WhatsApp : relance d’activité</a>}
                 {waExpire && <a href={waExpire} target="_blank" rel="noopener" className={secondary}>WhatsApp : fin de pack</a>}
-                <a href={`mailto:${p.email}`} className={secondary}>Écrire un email</a>
               </div>
               {!p.phone && <p className="mt-3 text-xs text-slate">Ajoutez un numéro pour contacter l’apprenant sur WhatsApp.</p>}
               {isAdmin && (
+                <details className="mt-4 rounded-lg border border-rule p-4 open:bg-paper/40">
+                  <summary className="cursor-pointer text-sm font-bold text-ocean">Écrire un email à {p.first_name || 'l’apprenant'}</summary>
+                  <form action={saveLearner} className="mt-4 space-y-3">
+                    <Hidden id={id} intent="email" />
+                    <label className="block text-xs font-semibold">Objet<input name="subject" required maxLength={150} className={`mt-1 ${fieldClass}`} /></label>
+                    <label className="block text-xs font-semibold">Message<textarea name="message" required rows={6} maxLength={5000} defaultValue={`Bonjour ${p.first_name ?? ''},\n\n`} className={`mt-1 ${fieldClass}`} /></label>
+                    <p className="text-xs text-slate">Envoyé tout de suite depuis l’adresse de la formation, à {p.email}. L’apprenant peut répondre à l’email.</p>
+                    <SubmitButton className={adminButton}>Envoyer l’email</SubmitButton>
+                  </form>
+                </details>
+              )}
+              {isAdmin && (
                 <div className="mt-4 flex flex-wrap gap-2 border-t border-rule pt-4">
-                  <form action={saveLearner}><Hidden id={id} intent="remind" extra={{ kind: 'inactif' }} /><button className={secondary}>Email : relance d’activité</button></form>
-                  {activePack && <form action={saveLearner}><Hidden id={id} intent="remind" extra={{ kind: 'expiration', ends_at: activePack.ends_at ?? '' }} /><button className={secondary}>Email : fin de pack</button></form>}
-                  <form action={saveLearner}><Hidden id={id} intent="link" /><button className={secondary}>Envoyer le lien de connexion</button></form>
+                  <form action={saveLearner}><Hidden id={id} intent="remind" extra={{ kind: 'inactif' }} /><SubmitButton className={secondary}>Email : relance d’activité</SubmitButton></form>
+                  {activePack && <form action={saveLearner}><Hidden id={id} intent="remind" extra={{ kind: 'expiration', ends_at: activePack.ends_at ?? '' }} /><SubmitButton className={secondary}>Email : fin de pack</SubmitButton></form>}
+                  <form action={saveLearner}><Hidden id={id} intent="link" /><SubmitButton className={secondary}>Envoyer le lien de connexion</SubmitButton></form>
                 </div>
               )}
             </section>
@@ -280,7 +292,7 @@ export default async function Learner({ params, searchParams }: { params: Promis
                   <form action={saveLearner} className="mt-3 space-y-3">
                     <Hidden id={id} intent="delete" />
                     <label className="block text-xs font-semibold">Recopiez l’email {p.email} pour confirmer<input name="confirm" autoComplete="off" required className={`mt-1 ${fieldClass}`} /></label>
-                    <button className="rounded-lg bg-maple px-4 py-2.5 text-sm font-bold text-white">Supprimer définitivement</button>
+                    <button className={adminDangerSolid}>Supprimer définitivement</button>
                   </form>
                 </details>
               </section>

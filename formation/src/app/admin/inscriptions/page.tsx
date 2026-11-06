@@ -8,6 +8,7 @@ import { supabaseConfigured } from '@/lib/supabase/config';
 import { effectiveStatus, formatDate, formuleName, statusLabel, statusTone, type Enrollment, type Profile } from '@/lib/labels';
 import { packs } from '@/content/offers';
 import { activateEnrollment, saveNotes, setEnrollmentStatus } from '../actions';
+import { adminButton, adminSecondary, adminSuccess, adminDanger, adminSmall, adminLink } from '@/components/admin/ui';
 
 export const metadata: Metadata = { title: 'Administration', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -34,7 +35,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       <Container className="py-20">
         <h1 className="heading text-3xl text-night">Accès réservé</h1>
         <p className="mt-4 text-slate">Cette page est réservée à l’équipe Paul World Travel.</p>
-        <Link href="/espace/" className="mt-6 inline-block font-bold text-ocean hover:underline">Retour à mon espace</Link>
+        <Link href="/espace/" className={`mt-6 inline-block ${adminLink}`}>Retour à mon espace</Link>
       </Container>
     );
   }
@@ -85,7 +86,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                   <div>
                     <h2 className="heading text-lg text-night">{[p?.first_name, p?.last_name].filter(Boolean).join(' ') || 'Sans nom'}</h2>
                     <p className="text-sm text-slate">
-                      <a href={`mailto:${p?.email}`} className="hover:underline">{p?.email}</a>
+                      <Link href={`/admin/apprenants/${r.user_id}/`} title="Ouvrir la fiche pour lui écrire" className={adminLink}>{p?.email}</Link>
                       {p?.phone && <> · <a href={`https://wa.me/${p.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{p.phone}</a></>}
                       {p?.city && <> · {p.city}</>}
                     </p>
@@ -119,22 +120,22 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                         <span className="block font-semibold text-night">ou jusqu’au</span>
                         <input type="date" name="ends_at" className="mt-1 rounded-md border border-rule px-3 py-2" />
                       </label>
-                      <button className="rounded-md bg-green-700 px-4 py-2 font-bold text-white hover:bg-green-800">
+                      <button className={adminSuccess}>
                         {r.shown === 'active' ? 'Prolonger' : 'Paiement reçu : activer'}
                       </button>
                     </form>
                     <div className="flex flex-wrap gap-2">
                       {r.shown !== 'pending' && (
                         <form action={setEnrollmentStatus}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="pending" />
-                          <button className="rounded-md border border-rule px-3 py-2 text-sm font-semibold hover:bg-paper">Remettre en attente</button></form>
+                          <button className={`${adminSecondary} ${adminSmall}`}>Remettre en attente</button></form>
                       )}
                       {r.shown === 'active' && (
                         <form action={setEnrollmentStatus}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="expired" />
-                          <button className="rounded-md border border-rule px-3 py-2 text-sm font-semibold hover:bg-paper">Terminer</button></form>
+                          <button className={`${adminSecondary} ${adminSmall}`}>Terminer</button></form>
                       )}
                       {r.shown !== 'cancelled' && (
                         <form action={setEnrollmentStatus}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="cancelled" />
-                          <button className="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-maple hover:bg-red-50">Annuler</button></form>
+                          <button className={`${adminDanger} ${adminSmall}`}>Annuler</button></form>
                       )}
                     </div>
                   </div>
@@ -143,7 +144,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                   <form action={saveNotes} className="mt-4 flex flex-col gap-2 sm:flex-row">
                     <input type="hidden" name="id" value={r.id} />
                     <input name="staff_notes" defaultValue={r.staff_notes ?? ''} placeholder="Note interne (paiement, mode, remarque…)" className="flex-1 rounded-md border border-rule px-3 py-2 text-sm" />
-                    <button className="rounded-md bg-night px-4 py-2 text-sm font-bold text-white hover:bg-ocean">Enregistrer la note</button>
+                    <button className={adminButton}>Enregistrer la note</button>
                   </form>
                 )}
               </article>

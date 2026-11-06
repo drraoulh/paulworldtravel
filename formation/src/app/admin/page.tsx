@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireStaff } from '@/lib/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { AdminHeading, AdminBody, DataError, adminButton } from '@/components/admin/ui';
+import { AdminHeading, AdminBody, DataError, adminButton, adminLink } from '@/components/admin/ui';
 import { learnerDirectory, learnerName, daysSince, type DirectoryRow } from '@/lib/admin/learners';
 import { packs, packName } from '@/content/offers';
 import { formatDate } from '@/lib/labels';
@@ -90,7 +90,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             {inactive.length > 0 && <p className="border-t border-rule px-5 py-3 text-xs text-slate">Ouvrez une fiche pour relancer par email ou WhatsApp.</p>}
           </section>
           <section className={card}>
-            <div className="flex justify-between border-b border-rule p-5"><h2 className="font-bold">Inscrits cette semaine</h2><Link href="/admin/apprenants/" className="text-xs font-bold text-ocean">Voir tous</Link></div>
+            <div className="flex justify-between border-b border-rule p-5"><h2 className="font-bold">Inscrits cette semaine</h2><Link href="/admin/apprenants/" className={`text-xs ${adminLink}`}>Voir tous</Link></div>
             <PeopleList rows={week} empty="Aucune inscription cette semaine." detail={(r) => formatDate(r.created_at)} />
           </section>
           <section className={`${card} p-5`}>

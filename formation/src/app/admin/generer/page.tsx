@@ -5,6 +5,7 @@ import { formatDate } from '@/lib/labels';
 import { requireStaff } from '@/lib/staff';
 import { setDraftStatus } from './actions';
 import GenerateForm from './GenerateForm';
+import { adminSecondary, adminSuccess, adminDanger } from '@/components/admin/ui';
 
 export const metadata: Metadata = { title: 'Générer des exercices', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -50,9 +51,9 @@ export default async function Generer() {
               </ol>
               {isAdmin && (
                 <div className="mt-5 flex gap-2 border-t border-rule pt-4">
-                  {d.status !== 'approved' && <form action={setDraftStatus}><input type="hidden" name="id" value={d.id} /><input type="hidden" name="status" value="approved" /><button className="rounded-lg bg-green-700 px-4 py-2 text-sm font-bold text-white hover:bg-green-800">Valider</button></form>}
-                  {d.status === 'approved' && <form action={setDraftStatus}><input type="hidden" name="id" value={d.id} /><input type="hidden" name="status" value="draft" /><button className="rounded-lg border border-rule px-4 py-2 text-sm font-semibold hover:bg-paper">Repasser en brouillon</button></form>}
-                  <form action={setDraftStatus}><input type="hidden" name="id" value={d.id} /><input type="hidden" name="status" value="rejected" /><button className="rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-maple hover:bg-red-50">Rejeter</button></form>
+                  {d.status !== 'approved' && <form action={setDraftStatus}><input type="hidden" name="id" value={d.id} /><input type="hidden" name="status" value="approved" /><button className={adminSuccess}>Valider</button></form>}
+                  {d.status === 'approved' && <form action={setDraftStatus}><input type="hidden" name="id" value={d.id} /><input type="hidden" name="status" value="draft" /><button className={adminSecondary}>Repasser en brouillon</button></form>}
+                  <form action={setDraftStatus}><input type="hidden" name="id" value={d.id} /><input type="hidden" name="status" value="rejected" /><button className={adminDanger}>Rejeter</button></form>
                 </div>
               )}
             </article>

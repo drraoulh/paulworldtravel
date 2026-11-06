@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/staff';
-import { AdminHeading, AdminBody, DataError, fieldClass, adminButton } from '@/components/admin/ui';
+import { AdminHeading, AdminBody, DataError, fieldClass, adminButton, adminLink } from '@/components/admin/ui';
 import PaymentFields from '@/components/admin/PaymentFields';
 import { packs } from '@/content/offers';
 import { ACCESS_DAYS } from '@/lib/admin/accounts';
@@ -17,7 +17,7 @@ export default async function NewLearner({ searchParams }: { searchParams: Promi
   const { erreur, id } = await searchParams;
   return (
     <>
-      <AdminHeading eyebrow="Apprenants" title="Ajouter un apprenant" description="Pour un élève inscrit au bureau, par téléphone ou par WhatsApp. Il reçoit un email pour choisir son mot de passe." action={<Link href="/admin/apprenants/" className="text-sm font-bold text-ocean">← Tous les apprenants</Link>} />
+      <AdminHeading eyebrow="Apprenants" title="Ajouter un apprenant" description="Pour un élève inscrit au bureau, par téléphone ou par WhatsApp. Il reçoit un email pour choisir son mot de passe." action={<Link href="/admin/apprenants/" className={`text-sm ${adminLink}`}>← Tous les apprenants</Link>} />
       <AdminBody>
         {erreur && (
           <DataError>

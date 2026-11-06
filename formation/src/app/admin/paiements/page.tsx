@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireStaff } from '@/lib/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { AdminHeading, AdminBody, DataError, fieldClass, adminButton } from '@/components/admin/ui';
+import { AdminHeading, AdminBody, DataError, fieldClass, adminButton, adminLink } from '@/components/admin/ui';
 import { paymentMethodName } from '@/lib/admin/accounts';
 import { learnerName } from '@/lib/admin/learners';
 import { packName } from '@/content/offers';
@@ -41,7 +41,7 @@ export default async function Payments({ searchParams }: { searchParams: Promise
         <form className="flex flex-wrap items-end gap-3">
           <label className="text-xs font-semibold text-slate">Mois<input type="month" name="mois" defaultValue={month} className={`mt-1 ${fieldClass}`} /></label>
           <button className={adminButton}>Afficher</button>
-          <Link href={`/admin/paiements/?mois=${prev.toISOString().slice(0, 7)}`} className="self-center text-sm font-bold text-ocean hover:underline">Mois précédent</Link>
+          <Link href={`/admin/paiements/?mois=${prev.toISOString().slice(0, 7)}`} className={`self-center text-sm ${adminLink}`}>Mois précédent</Link>
         </form>
 
         <div className="grid gap-4 sm:grid-cols-3">
