@@ -13,9 +13,9 @@ import InteractionPractice from '@/components/simulator/InteractionPractice';
 import { getSeries } from '@/content/series';
 import type { Feedback } from '@/lib/ai/prompts';
 import { nclcFor, nclcLabel } from '@/lib/nclc';
-import { saveMockResult, type MockResult } from '@/lib/results';
+import { readResults, saveMockResult, type MockResult } from '@/lib/results';
 import { stopSpeaking } from '@/lib/speech';
-import { mockName, monthLabel } from '@/lib/mock-name';
+import { mockName, MOCK_MONTHS, pickMock } from '@/lib/mock-name';
 import SeriesRunner from './SeriesRunner';
 
 type Phase = 'intro' | 'co' | 'break-ce' | 'ce' | 'break-ee' | 'ee' | 'break-eo' | 'eo' | 'results';
@@ -44,7 +44,20 @@ const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).
 
 export default function MockExam({ series, monthly = [] }: { series: number[]; monthly?: { number: number; month: string }[] }) {
   const [phase, setPhase] = useState<Phase>('intro');
-  const [serie, setSerie] = useState(monthly[0]?.number ?? series[0]);
+  // Newest first: the monthly exams, then the others from the most recent.
+  const order = [...monthly.map((m) => m.number), ...[...series].sort((a, b) => b - a)];
+  const [serie, setSerie] = useState(order[0]);
+  const [taken, setTaken] = useState<Record<number, string>>({});
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => {
+    const last: Record<number, string> = {};
+    for (const m of readResults().mocks) if (!last[m.serie] || m.date > last[m.serie]) last[m.serie] = m.date;
+    setTaken(last);
+    const next = pickMock(order, last);
+    if (next) setSerie(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const choose = (n: number) => { setSerie(n); requestId.current = null; };
   const [co, setCo] = useState(0);
   const [ce, setCe] = useState(0);
   const [tcf, setTcf] = useState({ co: 0, ce: 0 });
@@ -119,30 +132,35 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
           </div>
           <fieldset className="rounded-2xl bg-white p-6 sm:p-8">
             <legend className="sr-only">Choisir l’examen</legend>
-            <p className="heading text-lg text-night">Choisissez votre examen blanc</p>
-            {monthly.length > 0 && (
-              <>
-                <p className="mt-4 text-sm font-semibold text-slate">Examens du mois, sur les thèmes rapportés par les candidats</p>
-                <div className="mt-2 flex flex-wrap gap-3">
-                  {monthly.map((m, i) => (
-                    <label key={m.number} className={`cursor-pointer rounded-xl border-2 px-5 py-3 font-semibold ${serie === m.number ? 'border-ocean bg-blue-50 text-night' : 'border-rule text-slate hover:border-ocean/50'}`}>
-                      <input type="radio" name="serie" className="sr-only" checked={serie === m.number} disabled={starting} onChange={() => { setSerie(m.number); requestId.current = null; }} />
-                      <span className="capitalize">{monthLabel(m.month)}</span>
-                      {i === 0 && <span className="ml-2 rounded-full bg-container px-2 py-0.5 text-xs font-bold text-night">Nouveau</span>}
-                    </label>
-                  ))}
-                </div>
-                <p className="mt-5 text-sm font-semibold text-slate">Examens blancs classiques</p>
-              </>
-            )}
-            <div className="mt-2 flex flex-wrap gap-3">
-              {series.map((n) => (
-                <label key={n} className={`cursor-pointer rounded-xl border-2 px-5 py-3 font-semibold ${serie === n ? 'border-ocean bg-blue-50 text-night' : 'border-rule text-slate hover:border-ocean/50'}`}>
-                  <input type="radio" name="serie" className="sr-only" checked={serie === n} disabled={starting} onChange={() => { setSerie(n); requestId.current = null; }} />
-                  Examen blanc {n}
-                </label>
-              ))}
+            <p className="text-sm font-semibold text-slate">Votre examen blanc, tiré parmi les plus récents que vous n’avez pas encore passés</p>
+            <div className="mt-3 rounded-2xl border-2 border-ocean bg-blue-50 p-5">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="heading text-2xl text-night">{mockName(serie)}</p>
+                {MOCK_MONTHS[serie] && serie === order[0] && <span className="rounded-full bg-container px-2.5 py-0.5 text-xs font-bold text-night">Nouveau</span>}
+              </div>
+              <p className="mt-1 text-slate">
+                {MOCK_MONTHS[serie] ? 'Sur les thèmes rapportés par les candidats ce mois-ci. ' : ''}
+                39 questions d’écoute, 39 de lecture, 3 textes et 3 tâches orales.
+                {taken[serie] ? ` Déjà passé le ${new Date(taken[serie]).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} : vous avez passé tous les examens récents.` : ''}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                {order.length > 1 && <button type="button" disabled={starting} onClick={() => { const n = pickMock(order, taken, serie); if (n) choose(n); }} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Tirer un autre examen</button>}
+                <button type="button" disabled={starting} aria-expanded={choosing} onClick={() => setChoosing((v) => !v)} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">{choosing ? 'Masquer la liste' : 'Choisir moi-même'}</button>
+              </div>
             </div>
+            {choosing && (
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                {order.map((n) => (
+                  <li key={n}>
+                    <label className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 ${serie === n ? 'border-ocean bg-blue-50' : 'border-rule hover:border-ocean/50'}`}>
+                      <input type="radio" name="serie" className="sr-only" checked={serie === n} disabled={starting} onChange={() => choose(n)} />
+                      <span className="font-semibold text-night">{mockName(n)}</span>
+                      <span className={`text-xs font-semibold ${taken[n] ? 'text-slate' : 'text-emerald-700'}`}>{taken[n] ? 'Déjà passé' : MOCK_MONTHS[n] ? 'Du mois' : 'Jamais passé'}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
             <button onClick={start} disabled={starting || !access?.aiAllowed || !access.exams?.remaining} className="mt-6 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">{starting ? 'Réservation de votre examen…' : 'Commencer l’examen (1 crédit)'}</button>
             {startError && <p role="alert" className="mt-3 text-maple">{startError}</p>}
           </fieldset>
