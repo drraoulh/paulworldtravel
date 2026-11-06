@@ -1,27 +1,20 @@
 /** Series numbers of the monthly mock exams and their month (YYYY-MM). */
 export const MOCK_MONTHS: Record<number, string> = { 101: '2026-10' };
 
-/** The other mock exams are named after cities of Canada and Cameroon, never by number. */
-const CITY_NAMES: Record<number, string> = {
-  1: 'Montréal', 2: 'Douala', 3: 'Québec', 4: 'Yaoundé', 5: 'Ottawa',
-  6: 'Bafoussam', 7: 'Moncton', 8: 'Kribi', 9: 'Gatineau', 10: 'Limbé',
-  11: 'Sherbrooke', 12: 'Garoua', 13: 'Winnipeg', 14: 'Bamenda', 15: 'Toronto',
-};
-
 const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 export const monthLabel = (month: string) => {
   const [y, m] = month.split('-').map(Number);
   return `${MONTHS[m - 1]} ${y}`;
 };
 
-/** « Session d’octobre 2026 » or « Session Montréal ». */
+/** « Examen blanc d’octobre 2026 » for a monthly exam, « Examen blanc n° 7 » for the others. */
 export const mockName = (serie: number) => {
   const month = MOCK_MONTHS[serie];
   if (month) {
     const label = monthLabel(month);
-    return `Session ${/^[ao]/.test(label) ? 'd’' : 'de '}${label}`;
+    return `Examen blanc ${/^[ao]/.test(label) ? 'd’' : 'de '}${label}`;
   }
-  return `Session ${CITY_NAMES[serie] ?? `spéciale ${serie}`}`;
+  return `Examen blanc n° ${serie}`;
 };
 
 /**
