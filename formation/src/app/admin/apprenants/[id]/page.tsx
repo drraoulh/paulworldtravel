@@ -9,7 +9,7 @@ import { publishedModules } from '@/lib/training-content';
 import { progressSummary } from '@/lib/admin/progress';
 import { packs, packName } from '@/content/offers';
 import { effectiveStatus, formatDate, statusLabel, type Profile, type Enrollment } from '@/lib/labels';
-import { AdminHeading, AdminBody, DataError, fieldClass, adminButton, adminSecondary, adminDangerSolid, adminSmall, adminLink } from '@/components/admin/ui';
+import { AdminHeading, AdminBody, DataError, fieldClass, adminButton, adminSecondary, adminDangerSolid, adminSmall, adminLink, adminDanger } from '@/components/admin/ui';
 import PaymentFields from '@/components/admin/PaymentFields';
 import { saveLearner } from '../actions';
 import SubmitButton from '@/components/admin/SubmitButton';
@@ -286,7 +286,7 @@ export default async function Learner({ params, searchParams }: { params: Promis
               <section className={`${card} border-red-200`}>
                 <h2 className="font-bold">Compte</h2>
                 <p className="mt-2 text-xs text-slate">Désactiver bloque la connexion sans rien effacer. Supprimer efface définitivement le compte, ses packs, sa progression et ses productions.</p>
-                <form action={saveLearner} className="mt-4"><Hidden id={id} intent={disabled ? 'enable' : 'disable'} /><button className={secondary}>{disabled ? 'Réactiver le compte' : 'Désactiver le compte'}</button></form>
+                <form action={saveLearner} className="mt-4"><Hidden id={id} intent={disabled ? 'enable' : 'disable'} /><button className={disabled ? secondary : `${adminDanger} ${adminSmall}`}>{disabled ? 'Réactiver le compte' : 'Désactiver le compte'}</button></form>
                 <details className="mt-4">
                   <summary className="cursor-pointer text-xs font-bold text-maple">Supprimer le compte</summary>
                   <form action={saveLearner} className="mt-3 space-y-3">
