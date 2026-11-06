@@ -19,7 +19,8 @@ const csp = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  'upgrade-insecure-requests',
+  // Only on Vercel (HTTPS): on a local http server it would break every request.
+  ...(process.env.VERCEL ? ['upgrade-insecure-requests'] : []),
 ].join('; ');
 
 const securityHeaders = [

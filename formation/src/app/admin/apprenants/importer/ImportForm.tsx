@@ -1,7 +1,7 @@
 'use client';
 import { useActionState } from 'react';
 import Link from 'next/link';
-import { fieldClass, adminButton } from '@/components/admin/ui';
+import { fieldClass, adminButton, adminLink } from '@/components/admin/ui';
 import { importLearners, type ImportState } from '../actions';
 
 const label = { cree: 'Créé', existe: 'Existe déjà', invalide: 'Email invalide', erreur: 'Échec' } as const;
@@ -46,7 +46,7 @@ export default function ImportForm() {
               {state.results.map((r) => (
                 <tr key={r.line}>
                   <td className="py-2 text-slate">{r.line}</td>
-                  <td>{r.id ? <Link href={`/admin/apprenants/${r.id}/`} className="font-semibold text-ocean hover:underline">{r.name || r.email}</Link> : r.name || r.email || '(vide)'}<span className="block text-xs text-slate">{r.email}</span></td>
+                  <td>{r.id ? <Link href={`/admin/apprenants/${r.id}/`} className={adminLink}>{r.name || r.email}</Link> : r.name || r.email || '(vide)'}<span className="block text-xs text-slate">{r.email}</span></td>
                   <td className={`font-semibold ${tone[r.status]}`}>{label[r.status]}{r.detail && <span className="block text-xs font-normal text-slate">{r.detail}</span>}</td>
                 </tr>
               ))}

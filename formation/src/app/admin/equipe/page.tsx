@@ -1,6 +1,6 @@
 import { requireStaff } from '@/lib/staff';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { AdminHeading, AdminBody, DataError, fieldClass, adminButton } from '@/components/admin/ui';
+import { AdminHeading, AdminBody, DataError, fieldClass, adminButton, adminSecondary, adminSmall } from '@/components/admin/ui';
 import { roleName, type Role } from '@/lib/admin/accounts';
 import { learnerName } from '@/lib/admin/learners';
 import { formatDate } from '@/lib/labels';
@@ -52,7 +52,7 @@ export default async function Team({ searchParams }: { searchParams: Promise<{ s
                               <option value="trainer">Formateur</option>
                               <option value="candidate">Retirer de l’équipe</option>
                             </select>
-                            <button className="rounded-lg border border-rule px-3 py-1.5 text-xs font-bold hover:border-ocean">Appliquer</button>
+                            <button className={`${adminSecondary} ${adminSmall}`}>Appliquer</button>
                           </form>
                         )}
                       </td>

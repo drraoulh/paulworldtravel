@@ -6,6 +6,7 @@ import { formatDate } from '@/lib/labels';
 import type { Feedback } from '@/lib/ai/prompts';
 import { requireStaff } from '@/lib/staff';
 import { reviewSubmission } from './actions';
+import { adminButton } from '@/components/admin/ui';
 
 export const metadata: Metadata = { title: 'Corrections', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -78,7 +79,7 @@ export default async function Corrections({ searchParams }: { searchParams: Prom
                   <span className="block font-semibold text-night">Commentaire du formateur</span>
                   <input name="trainer_comment" defaultValue={r.trainer_comment ?? ''} placeholder="Points forts, priorités de travail…" className="mt-1 w-full rounded-lg border border-rule px-3 py-2" />
                 </label>
-                <button className="rounded-lg bg-night px-4 py-2.5 text-sm font-bold text-white hover:bg-ocean">{r.status === 'trainer_reviewed' ? 'Mettre à jour' : 'Valider'}</button>
+                <button className={adminButton}>{r.status === 'trainer_reviewed' ? 'Mettre à jour' : 'Valider'}</button>
               </form>
             </article>
           ))}

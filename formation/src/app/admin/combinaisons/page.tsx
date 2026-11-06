@@ -6,6 +6,7 @@ import { MONTHS, type CombinaisonContent, type ReportContent } from '@/lib/combi
 import { formatDate } from '@/lib/labels';
 import { requireStaff } from '@/lib/staff';
 import { reformulate, saveCombinaison, setCombinaisonStatus } from './actions';
+import { adminButton, adminSecondary, adminLink } from '@/components/admin/ui';
 
 export const metadata: Metadata = { title: 'Combinaisons des candidats', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -49,8 +50,8 @@ function Editor({ row, year, month }: { row?: Row<CombinaisonContent>; year: num
         </fieldset>
       ))}
       <div className="flex flex-wrap gap-3">
-        <button name="intent" value="publish" className="rounded-full bg-container px-5 py-2.5 text-sm font-bold text-night hover:bg-container-hover">{row?.status === 'approved' ? 'Enregistrer (reste publiée)' : 'Publier'}</button>
-        <button name="intent" value="save" className="rounded-full border border-rule px-5 py-2.5 text-sm font-semibold text-night hover:border-night">{row?.status === 'approved' ? 'Retirer et garder en brouillon' : 'Enregistrer le brouillon'}</button>
+        <button name="intent" value="publish" className={adminButton}>{row?.status === 'approved' ? 'Enregistrer (reste publiée)' : 'Publier'}</button>
+        <button name="intent" value="save" className={adminSecondary}>{row?.status === 'approved' ? 'Retirer et garder en brouillon' : 'Enregistrer le brouillon'}</button>
       </div>
     </form>
   );
@@ -92,7 +93,7 @@ export default async function AdminCombinaisons() {
 
           <section>
             <h2 className="heading text-2xl text-night">Sujets rapportés à traiter ({reports.length})</h2>
-            {reports.length === 0 && <p className="mt-3 text-slate">Aucun nouveau sujet. Partagez le lien <Link href="/partager-mes-sujets/" className="font-semibold text-ocean hover:underline">formation.paulworldtravel.com/partager-mes-sujets</Link> à vos élèves après leur examen.</p>}
+            {reports.length === 0 && <p className="mt-3 text-slate">Aucun nouveau sujet. Partagez le lien <Link href="/partager-mes-sujets/" className={adminLink}>formation.paulworldtravel.com/partager-mes-sujets</Link> à vos élèves après leur examen.</p>}
             <div className="mt-4 space-y-4">
               {reports.map((r) => (
                 <article key={r.id} className="rounded-2xl bg-white p-6">
@@ -100,8 +101,8 @@ export default async function AdminCombinaisons() {
                   <ol className="mt-3 space-y-2 text-ink">{r.content.tasks.map((t, i) => <li key={i}><strong>Tâche {i + 1} : </strong>{t || <em className="text-slate">non décrite</em>}</li>)}</ol>
                   {r.content.notes && <p className="mt-2 text-sm text-slate">Remarques : {r.content.notes}</p>}
                   <div className="mt-4 flex flex-wrap gap-3">
-                    <form action={reformulate}><input type="hidden" name="id" value={r.id} /><button className="rounded-full bg-night px-5 py-2.5 text-sm font-bold text-white hover:bg-ocean">Reformuler avec l’IA</button></form>
-                    <form action={setCombinaisonStatus}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="rejected" /><button className="rounded-full border border-rule px-5 py-2.5 text-sm font-semibold text-slate hover:text-maple">Ignorer</button></form>
+                    <form action={reformulate}><input type="hidden" name="id" value={r.id} /><button className={adminButton}>Reformuler avec l’IA</button></form>
+                    <form action={setCombinaisonStatus}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="status" value="rejected" /><button className={adminSecondary}>Ignorer</button></form>
                   </div>
                 </article>
               ))}

@@ -7,7 +7,7 @@ import { packs } from '@/content/offers';
 import { parseLearners } from '@/lib/admin/csv';
 import {
   ACCESS_DAYS, cleanText, createAccount, currencies, deleteAccount, extendEnrollment, grantPack, paymentMethods,
-  recordPayment, sendAccessLink, sendReminder, service, setDisabled, type Reminder,
+  recordPayment, sendAccessLink, sendMessage, sendReminder, service, setDisabled, type Reminder,
 } from '@/lib/admin/accounts';
 
 const isPack = (v: string) => packs.some((p) => p.id === v);
@@ -167,6 +167,14 @@ export async function saveLearner(form: FormData) {
     }
     case 'link': {
       if (!(await sendAccessLink(target!.email, target!.first_name, false)).sent) fail('email');
+      break;
+    }
+    case 'email': {
+      const subject = cleanText(form.get('subject'), 150);
+      const message = String(form.get('message') ?? '').trim().slice(0, 5000);
+      if (!subject || !message) fail('message');
+      const { sent } = await sendMessage([target!], subject, message);
+      if (!sent) fail('email');
       break;
     }
     case 'remind': {
