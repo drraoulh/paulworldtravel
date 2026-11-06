@@ -51,7 +51,7 @@ export const buildCourse = (trainingModules: Module[]): CourseModule[] => [
     ],
   },
   ...trainingModules.map((m, i): CourseModule => {
-    const series = allSeries.filter((s) => s.epreuve === m.id);
+    const series = allSeries.filter((s) => s.epreuve === m.id && !s.month);
     const practice: CourseItem[] =
       m.id === 'ee'
         ? writingTasks.map((t) => ({ id: `ee/simulation-${t.n}`, kind: 'simulation', title: t.title, minutes: t.minutes, href: `/epreuve/${m.slug}/simulateur/` }))

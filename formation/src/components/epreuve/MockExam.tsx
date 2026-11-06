@@ -13,18 +13,51 @@ import InteractionPractice from '@/components/simulator/InteractionPractice';
 import { getSeries } from '@/content/series';
 import type { Feedback } from '@/lib/ai/prompts';
 import { nclcFor, nclcLabel } from '@/lib/nclc';
-import { saveMockResult } from '@/lib/results';
+import { readResults, saveMockResult, type MockResult } from '@/lib/results';
 import { stopSpeaking } from '@/lib/speech';
+import { mockName, MOCK_MONTHS, pickMock } from '@/lib/mock-name';
 import SeriesRunner from './SeriesRunner';
 
 type Phase = 'intro' | 'co' | 'break-ce' | 'ce' | 'break-ee' | 'ee' | 'break-eo' | 'eo' | 'results';
 
 const EE_SECONDS = 60 * 60;
+type Part = 'co' | 'ce' | 'ee' | 'eo';
+const average = (xs: (number | null | undefined)[]) => {
+  const v = xs.filter((x): x is number => typeof x === 'number');
+  return v.length ? Math.round((v.reduce((a, b) => a + b, 0) / v.length) * 10) / 10 : null;
+};
+
+/** The scores of the tests already taken, shown during the breaks. */
+function ScoreSoFar({ co, ce, tcf, done }: { co: number; ce: number; tcf: { co: number; ce: number }; done: Part[] }) {
+  return (
+    <div className="rounded-2xl bg-night p-6 text-white sm:p-8">
+      <p className="text-sm font-semibold text-blue-200">Votre score jusqu’ici</p>
+      <div className="mt-4 grid gap-6 sm:grid-cols-2">
+        {done.includes('co') && <div><p className="text-blue-100">Compréhension orale</p><p className="display text-5xl text-container">{co}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.co} / 699, {nclcLabel(nclcFor('co', tcf.co))}</p></div>}
+        {done.includes('ce') && <div><p className="text-blue-100">Compréhension écrite</p><p className="display text-5xl text-container">{ce}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.ce} / 699, {nclcLabel(nclcFor('ce', tcf.ce))}</p></div>}
+      </div>
+      {done.includes('ee') && <p className="mt-4 text-sm text-blue-100">Expression écrite rédigée : vos trois textes seront corrigés dans le bilan final.</p>}
+    </div>
+  );
+}
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
 
-export default function MockExam({ series }: { series: number[] }) {
+export default function MockExam({ series, monthly = [] }: { series: number[]; monthly?: { number: number; month: string }[] }) {
   const [phase, setPhase] = useState<Phase>('intro');
-  const [serie, setSerie] = useState(series[0]);
+  // Newest first: the monthly exams, then the others from the most recent.
+  const order = [...monthly.map((m) => m.number), ...[...series].sort((a, b) => b - a)];
+  const [serie, setSerie] = useState(order[0]);
+  const [taken, setTaken] = useState<Record<number, string>>({});
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => {
+    const last: Record<number, string> = {};
+    for (const m of readResults().mocks) if (!last[m.serie] || m.date > last[m.serie]) last[m.serie] = m.date;
+    setTaken(last);
+    const next = pickMock(order, last);
+    if (next) setSerie(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const choose = (n: number) => { setSerie(n); requestId.current = null; };
   const [co, setCo] = useState(0);
   const [ce, setCe] = useState(0);
   const [tcf, setTcf] = useState({ co: 0, ce: 0 });
@@ -34,6 +67,15 @@ export default function MockExam({ series }: { series: number[] }) {
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState('');
   const [oralResults, setOralResults] = useState<Record<string, { feedback: Feedback; transcript?: string }>>({});
+  const [startedAt, setStartedAt] = useState('');
+  const [done, setDone] = useState<Part[]>([]);
+  // Saved after every test, so the score is kept even if the exam stops halfway.
+  const saved = useRef<Partial<MockResult>>({});
+  const persist = (next: Partial<MockResult> & { done: Part[] }) => {
+    saved.current = { ...saved.current, ...next };
+    saveMockResult({ serie, co, ce, total: 39, date: startedAt || new Date().toISOString(), tcfCo: tcf.co, tcfCe: tcf.ce, ...saved.current, done: next.done });
+    setDone(next.done);
+  };
   const requestId = useRef<string | null>(null);
   const start = async () => {
     if (starting) return;
@@ -43,7 +85,7 @@ export default function MockExam({ series }: { series: number[] }) {
       const response = await fetch('/api/ai/exam/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ serie, requestId: requestId.current }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? 'L’examen n’a pas pu démarrer.');
-      setSessionId(data.sessionId); refreshAccess(); setPhase('co');
+      setSessionId(data.sessionId); setStartedAt(new Date().toISOString()); refreshAccess(); setPhase('co');
     } catch (e) { setStartError(e instanceof Error ? e.message : 'L’examen n’a pas pu démarrer.'); }
     finally { setStarting(false); }
   };
@@ -90,15 +132,35 @@ export default function MockExam({ series }: { series: number[] }) {
           </div>
           <fieldset className="rounded-2xl bg-white p-6 sm:p-8">
             <legend className="sr-only">Choisir l’examen</legend>
-            <p className="heading text-lg text-night">Choisissez votre examen blanc</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {series.map((n) => (
-                <label key={n} className={`cursor-pointer rounded-xl border-2 px-5 py-3 font-semibold ${serie === n ? 'border-ocean bg-blue-50 text-night' : 'border-rule text-slate hover:border-ocean/50'}`}>
-                  <input type="radio" name="serie" className="sr-only" checked={serie === n} disabled={starting} onChange={() => { setSerie(n); requestId.current = null; }} />
-                  Examen blanc {n}
-                </label>
-              ))}
+            <p className="text-sm font-semibold text-slate">Votre examen blanc, tiré parmi les plus récents que vous n’avez pas encore passés</p>
+            <div className="mt-3 rounded-2xl border-2 border-ocean bg-blue-50 p-5">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="heading text-2xl text-night">{mockName(serie)}</p>
+                {MOCK_MONTHS[serie] && serie === order[0] && <span className="rounded-full bg-container px-2.5 py-0.5 text-xs font-bold text-night">Nouveau</span>}
+              </div>
+              <p className="mt-1 text-slate">
+                {MOCK_MONTHS[serie] ? 'Sur les thèmes rapportés par les candidats ce mois-ci. ' : ''}
+                39 questions d’écoute, 39 de lecture, 3 textes et 3 tâches orales.
+                {taken[serie] ? ` Déjà passé le ${new Date(taken[serie]).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} : vous avez passé tous les examens récents.` : ''}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                {order.length > 1 && <button type="button" disabled={starting} onClick={() => { const n = pickMock(order, taken, serie); if (n) choose(n); }} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Tirer un autre examen</button>}
+                <button type="button" disabled={starting} aria-expanded={choosing} onClick={() => setChoosing((v) => !v)} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">{choosing ? 'Masquer la liste' : 'Choisir moi-même'}</button>
+              </div>
             </div>
+            {choosing && (
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                {order.map((n) => (
+                  <li key={n}>
+                    <label className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 ${serie === n ? 'border-ocean bg-blue-50' : 'border-rule hover:border-ocean/50'}`}>
+                      <input type="radio" name="serie" className="sr-only" checked={serie === n} disabled={starting} onChange={() => choose(n)} />
+                      <span className="font-semibold text-night">{mockName(n)}</span>
+                      <span className={`text-xs font-semibold ${taken[n] ? 'text-slate' : 'text-emerald-700'}`}>{taken[n] ? 'Déjà passé' : MOCK_MONTHS[n] ? 'Du mois' : 'Jamais passé'}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
             <button onClick={start} disabled={starting || !access?.aiAllowed || !access.exams?.remaining} className="mt-6 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">{starting ? 'Réservation de votre examen…' : 'Commencer l’examen (1 crédit)'}</button>
             {startError && <p role="alert" className="mt-3 text-maple">{startError}</p>}
           </fieldset>
@@ -108,22 +170,29 @@ export default function MockExam({ series }: { series: number[] }) {
       {phase === 'co' && (
         <section>
           <p className="mb-4 font-semibold text-night">Épreuve 1 sur 4 : compréhension orale</p>
-          <SeriesRunner key="co" epreuve="co" number={serie} questions={coSeries.questions} forceMode="exam" onFinish={(s, t) => { setCo(s); setTcf((x) => ({ ...x, co: t })); setPhase('break-ce'); }} />
+          <SeriesRunner key="co" epreuve="co" number={serie} questions={coSeries.questions} forceMode="exam" onFinish={(s, t) => { setCo(s); setTcf((x) => ({ ...x, co: t })); persist({ co: s, tcfCo: t, done: ['co'] }); setPhase('break-ce'); }} />
         </section>
       )}
 
       {(phase === 'break-ce' || phase === 'break-ee' || phase === 'break-eo') && (
-        <div className="rounded-2xl bg-white p-6 text-center sm:p-10">
-          <p className="text-slate">Épreuve terminée. Prenez quelques minutes de pause si vous le souhaitez.</p>
-          <p className="heading mt-4 text-2xl text-night">Prochaine épreuve : {phase === 'break-ce' ? 'compréhension écrite, 60 minutes' : phase === 'break-ee' ? 'expression écrite, 60 minutes' : 'expression orale, environ 12 minutes'}</p>
-          <button onClick={() => setPhase(phase === 'break-ce' ? 'ce' : phase === 'break-ee' ? 'ee' : 'eo')} className="mt-6 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">Commencer l’épreuve</button>
+        <div className="space-y-5">
+          <ScoreSoFar co={co} ce={ce} tcf={tcf} done={done} />
+          <div className="rounded-2xl bg-white p-6 text-center sm:p-10">
+            <p className="text-slate">Épreuve terminée et enregistrée dans <strong>Mes résultats</strong>. Prenez quelques minutes de pause si vous le souhaitez.</p>
+            <p className="heading mt-4 text-2xl text-night">Prochaine épreuve : {phase === 'break-ce' ? 'compréhension écrite, 60 minutes' : phase === 'break-ee' ? 'expression écrite, 60 minutes' : 'expression orale, environ 12 minutes'}</p>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <button onClick={() => setPhase(phase === 'break-ce' ? 'ce' : phase === 'break-ee' ? 'ee' : 'eo')} className="inline-flex items-center justify-center rounded-lg bg-ocean px-6 py-3.5 font-bold text-white shadow-[0_4px_14px_rgba(36,66,199,.35)] transition hover:-translate-y-0.5 hover:bg-night">Commencer l’épreuve suivante</button>
+              <button onClick={() => setPhase('results')} className="inline-flex items-center justify-center rounded-lg border-2 border-ocean bg-white px-6 py-3.5 font-bold text-ocean transition hover:bg-ocean hover:text-white">Arrêter ici et voir mon bilan</button>
+            </div>
+            <p className="mt-3 text-sm text-slate">Vous pourrez repasser un examen blanc complet plus tard avec un nouveau crédit.</p>
+          </div>
         </div>
       )}
 
       {phase === 'ce' && (
         <section>
           <p className="mb-4 font-semibold text-night">Épreuve 2 sur 4 : compréhension écrite</p>
-          <SeriesRunner key="ce" epreuve="ce" number={serie} questions={ceSeries.questions} forceMode="exam" onFinish={(s, t) => { setCe(s); setTcf((x) => ({ ...x, ce: t })); setPhase('break-ee'); }} />
+          <SeriesRunner key="ce" epreuve="ce" number={serie} questions={ceSeries.questions} forceMode="exam" onFinish={(s, t) => { setCe(s); setTcf((x) => ({ ...x, ce: t })); persist({ ce: s, tcfCe: t, done: ['co', 'ce'] }); setPhase('break-ee'); }} />
         </section>
       )}
 
@@ -132,7 +201,7 @@ export default function MockExam({ series }: { series: number[] }) {
           subjects={subjects}
           texts={texts}
           setTexts={setTexts}
-          onFinish={() => setPhase('break-eo')}
+          onFinish={() => { persist({ done: ['co', 'ce', 'ee'], ee: null }); setPhase('break-eo'); }}
         />
       )}
 
@@ -143,13 +212,13 @@ export default function MockExam({ series }: { series: number[] }) {
           results={oralResults}
           onResult={(id, result) => setOralResults((previous) => ({ ...previous, [id]: result }))}
           onFinish={() => {
-            saveMockResult({ serie, co, ce, total: 39, date: new Date().toISOString() });
+            persist({ done: ['co', 'ce', 'ee', 'eo'], eo: average(Object.values(oralResults).map((r) => r.feedback.score)) });
             setPhase('results');
           }}
         />
       )}
 
-      {phase === 'results' && <MockResults sessionId={sessionId} oralResults={oralResults} serie={serie} co={co} ce={ce} tcf={tcf} subjects={subjects} texts={texts} />}
+      {phase === 'results' && <MockResults sessionId={sessionId} oralResults={oralResults} serie={serie} co={co} ce={ce} tcf={tcf} subjects={subjects} texts={texts} done={done} onWritingScore={(ee) => persist({ done, ee })} />}
     </div>
   );
 }
@@ -255,7 +324,7 @@ function MockSpeaking({ tasks, onFinish, sessionId, results, onResult }: { tasks
   );
 }
 
-function MockResults({ sessionId, oralResults, serie, co, ce, tcf, subjects, texts }: { sessionId: string; oralResults: Record<string, { feedback: Feedback }>; serie: number; co: number; ce: number; tcf: { co: number; ce: number }; subjects: WritingTask[]; texts: string[] }) {
+function MockResults({ sessionId, oralResults, serie, co, ce, tcf, subjects, texts, done, onWritingScore }: { sessionId: string; oralResults: Record<string, { feedback: Feedback }>; serie: number; co: number; ce: number; tcf: { co: number; ce: number }; subjects: WritingTask[]; texts: string[]; done: Part[]; onWritingScore: (ee: number | null) => void }) {
   const [grades, setGrades] = useState<(Feedback | string | null)[]>([null, null, null]);
   const [busy, setBusy] = useState(false);
 
@@ -275,21 +344,24 @@ function MockResults({ sessionId, oralResults, serie, co, ce, tcf, subjects, tex
       setGrades([...out]);
     }
     setBusy(false);
+    onWritingScore(average(out.map((g) => (g && typeof g !== 'string' ? g.score : null))));
   };
 
   return (
     <div className="space-y-6">
       <div className="rounded-2xl bg-night p-6 text-white sm:p-8">
-        <p className="text-sm text-blue-200">Examen blanc {serie} terminé</p>
+        <p className="text-sm text-blue-200">{mockName(serie)} : {done.length === 4 ? 'terminé' : `${done.length} épreuve${done.length > 1 ? 's' : ''} sur 4`}</p>
+        <h2 className="heading mt-1 text-3xl text-white">Votre bilan</h2>
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div><p className="text-blue-100">Compréhension orale</p><p className="display text-4xl text-container">{co}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.co} / 699, {nclcLabel(nclcFor('co', tcf.co))}</p></div>
-          <div><p className="text-blue-100">Compréhension écrite</p><p className="display text-4xl text-container">{ce}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.ce} / 699, {nclcLabel(nclcFor('ce', tcf.ce))}</p></div>
-          <div><p className="text-blue-100">Expression écrite</p><p className="mt-2 text-blue-100">{texts.filter((t) => wordCount(t) > 0).length} / 3 tâches rédigées</p></div>
-          <div><p className="text-blue-100">Expression orale</p><p className="mt-2 text-blue-100">{Object.keys(oralResults).length} / 3 tâches corrigées — détail dans votre espace</p></div>
+          {done.includes('co') ? <div><p className="text-blue-100">Compréhension orale</p><p className="display text-4xl text-container">{co}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.co} / 699, {nclcLabel(nclcFor('co', tcf.co))}</p></div> : <div><p className="text-blue-100">Compréhension orale</p><p className="mt-2 text-blue-100">Non passée</p></div>}
+          {done.includes('ce') ? <div><p className="text-blue-100">Compréhension écrite</p><p className="display text-4xl text-container">{ce}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.ce} / 699, {nclcLabel(nclcFor('ce', tcf.ce))}</p></div> : <div><p className="text-blue-100">Compréhension écrite</p><p className="mt-2 text-blue-100">Non passée</p></div>}
+          <div><p className="text-blue-100">Expression écrite</p><p className="mt-2 text-blue-100">{done.includes('ee') ? `${texts.filter((t) => wordCount(t) > 0).length} / 3 tâches rédigées` : 'Non passée'}</p></div>
+          <div><p className="text-blue-100">Expression orale</p><p className="mt-2 text-blue-100">{done.includes('eo') ? `${Object.keys(oralResults).length} / 3 tâches corrigées` : 'Non passée'}</p></div>
         </div>
-        <p className="mt-6 text-sm text-blue-100">Les scores sur 699 et les NCLC des compréhensions sont des estimations, pas des scores officiels. Le détail de chaque question est dans le tableau de bord de chaque épreuve.</p>
+        <p className="mt-6 text-sm text-blue-100">Ce bilan est enregistré dans <strong className="text-white">Mes résultats</strong>. Les scores sur 699 et les NCLC des compréhensions sont des estimations, pas des scores officiels. Le détail de chaque question est dans le tableau de bord de chaque épreuve.</p>
       </div>
 
+      {done.includes('ee') && (
       <div className="rounded-2xl bg-white p-6 sm:p-8">
         <h2 className="heading text-xl text-night">Votre expression écrite</h2>
         <p className="mt-2 text-slate">Faites corriger vos trois textes par l’IA : les trois corrections sont incluses dans le crédit de cet examen, sans utiliser vos quotas d’entraînement.</p>
@@ -320,9 +392,10 @@ function MockResults({ sessionId, oralResults, serie, co, ce, tcf, subjects, tex
           })}
         </div>
       </div>
+      )}
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/espace/" className="rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">Voir mon espace</Link>
+        <Link href="/espace/" className="inline-flex items-center rounded-lg bg-ocean px-6 py-3.5 font-bold text-white shadow-[0_4px_14px_rgba(36,66,199,.35)] hover:bg-night">Voir Mes résultats</Link>
         <Link href="/examen-blanc/" onClick={() => window.location.reload()} className="rounded-full border border-rule px-6 py-3.5 font-semibold text-night hover:border-ocean">Passer un autre examen blanc</Link>
       </div>
     </div>

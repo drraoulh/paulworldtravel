@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Container, PageHeader } from '@/components/ui';
 import MockExam from '@/components/epreuve/MockExam';
 import PackGate from '@/components/access/PackGate';
-import { seriesFor } from '@/content/series';
+import { monthlyMocks, seriesFor } from '@/content/series';
 
 export const metadata: Metadata = {
   title: 'Examen blanc TCF Canada',
@@ -20,7 +20,7 @@ export default function ExamenBlanc() {
         intro="Les quatre épreuves du TCF Canada enchaînées, avec les durées officielles : compréhension orale, compréhension écrite, expression écrite, puis expression orale."
       />
       <section className="bg-paper py-12 sm:py-16">
-        <Container className="max-w-6xl"><PackGate what="L’examen blanc" next="/examen-blanc/"><MockExam series={numbers} /></PackGate></Container>
+        <Container className="max-w-6xl"><PackGate what="L’examen blanc" next="/examen-blanc/"><MockExam series={numbers} monthly={monthlyMocks()} /></PackGate></Container>
       </section>
     </>
   );

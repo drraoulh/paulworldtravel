@@ -7,7 +7,15 @@
 const KEY = 'pwt-results';
 
 export interface SeriesResult { score: number; total: number; mode: 'exam' | 'training'; date: string; bands: Record<string, [number, number]>; /** Estimated TCF score (100-699), see src/lib/nclc.ts. */ tcf?: number }
-export interface MockResult { serie: number; co: number; ce: number; total: number; date: string }
+/**
+ * A mock exam, saved as soon as each test is finished: `date` is when it started
+ * (it identifies the exam), `done` lists the tests already taken, `tcfCo` and
+ * `tcfCe` are the estimated scores out of 699, `ee` and `eo` the AI marks out of 20.
+ */
+export interface MockResult {
+  serie: number; co: number; ce: number; total: number; date: string;
+  done?: ('co' | 'ce' | 'ee' | 'eo')[]; tcfCo?: number; tcfCe?: number; ee?: number | null; eo?: number | null; updated?: string;
+}
 interface Store { series: Record<string, { last: SeriesResult; best: number; attempts: number }>; mocks: MockResult[] }
 
 export function readResults(): Store {
@@ -33,8 +41,10 @@ export function saveSeriesResult(key: string, result: SeriesResult) {
   write(store);
 }
 
+/** Adds the mock exam, or updates it if it was already saved (same start date). */
 export function saveMockResult(result: MockResult) {
   const store = readResults();
-  store.mocks = [result, ...store.mocks].slice(0, 20);
+  const rest = store.mocks.filter((m) => m.date !== result.date);
+  store.mocks = [{ ...result, updated: new Date().toISOString() }, ...rest].slice(0, 20);
   write(store);
 }
