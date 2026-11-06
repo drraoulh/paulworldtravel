@@ -26,6 +26,8 @@ export interface SeriesQuestion {
 export interface Series {
   epreuve: 'ce' | 'co';
   number: number;
+  /** Monthly mock exam (YYYY-MM): kept for the examen blanc, out of the training lists. */
+  month?: string;
   questions: SeriesQuestion[];
 }
 

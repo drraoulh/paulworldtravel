@@ -15,6 +15,7 @@ import type { Feedback } from '@/lib/ai/prompts';
 import { nclcFor, nclcLabel } from '@/lib/nclc';
 import { saveMockResult, type MockResult } from '@/lib/results';
 import { stopSpeaking } from '@/lib/speech';
+import { mockName, monthLabel } from '@/lib/mock-name';
 import SeriesRunner from './SeriesRunner';
 
 type Phase = 'intro' | 'co' | 'break-ce' | 'ce' | 'break-ee' | 'ee' | 'break-eo' | 'eo' | 'results';
@@ -41,9 +42,9 @@ function ScoreSoFar({ co, ce, tcf, done }: { co: number; ce: number; tcf: { co: 
 }
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
 
-export default function MockExam({ series }: { series: number[] }) {
+export default function MockExam({ series, monthly = [] }: { series: number[]; monthly?: { number: number; month: string }[] }) {
   const [phase, setPhase] = useState<Phase>('intro');
-  const [serie, setSerie] = useState(series[0]);
+  const [serie, setSerie] = useState(monthly[0]?.number ?? series[0]);
   const [co, setCo] = useState(0);
   const [ce, setCe] = useState(0);
   const [tcf, setTcf] = useState({ co: 0, ce: 0 });
@@ -119,7 +120,22 @@ export default function MockExam({ series }: { series: number[] }) {
           <fieldset className="rounded-2xl bg-white p-6 sm:p-8">
             <legend className="sr-only">Choisir l’examen</legend>
             <p className="heading text-lg text-night">Choisissez votre examen blanc</p>
-            <div className="mt-4 flex flex-wrap gap-3">
+            {monthly.length > 0 && (
+              <>
+                <p className="mt-4 text-sm font-semibold text-slate">Examens du mois, sur les thèmes rapportés par les candidats</p>
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {monthly.map((m, i) => (
+                    <label key={m.number} className={`cursor-pointer rounded-xl border-2 px-5 py-3 font-semibold ${serie === m.number ? 'border-ocean bg-blue-50 text-night' : 'border-rule text-slate hover:border-ocean/50'}`}>
+                      <input type="radio" name="serie" className="sr-only" checked={serie === m.number} disabled={starting} onChange={() => { setSerie(m.number); requestId.current = null; }} />
+                      <span className="capitalize">{monthLabel(m.month)}</span>
+                      {i === 0 && <span className="ml-2 rounded-full bg-container px-2 py-0.5 text-xs font-bold text-night">Nouveau</span>}
+                    </label>
+                  ))}
+                </div>
+                <p className="mt-5 text-sm font-semibold text-slate">Examens blancs classiques</p>
+              </>
+            )}
+            <div className="mt-2 flex flex-wrap gap-3">
               {series.map((n) => (
                 <label key={n} className={`cursor-pointer rounded-xl border-2 px-5 py-3 font-semibold ${serie === n ? 'border-ocean bg-blue-50 text-night' : 'border-rule text-slate hover:border-ocean/50'}`}>
                   <input type="radio" name="serie" className="sr-only" checked={serie === n} disabled={starting} onChange={() => { setSerie(n); requestId.current = null; }} />
@@ -316,7 +332,7 @@ function MockResults({ sessionId, oralResults, serie, co, ce, tcf, subjects, tex
   return (
     <div className="space-y-6">
       <div className="rounded-2xl bg-night p-6 text-white sm:p-8">
-        <p className="text-sm text-blue-200">Examen blanc {serie} : {done.length === 4 ? 'terminé' : `${done.length} épreuve${done.length > 1 ? 's' : ''} sur 4`}</p>
+        <p className="text-sm text-blue-200">{mockName(serie)} : {done.length === 4 ? 'terminé' : `${done.length} épreuve${done.length > 1 ? 's' : ''} sur 4`}</p>
         <h2 className="heading mt-1 text-3xl text-white">Votre bilan</h2>
         <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {done.includes('co') ? <div><p className="text-blue-100">Compréhension orale</p><p className="display text-4xl text-container">{co}<span className="text-xl text-blue-200"> / 39</span></p><p className="mt-1 text-sm text-blue-100">Score estimé {tcf.co} / 699, {nclcLabel(nclcFor('co', tcf.co))}</p></div> : <div><p className="text-blue-100">Compréhension orale</p><p className="mt-2 text-blue-100">Non passée</p></div>}

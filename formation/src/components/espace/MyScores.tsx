@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { readResults, type MockResult } from '@/lib/results';
 import { nclcFor, nclcLabel } from '@/lib/nclc';
 import { PROGRESS_EVENT } from '@/components/parcours/useCourse';
+import { mockName } from '@/lib/mock-name';
 
 type Store = ReturnType<typeof readResults>;
 const day = (d: string) => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -30,7 +31,7 @@ function Mock({ m }: { m: MockResult }) {
   return (
     <li className="rounded-xl border border-rule p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-bold text-night">Examen blanc {m.serie}</p>
+        <p className="font-bold text-night">{mockName(m.serie)}</p>
         <p className="text-sm text-slate">{day(m.date)} · {done.length === 4 ? 'terminé' : `${done.length} épreuve${done.length > 1 ? 's' : ''} sur 4`}</p>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">

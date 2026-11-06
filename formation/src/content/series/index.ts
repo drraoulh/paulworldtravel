@@ -30,14 +30,19 @@ import { co5 } from './co-5';
 import { co6 } from './co-6';
 import { co7 } from './co-7';
 import { co8 } from './co-8';
+import { ce101 } from './ce-101';
+import { co101 } from './co-101';
 import type { Series } from './types';
 
 export type { Series, SeriesQuestion, Level } from './types';
 export { rightChoice } from './types';
 
-export const allSeries: Series[] = [ce1, ce2, ce3, ce4, ce5, ce6, ce7, ce8, ce9, ce10, ce11, ce12, ce13, ce14, ce15, ce16, ce17, ce18, ce19, ce20, ce21, ce22, ce23, ce24, co1, co2, co3, co4, co5, co6, co7, co8];
+export const allSeries: Series[] = [ce1, ce2, ce3, ce4, ce5, ce6, ce7, ce8, ce9, ce10, ce11, ce12, ce13, ce14, ce15, ce16, ce17, ce18, ce19, ce20, ce21, ce22, ce23, ce24, co1, co2, co3, co4, co5, co6, co7, co8, ce101, co101];
 
-export const seriesFor = (epreuve: 'ce' | 'co') => allSeries.filter((s) => s.epreuve === epreuve);
+/** Training series (monthly mock exams are left out). */
+export const seriesFor = (epreuve: 'ce' | 'co') => allSeries.filter((s) => s.epreuve === epreuve && !s.month);
+/** Monthly mock exams, newest first: the number pairs the CE and CO series. */
+export const monthlyMocks = () => allSeries.filter((s) => s.epreuve === 'co' && s.month && getSeries('ce', s.number)).sort((a, b) => b.month!.localeCompare(a.month!)).map((s) => ({ number: s.number, month: s.month! }));
 export const getSeries = (epreuve: 'ce' | 'co', number: number) => allSeries.find((s) => s.epreuve === epreuve && s.number === number);
 
 /** Official durations of the full test, in seconds. */
