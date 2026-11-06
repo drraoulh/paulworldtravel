@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import MyScores from '@/components/espace/MyScores';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ButtonLink, Container } from '@/components/ui';
@@ -73,6 +74,7 @@ export default async function Espace({ searchParams }: { searchParams: Promise<{
             {paiement === 'annule' && (
               <p role="status" className="rounded-lg border border-rule bg-white p-5 text-slate">Le paiement a été interrompu, rien n’a été débité. Vous pouvez réessayer ci-dessous ou payer avec un conseiller.</p>
             )}
+            <MyScores />
             <h2 className="heading text-2xl text-night">Mon accès et mes packs</h2>
             {(enrollments ?? []).length === 0 && (
               <div className="rounded-lg bg-white p-6">

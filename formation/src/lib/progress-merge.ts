@@ -57,10 +57,15 @@ export function normalizeProgress(raw: unknown): Progress {
 /** Removes duplicates and caps the arrays, to keep the account metadata small. */
 export function compactProgress(p: Progress): Progress {
   const days = Array.from(new Set(p.meta.days)).sort().slice(-MAX_DAYS);
-  const seen = new Set<string>();
-  const mocks = [...p.results.mocks]
+  // One entry per exam (same start date): keep the most complete, then the latest saved.
+  const byDate = new Map<string, MockResult>();
+  for (const m of p.results.mocks) {
+    const prev = byDate.get(m.date);
+    const rank = (x: MockResult) => (x.done?.length ?? 2) * 1e13 + time(x.updated ?? x.date);
+    if (!prev || rank(m) > rank(prev)) byDate.set(m.date, m);
+  }
+  const mocks = [...byDate.values()]
     .sort((a, b) => time(b.date) - time(a.date))
-    .filter((m) => (seen.has(m.date) ? false : (seen.add(m.date), true)))
     .slice(0, MAX_MOCKS);
   const meta: ProgressMeta = { days };
   if (p.meta.last) meta.last = p.meta.last;
