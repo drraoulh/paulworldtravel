@@ -152,21 +152,26 @@ export default function CourseHome({ course, totalMinutes, quizCount }: { course
                         const ok = isDone(it.id);
                         const current = it.id === resume?.id;
                         return (
-                          <li key={it.id} className={`flex items-center gap-3 rounded-xl px-3 py-3 ${current ? 'bg-blue-50' : 'hover:bg-paper'}`}>
-                            <StatusMark done={ok} current={current} />
-                            <span className="text-slate"><KindIcon kind={it.kind} /></span>
-                            <Link href={it.href} className="min-w-0 flex-1">
-                              <span className={`block font-semibold ${ok ? 'text-slate' : 'text-night'} hover:text-ocean`}>{it.title}</span>
-                              <span className="block text-sm text-slate">{KIND_LABEL[it.kind]}, {it.minutes} min</span>
-                              {it.kind === 'lecon' && it.id !== 'guide' && <span className={`mt-1 block text-xs ${ok ? 'text-green-700' : 'text-slate'}`}>{ok ? '✓ Quiz réussi' : isRead(it.id) ? 'Leçon consultée · quiz à réussir' : 'À découvrir'}</span>}
-                              {audience !== null && <span className="mt-1 block text-xs font-semibold text-ocean">{withPack ? 'Inclus dans votre pack' : it.kind === 'examen' || (it.id.startsWith('serie:') && Number(it.href.split('/').filter(Boolean).at(-1)) > FREE_SERIES) ? 'Pack requis' : it.kind === 'simulation' ? 'Pack actif requis · quota selon formule' : it.id.startsWith('serie:') ? 'Gratuit avec un compte' : 'Gratuit sans compte'}</span>}
+                          <li key={it.id} className="py-1">
+                            <Link href={it.href} className={`group flex items-center gap-3 rounded-xl border-2 px-3 py-3 transition hover:-translate-y-0.5 hover:border-ocean hover:shadow-md ${current ? 'border-ocean bg-blue-50' : 'border-rule bg-white'}`}>
+                              <StatusMark done={ok} current={current} />
+                              <span className="hidden text-slate sm:block"><KindIcon kind={it.kind} /></span>
+                              <span className="min-w-0 flex-1">
+                                <span className={`block font-semibold ${ok ? 'text-slate' : 'text-night'} group-hover:text-ocean`}>{it.title}</span>
+                                <span className="block text-sm text-slate">{KIND_LABEL[it.kind]}, {it.minutes} min</span>
+                                {it.kind === 'lecon' && it.id !== 'guide' && <span className={`mt-1 block text-xs ${ok ? 'text-green-700' : 'text-slate'}`}>{ok ? '✓ Quiz réussi' : isRead(it.id) ? 'Leçon consultée · quiz à réussir' : 'À découvrir'}</span>}
+                                {audience !== null && <span className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${withPack ? 'bg-green-50 text-green-800' : 'bg-paper text-slate'}`}>{withPack ? 'Inclus dans votre pack' : it.kind === 'examen' || (it.id.startsWith('serie:') && Number(it.href.split('/').filter(Boolean).at(-1)) > FREE_SERIES) ? 'Pack requis' : it.kind === 'simulation' ? 'Pack actif requis · quota selon formule' : it.id.startsWith('serie:') ? 'Gratuit avec un compte' : 'Gratuit sans compte'}</span>}
+                              </span>
+                              <span className={`inline-flex shrink-0 items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold transition ${ok ? 'border-2 border-ocean bg-white text-ocean group-hover:bg-ocean group-hover:text-white' : 'bg-ocean text-white group-hover:bg-night'}`}>
+                                {ok ? 'Revoir' : current ? 'Continuer' : it.kind === 'lecon' ? 'Lire' : 'Commencer'}
+                                <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 10h12m-5-5 5 5-5 5" /></svg>
+                              </span>
                             </Link>
                             {it.kind === 'simulation' && !ok && ready && (
-                              <button onClick={() => markDone(it.id)} className="hidden shrink-0 rounded-lg border border-rule px-3 py-1.5 text-xs font-semibold text-slate hover:border-ocean hover:text-ocean sm:block">
+                              <button onClick={() => markDone(it.id)} className="mt-1 ml-12 text-xs font-semibold text-slate underline decoration-slate/30 underline-offset-4 hover:text-ocean">
                                 Marquer comme fait
                               </button>
                             )}
-                            {current && <span className="hidden shrink-0 rounded-full bg-ocean px-3 py-1 text-xs font-bold text-white sm:block">En cours</span>}
                           </li>
                         );
                       })}
