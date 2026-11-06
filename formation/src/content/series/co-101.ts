@@ -1,4 +1,4 @@
-import { listen, reply, type Series } from './types';
+import { listen, picture, reply, type Series } from './types';
 
 // Examen blanc « Octobre 2026 ». Original scripts written by the team on the themes
 // candidates reported in October 2026 (logement, colocation, garde d’enfants au Canada,
@@ -9,10 +9,18 @@ export const co101: Series = {
   number: 101,
   month: '2026-10',
   questions: [
-    listen('A1', [['a', 'Bonjour, je voudrais un café et un croissant, s’il vous plaît.'], ['b', 'Voilà. Ça fait quatre dollars.']], 'Qu’est-ce que la cliente commande ?', ['Un café et un croissant', 'Un thé et un croissant', 'Un café et un sandwich', 'Un jus et un gâteau'], 'Elle demande « un café et un croissant ».'),
-    listen('A1', 'Attention : le train pour Québec part du quai numéro trois.', 'De quel quai part le train ?', ['Du quai trois', 'Du quai deux', 'Du quai quatre', 'Du quai treize'], 'L’annonce dit « quai numéro trois ».'),
-    listen('A1', [['a', 'Tu as quel âge, Léo ?'], ['b', 'J’ai sept ans, et ma sœur a dix ans.']], 'Quel âge a Léo ?', ['Sept ans', 'Dix ans', 'Six ans', 'Dix-sept ans'], 'Léo répond « J’ai sept ans » ; c’est sa sœur qui a dix ans.'),
-    listen('A1', [['a', 'Il fait froid aujourd’hui !'], ['b', 'Oui, prends ton manteau et ta tuque.']], 'Que doit prendre la personne ?', ['Son manteau et sa tuque', 'Son parapluie', 'Ses lunettes de soleil', 'Ses bottes et ses gants'], 'On lui dit : « prends ton manteau et ta tuque ».'),
+    picture('A1', { src: '/images/co/serie-101-1.jpg', alt: 'Deux jeunes colocataires préparent ensemble un repas dans une petite cuisine ; l’un coupe des légumes, l’autre remue une casserole.' },
+      ['Ils font la vaisselle après le repas.', 'Ils font les courses au supermarché.', 'Deux colocataires cuisinent ensemble.', 'Ils mangent au restaurant.'], 2,
+      'Les deux jeunes préparent un repas : l’un coupe des légumes, l’autre surveille la casserole.'),
+    picture('A1', { src: '/images/co/serie-101-2.jpg', alt: 'Une femme à vélo, casque sur la tête, roule sur une piste cyclable en ville, à côté de voitures arrêtées.' },
+      ['La femme roule à vélo sur une piste cyclable.', 'La femme attend l’autobus à l’arrêt.', 'La femme répare son vélo.', 'La femme conduit une voiture.'], 0,
+      'Elle porte un casque et roule à vélo sur une piste réservée aux cyclistes.'),
+    picture('A1', { src: '/images/co/serie-101-3.jpg', alt: 'Dans une bibliothèque, un garçon assis à une table lit un livre ; des étagères pleines de livres sont derrière lui.' },
+      ['Le garçon joue sur sa tablette.', 'Le garçon range des livres sur l’étagère.', 'Il écrit au tableau.', 'Le garçon lit un livre à la bibliothèque.'], 3,
+      'Le garçon est assis et lit un livre, devant des étagères de bibliothèque.'),
+    picture('A1', { src: '/images/co/serie-101-4.jpg', alt: 'Devant un immeuble, un homme et une femme portent des cartons de déménagement vers un camion.' },
+      ['Ils plantent des fleurs devant l’immeuble.', 'Un couple déménage et porte des cartons.', 'Ils attendent un taxi devant la maison.', 'Ils achètent des meubles dans un magasin.'], 1,
+      'Le couple transporte des cartons vers un camion : c’est un déménagement.'),
 
     reply('A2', 'Tu veux venir au cinéma avec nous samedi ?', ['Le cinéma est en face de la banque.', 'J’ai vu ce film l’an dernier.', 'Avec plaisir, à quelle heure ?', 'Samedi, c’est le six.'], 2, 'C’est une invitation : « Avec plaisir, à quelle heure ? » l’accepte.'),
     reply('A2', 'Vous habitez ici depuis longtemps ?', ['Depuis trois ans, avec ma famille.', 'J’habite au deuxième étage.', 'Oui, c’est un grand appartement.', 'Je déménage la semaine prochaine.'], 0, '« Depuis longtemps » appelle une durée : « depuis trois ans ».'),
