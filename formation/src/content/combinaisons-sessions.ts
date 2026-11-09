@@ -1,6 +1,7 @@
 import type { Combinaison, CombiTask } from '@/lib/combinaisons';
 import { moreSessionCombinaisons } from './combinaisons-sessions-2';
 import { novemberCombinaisons } from './combinaisons-2026-11';
+import { reportedCombinaisons } from './combinaisons-reportees';
 
 /*
  * Combinations of recent sessions, written by the team from the themes that
@@ -701,6 +702,6 @@ Pauline`,
 ];
 
 /** August to October (this file), then May to July (combinaisons-sessions-2.ts), newest first. */
-export const sessionCombinaisons: Combinaison[] = [...novemberCombinaisons, ...recentCombinaisons, ...moreSessionCombinaisons];
+export const sessionCombinaisons: Combinaison[] = [...novemberCombinaisons, ...reportedCombinaisons, ...recentCombinaisons, ...moreSessionCombinaisons];
 
 export const getSessionCombinaison = (id: string) => sessionCombinaisons.find((x) => x.id === id) ?? null;
