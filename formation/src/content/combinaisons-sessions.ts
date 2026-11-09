@@ -1,5 +1,6 @@
 import type { Combinaison, CombiTask } from '@/lib/combinaisons';
 import { moreSessionCombinaisons } from './combinaisons-sessions-2';
+import { novemberCombinaisons } from './combinaisons-2026-11';
 
 /*
  * Combinations of recent sessions, written by the team from the themes that
@@ -16,153 +17,6 @@ function c(year: number, month: number, n: number, theme: string, tasks: [CombiT
 }
 
 const recentCombinaisons: Combinaison[] = [
-  /* ───────────── Novembre 2026 ─────────────
-   * Task 1: themes reported by candidates in early November. Tasks 2 and 3: written by
-   * the team on recurring themes, until more reports come in (source 'equipe'). */
-  c(2026, 11, 1, 'Le télétravail', [
-    {
-      prompt: 'Le journal municipal « Bienvenue » consacre un numéro aux nouveaux habitants. Vous venez de vous installer dans la ville : écrivez un message pour vous présenter et décrire vos lieux préférés.',
-      corrige: `Bonjour à tous,
-
-Je m’appelle Armelle, j’ai 31 ans et je suis arrivée de Douala en août avec mon mari et notre fils. Je travaille comme comptable dans une entreprise du centre-ville.
-
-En trois mois, j’ai déjà mes habitudes. Le samedi matin, je vais au marché de la place Royale : les producteurs sont accueillants et les légumes délicieux. J’aime aussi beaucoup la bibliothèque du parc, calme et lumineuse, où mon fils emprunte des bandes dessinées. Enfin, le dimanche, nous nous promenons le long de la rivière, surtout maintenant que les arbres changent de couleur.
-
-Merci pour votre accueil chaleureux !
-Armelle`,
-    },
-    {
-      prompt: 'Sur le blog d’une association, racontez une journée de bénévolat à laquelle vous avez participé : ce que vous avez fait, les personnes rencontrées et ce que cette expérience vous a apporté.',
-      corrige: `Samedi dernier, j’ai participé pour la première fois à la collecte de la banque alimentaire de mon quartier. Avec une quinzaine de bénévoles, nous avons accueilli les clients à l’entrée d’un supermarché pour leur proposer de donner des pâtes, du riz ou des conserves.
-
-Le matin, j’étais un peu timide, mais l’ambiance m’a vite mis à l’aise. J’ai fait équipe avec Michel, un retraité qui fait ce travail depuis dix ans, et avec deux lycéennes très motivées. L’après-midi, nous avons trié les dons dans un entrepôt : en une journée, nous avons rempli plus de deux cents boîtes.
-
-Ce qui m’a le plus touché, c’est la générosité de personnes qui ne semblaient pas riches elles-mêmes. Je suis rentré fatigué mais heureux, et je me suis déjà inscrit pour la prochaine collecte.`,
-    },
-    {
-      prompt: T3('Le télétravail : progrès ou piège ?'),
-      documents: [
-        'Document 1 : Travailler de chez soi fait gagner des heures de transport chaque semaine. Les salariés organisent mieux leur journée, se concentrent davantage loin du bruit des bureaux ouverts et peuvent concilier plus facilement vie familiale et vie professionnelle.',
-        'Document 2 : Seul devant son écran, on perd le contact avec ses collègues et l’on apprend moins vite. La frontière entre travail et vie privée disparaît : beaucoup de télétravailleurs répondent à leurs courriels le soir et finissent par travailler davantage.',
-      ],
-      corrige: `Le télétravail : liberté ou isolement ?
-
-Le premier document présente le télétravail comme un progrès : il supprime les transports, favorise la concentration et facilite l’équilibre entre famille et emploi. Le second, en revanche, souligne l’isolement des salariés et l’effacement de la frontière entre travail et vie privée.
-
-Pour ma part, je pense que le télétravail est une bonne chose s’il reste partiel. Travailler deux jours par semaine à la maison m’a permis de gagner presque cinq heures de trajet et de passer plus de temps avec mes enfants. Cependant, les jours au bureau restent indispensables : c’est là que l’on échange des idées, que l’on règle rapidement un problème et que les nouveaux employés apprennent le métier. Enfin, l’entreprise doit fixer des règles claires, par exemple ne pas envoyer de messages après 18 heures. Bien organisé, le télétravail est un progrès ; sans limites, il devient un piège.`,
-    },
-  ], 'equipe'),
-  c(2026, 11, 2, 'La semaine de quatre jours', [
-    {
-      prompt: 'Écrivez un message à vos amis pour leur proposer de passer un week-end sportif avec vous : lieu, activités prévues, hébergement et ce qu’il faut apporter.',
-      corrige: `Salut la bande !
-
-Ça vous dit, un week-end sportif les 22 et 23 novembre ? J’ai trouvé un chalet au bord du lac Beauport, à trente minutes de la ville. Il peut accueillir six personnes et coûte 60 $ chacun pour les deux nuits.
-
-Samedi matin, je propose une randonnée de dix kilomètres sur le sentier des Falaises, puis une séance de yoga l’après-midi. Dimanche, si le lac n’est pas gelé, on peut louer des kayaks ; sinon, il y a une piscine au centre sportif du village.
-
-Apportez de bonnes chaussures, des vêtements chauds et un maillot de bain. Je m’occupe des courses pour les repas.
-
-Répondez-moi avant vendredi pour que je réserve !
-Fabrice`,
-    },
-    {
-      prompt: 'Vous avez commencé un nouvel emploi il y a un mois. Écrivez un courriel à vos proches pour leur raconter vos débuts : l’entreprise, vos missions, vos collègues et vos impressions.',
-      corrige: `Bonjour à tous,
-
-Voilà déjà un mois que j’ai commencé mon poste de technicienne de laboratoire dans un hôpital de Sherbrooke, et je voulais vous donner des nouvelles.
-
-Le premier jour, j’étais très stressée : tout était nouveau, les machines, le vocabulaire, et même l’accent québécois ! Heureusement, ma responsable, Nathalie, m’a accompagnée pendant les deux premières semaines. Aujourd’hui, je prépare seule les analyses de sang et je participe à la réunion d’équipe du lundi.
-
-Mes collègues sont accueillants ; le vendredi, nous dînons souvent ensemble à la cafétéria. Le seul point difficile, ce sont les horaires : je commence à 7 h et il fait encore nuit. Mais je suis fière d’exercer enfin mon métier ici, et je sens que je progresse chaque jour.
-
-Je vous embrasse,
-Grâce`,
-    },
-    {
-      prompt: T3('La semaine de quatre jours : une bonne idée ?'),
-      documents: [
-        'Document 1 : Dans les entreprises qui l’ont essayée, la semaine de quatre jours a réduit la fatigue et les absences. Les salariés, plus reposés, sont aussi productifs en quatre jours qu’en cinq, et l’entreprise attire plus facilement de nouveaux talents.',
-        'Document 2 : Concentrer le travail sur quatre jours allonge les journées et augmente le stress. Ce rythme convient mal aux hôpitaux, aux commerces ou aux écoles, qui doivent rester ouverts tous les jours, et il risque de creuser les inégalités entre les métiers.',
-      ],
-      corrige: `Quatre jours de travail : une réforme pour tous ?
-
-Selon le premier document, la semaine de quatre jours diminue la fatigue et les absences sans faire baisser la productivité, et elle aide les entreprises à recruter. Le second document, au contraire, estime qu’elle rallonge les journées et ne convient pas aux services qui doivent fonctionner chaque jour.
-
-À mon avis, cette organisation est intéressante, mais elle ne peut pas être imposée partout. Dans un bureau, un employé reposé travaille souvent mieux : mon frère, qui a adopté ce rythme, dit qu’il fait moins d’erreurs et qu’il profite enfin de sa famille. En revanche, une infirmière ou un caissier ne peuvent pas simplement fermer le vendredi ; il faudrait embaucher plus de personnel, ce qui coûte cher. Je pense donc que chaque secteur devrait pouvoir choisir sa formule, avec l’accord des salariés. La semaine de quatre jours est une piste, pas une solution universelle.`,
-    },
-  ], 'equipe'),
-  c(2026, 11, 3, 'Le téléphone à l’école', [
-    {
-      prompt: 'Votre amie Jeanne prépare un voyage dans votre pays. Écrivez-lui un message pour lui proposer un itinéraire : villes, sites touristiques et monuments à voir, en expliquant l’intérêt de chaque étape.',
-      corrige: `Chère Jeanne,
-
-Quelle bonne nouvelle, ton voyage au Cameroun ! Voici mon itinéraire idéal pour deux semaines.
-
-Commence par Douala : visite le marché des Fleurs et la cathédrale Saints-Pierre-et-Paul, pour sentir l’énergie de la capitale économique. Ensuite, descends à Kribi : ses plages et les chutes de la Lobé, qui tombent directement dans la mer, sont uniques. Puis monte à Yaoundé, où le musée national t’expliquera l’histoire du pays. Termine par l’Ouest : à Foumban, le palais du sultan et les artisans du bronze sont magnifiques.
-
-Prévois des vêtements légers et un imperméable. Et surtout, goûte au ndolè !
-
-Je t’embrasse,
-Carine`,
-    },
-    {
-      prompt: 'Sur votre blog, racontez un voyage qui vous a particulièrement marqué(e) : où vous êtes allé(e), ce que vous avez découvert et pourquoi vous ne l’oublierez pas.',
-      corrige: `L’été dernier, je suis parti dix jours en Gaspésie avec deux amis. Nous avons fait le tour de la péninsule en voiture, en dormant dans de petits campings au bord de la mer.
-
-Le moment le plus fort a été la sortie en bateau vers l’île Bonaventure. Des milliers de fous de Bassan couvraient les falaises ; le bruit et l’odeur étaient incroyables. Le lendemain, à l’aube, nous avons vu des baleines souffler à quelques mètres du rivage, alors que nous prenions notre café sur la plage.
-
-Ce voyage m’a marqué parce que j’ai découvert une autre façon de voyager : lentement, sans programme strict, en parlant avec les habitants. Un pêcheur de Percé nous a même invités à manger du homard chez lui. Je recommande la Gaspésie à tous ceux qui aiment la nature et les rencontres simples.`,
-    },
-    {
-      prompt: T3('Faut-il interdire le téléphone portable à l’école ?'),
-      documents: [
-        'Document 1 : Depuis l’interdiction des téléphones dans les classes, les enseignants observent des élèves plus attentifs et moins de conflits liés aux réseaux sociaux. Pendant la récréation, les jeunes recommencent à jouer et à discuter ensemble.',
-        'Document 2 : Le téléphone fait partie de la vie des jeunes : mieux vaut leur apprendre à s’en servir de façon responsable. Bien utilisé, il permet de chercher une information, de traduire un mot ou de rester joignable par ses parents en cas de problème.',
-      ],
-      corrige: `Le portable à l’école : interdire ou éduquer ?
-
-D’après le premier document, l’interdiction du téléphone rend les élèves plus attentifs, réduit les conflits et favorise les échanges pendant la récréation. Le second document défend une autre approche : apprendre aux jeunes un usage responsable, car l’appareil peut être utile pour apprendre et rassurer les parents.
-
-Je suis plutôt favorable à l’interdiction pendant les cours. Un adolescent qui reçoit des notifications toutes les deux minutes ne peut pas se concentrer, même avec beaucoup de volonté. Ma nièce m’a raconté que, depuis que son école ramasse les téléphones le matin, ses camarades discutent davantage et que les moqueries en ligne ont diminué. Cependant, je pense que l’école doit aussi enseigner l’usage du numérique, par exemple dans un cours consacré aux réseaux sociaux et à la vérification des informations. Interdire en classe et éduquer en même temps me semble la solution la plus équilibrée.`,
-    },
-  ], 'equipe'),
-  c(2026, 11, 4, 'Le tourisme de masse', [
-    {
-      prompt: 'Votre ami veut commencer à faire du sport. Écrivez-lui un message pour lui recommander une salle de sport de votre quartier : situation, tarifs, horaires et activités proposées.',
-      corrige: `Salut Patrick,
-
-Tu veux te remettre au sport ? Je te conseille la salle Énergie Plus, rue Saint-Joseph, à cinq minutes à pied de chez toi, juste à côté de la pharmacie.
-
-L’abonnement coûte 35 $ par mois, sans contrat de longue durée, et la première semaine est gratuite pour essayer. La salle est ouverte de 6 h à 22 h en semaine et de 8 h à 18 h le week-end. Il y a des appareils de musculation récents, des vélos et des tapis de course, mais aussi des cours collectifs de zumba et de boxe le soir.
-
-Les entraîneurs sont très gentils et proposent un programme personnalisé aux débutants. Si tu veux, on peut y aller ensemble mardi prochain !
-
-À bientôt,
-Olivier`,
-    },
-    {
-      prompt: 'Un magazine recueille des témoignages sur les fêtes et les festivals. Racontez un événement auquel vous avez assisté récemment (fête, concert, festival) et dites ce que vous en avez pensé.',
-      corrige: `Le mois dernier, j’ai assisté pour la première fois au Festival des films du monde africain, organisé au centre culturel de ma ville. Pendant trois jours, une vingtaine de films venus du Sénégal, du Cameroun ou du Maroc étaient projetés, suivis de discussions avec les réalisateurs.
-
-Le film qui m’a le plus touché racontait l’histoire d’une jeune femme qui ouvre un restaurant à Dakar malgré l’opposition de sa famille. Après la projection, la réalisatrice a répondu aux questions du public avec beaucoup d’humour, et la salle a applaudi longtemps.
-
-J’ai trouvé l’ambiance chaleureuse et l’organisation excellente, même si certaines séances commençaient en retard. Ce festival m’a fait découvrir un cinéma que l’on voit rarement à la télévision. Je recommande à vos lecteurs de ne pas manquer la prochaine édition, au printemps.`,
-    },
-    {
-      prompt: T3('Faut-il limiter le nombre de touristes ?'),
-      documents: [
-        'Document 1 : Certaines villes et certains parcs naturels accueillent chaque été des foules si importantes que les habitants ne peuvent plus se loger ni circuler, et que la nature s’abîme. Limiter le nombre de visiteurs ou imposer une réservation devient indispensable pour protéger ces lieux.',
-        'Document 2 : Le tourisme fait vivre des milliers de familles : hôteliers, guides, restaurateurs, artisans. Réduire le nombre de visiteurs, c’est menacer ces emplois et réserver les voyages aux plus riches, qui pourront payer des billets plus chers.',
-      ],
-      corrige: `Tourisme : faut-il fermer la porte aux visiteurs ?
-
-Le premier document affirme que l’afflux de touristes empêche les habitants de se loger et abîme la nature ; il propose donc de limiter les visites ou d’exiger une réservation. Le second rappelle, à l’inverse, que le tourisme fait vivre de nombreuses familles et que des restrictions rendraient les voyages plus chers.
-
-Selon moi, il faut limiter le nombre de visiteurs dans les lieux les plus fragiles, mais sans fermer le tourisme. Un parc naturel piétiné par des milliers de personnes chaque jour finit par perdre ce qui attirait les voyageurs, et les emplois disparaissent avec lui. Un système de réservation gratuite, comme dans certains parcs canadiens, protège la nature sans favoriser les plus riches. Il serait aussi utile d’encourager les touristes à voyager hors saison ou à découvrir des régions moins connues. Ainsi, on protège les lieux tout en partageant mieux les retombées économiques.`,
-    },
-  ], 'equipe'),
-
   /* ───────────── Octobre 2026 ───────────── */
   c(2026, 10, 1, 'Cuisinier amateur ou professionnel ?', [
     {
@@ -847,6 +701,6 @@ Pauline`,
 ];
 
 /** August to October (this file), then May to July (combinaisons-sessions-2.ts), newest first. */
-export const sessionCombinaisons: Combinaison[] = [...recentCombinaisons, ...moreSessionCombinaisons];
+export const sessionCombinaisons: Combinaison[] = [...novemberCombinaisons, ...recentCombinaisons, ...moreSessionCombinaisons];
 
 export const getSessionCombinaison = (id: string) => sessionCombinaisons.find((x) => x.id === id) ?? null;

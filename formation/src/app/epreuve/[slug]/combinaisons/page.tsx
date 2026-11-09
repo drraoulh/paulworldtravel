@@ -6,6 +6,7 @@ import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import { MONTHS, TASK_LIMITS, teamCombinaisons } from '@/lib/combinaisons';
 import { publishedCombinaisons } from '@/lib/combinaisons-server';
 import { getEpreuve } from '@/lib/epreuves';
+import { oralMonths } from '@/content/sujets-oraux';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Combinaisons des candidats : expression écrite' };
@@ -14,7 +15,25 @@ type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ annee?
 
 export default async function CombinaisonsPage({ params, searchParams }: Props) {
   const e = getEpreuve((await params).slug);
-  if (!e || e.module.id !== 'ee') notFound();
+  if (!e || (e.module.id !== 'ee' && e.module.id !== 'eo')) notFound();
+  if (e.module.id === 'eo') {
+    return (
+      <EpreuveShell epreuve={e} active="combinaisons" title="Sujets des candidats" intro="Les sujets des tâches 2 et 3 rapportés par les candidats après leur examen, mois par mois, reformulés par notre équipe. Entraînez-vous à voix haute, dans le temps officiel.">
+        <Container>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {oralMonths.map((m) => (
+              <li key={`${m.year}-${m.month}`}>
+                <Link href={`/epreuve/${e.slug}/combinaisons/${m.year}/${m.month}/`} className="group block rounded-2xl card-link p-6 hover:border-night">
+                  <span className="heading block text-2xl text-night group-hover:text-ocean">{MONTHS[m.month - 1]} {m.year}</span>
+                  <span className="mt-2 block text-slate">{m.t2.length + m.t3.length} sujets</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </EpreuveShell>
+    );
+  }
   const all = await publishedCombinaisons();
   const years = Array.from(new Set(all.map((c) => c.content.year))).sort((a, b) => b - a);
   const asked = Number((await searchParams).annee);

@@ -22,7 +22,7 @@ export const epreuveConfigs: EpreuveConfig[] = modules.map((m) => {
       ? [{ key: 'series' as const, label: 'Séries d’entraînement', href: `${b}/series/` }]
       : [
           { key: 'sujets' as const, label: 'Sujets et corrigés', href: `${b}/sujets/` },
-          ...(m.id === 'ee' ? [{ key: 'combinaisons' as const, label: 'Combinaisons des candidats', href: `${b}/combinaisons/` }] : []),
+          { key: 'combinaisons' as const, label: m.id === 'ee' ? 'Combinaisons des candidats' : 'Sujets des candidats', href: `${b}/combinaisons/` },
           { key: 'simulateur' as const, label: 'Simulateur IA', href: `${b}/simulateur/` },
         ]),
     { key: 'tableau-de-bord', label: 'Tableau de bord', href: `${b}/tableau-de-bord/` },
