@@ -1,5 +1,4 @@
 import type { WritingTask } from '@/content/expression';
-import { writingTasks } from '@/content/expression';
 
 /*
  * "Combinaisons": the three writing tasks of one exam session, as reported by
@@ -69,9 +68,3 @@ export function isCombinaison(content: unknown): content is CombinaisonContent {
   const c = content as CombinaisonContent | null;
   return Boolean(c && c.kind === 'combinaison' && Number.isInteger(c.year) && c.month >= 1 && c.month <= 12 && Array.isArray(c.tasks) && c.tasks.length === 3);
 }
-
-/** Team sets built from the platform's own original subjects (not tied to an exam session). */
-export const teamCombinaisons = [0, 1, 2, 3].map((i) => {
-  const pick = (n: 1 | 2 | 3) => writingTasks.filter((t) => t.task === n)[i];
-  return { id: `equipe-${i + 1}`, tasks: [pick(1), pick(2), pick(3)] as const };
-});

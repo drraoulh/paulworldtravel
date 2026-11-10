@@ -15,6 +15,12 @@ const feedback = { score:12, level:'B2', nclc:'NCLC 7', summary:'Votre réponse 
   let credits=1,starts=0,writings=0,monologues=0,interactions=0;
   await context.route('**/api/access/',r=>r.fulfill({json:{signedIn:true,plan:'active',pack:'express',aiAllowed:true,remaining:{writing:0,speaking:0,tutor:0},exams:{remaining:credits,limit:1,days:7}}}));
   await context.route('**/api/ai/exam/',r=>{starts++;assert.ok(r.request().postDataJSON().requestId);credits=0;return r.fulfill({json:{sessionId,expiresAt:new Date(Date.now()+86400000).toISOString()}});});
+  // The four tests of the exam come from /api/examen/[numero]/ (pack holders only): served here from the content files.
+  const content=(f)=>JSON.parse(require('node:fs').readFileSync(require('node:path').join(__dirname,'../src/content',f),'utf8'));
+  const combi=content('licence/combinaisons.json')[0];
+  await context.route('**/api/examen/*/',r=>r.fulfill({json:{co:content('series/licence/co.json')[0].questions,ce:content('series/licence/ce.json')[0].questions,
+   writing:combi.content.tasks.map((t,i)=>({id:`cmb:${combi.id}:${i+1}`,task:i+1,title:`Tâche ${i+1}`,prompt:t.prompt,documents:t.documents,minWords:60,maxWords:180,minutes:20})),
+   speaking:[{id:'examen:1:1',task:1,title:'Tâche 1',prompt:'Présentez-vous.',tips:[],seconds:120,mode:'monologue'},{id:'examen:1:2',task:2,title:'Tâche 2',prompt:'Posez des questions.',tips:[],seconds:210,mode:'interaction',prepSeconds:120,partner:{role:'un ami',opening:'Bonjour !',facts:''}},{id:'examen:1:3',task:3,title:'Tâche 3',prompt:'Donnez votre avis.',tips:[],seconds:270,mode:'monologue'}]}}));
   await context.route('**/api/ai/writing/',r=>{writings++;assert.equal(r.request().postDataJSON().examSessionId,sessionId);return r.fulfill({json:{feedback,remaining:null,plan:'active'}});});
   await context.route('**/api/ai/speaking/session/',r=>{assert.equal(r.request().postDataJSON().examSessionId,sessionId);return r.fulfill({json:{ticket:'local-exam-ticket',remaining:null,plan:'active'}});});
   await context.route('**/api/ai/speaking/turn/',r=>{assert.match(r.request().postData(),/local-exam-ticket/);return r.fulfill({json:{transcript:'Bonjour quels sont vos horaires et les prix de cette activité ?',reply:'Nous sommes ouverts le samedi.'}});});

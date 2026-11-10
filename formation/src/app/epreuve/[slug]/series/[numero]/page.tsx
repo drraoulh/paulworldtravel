@@ -12,7 +12,7 @@ import { epreuveById, getEpreuve } from '@/lib/epreuves';
 type Props = { params: Promise<{ slug: string; numero: string }> };
 
 export const dynamicParams = false;
-export const generateStaticParams = () => allSeries.filter((s) => !s.month).map((s) => ({ slug: epreuveById(s.epreuve).slug, numero: String(s.number) }));
+export const generateStaticParams = () => allSeries.map((s) => ({ slug: epreuveById(s.epreuve).slug, numero: String(s.number) }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, numero } = await params;
@@ -26,7 +26,7 @@ export default async function SeriePage({ params }: Props) {
   if (!e || e.kind !== 'comprehension') notFound();
   const id = e.module.id as 'ce' | 'co';
   const series = getSeries(id, Number(numero));
-  if (!series || series.month) notFound();
+  if (!series) notFound();
 
   return (
     <EpreuveShell epreuve={e} active="series" title={`Série ${series.number}`} intro={`${series.questions.length} questions de ${e.module.name.toLowerCase()}, du niveau A1 au C2.`}>

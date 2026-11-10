@@ -2,7 +2,7 @@ import { startExam } from '@/lib/ai/exams';
 import { errorResponse } from '@/lib/ai/access';
 import { aiConfigured } from '@/lib/ai/openrouter';
 import { transcriptionConfigured } from '@/lib/ai/huggingface';
-import { getSeries } from '@/content/series';
+import { getSeries } from '@/content/series/catalog';
 
 export const runtime = 'nodejs';
 export async function POST(request: Request) {

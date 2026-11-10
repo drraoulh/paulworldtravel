@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Check } from '@/components/ui';
-import { formatPrice, packDuration, packIncludes, packs, type Pack, type PackId, type Zone } from '@/content/offers';
+import { formatPrice, formatFullPrice, packDuration, packIncludes, packs, type Pack, type PackId, type Zone } from '@/content/offers';
 
 /*
  * The packs, priced for the visitor's zone (chosen by the server, never by the visitor).
@@ -61,7 +61,7 @@ export default function PackGrid({ zone }: { zone: Zone }) {
               <span className="rounded-full bg-night px-3 py-1 text-xs font-bold text-[#ffd84a]">Pour commencer</span>
               <h2 className="heading mt-3 text-2xl">{p.name} <span className="text-base font-semibold">· {packDuration(p)}</span></h2>
               <p className="mt-1 font-semibold opacity-80">{p.tagline}</p>
-              <p className="display mt-4 whitespace-nowrap text-[2.4rem] leading-none">{formatPrice(p, zone)}</p>
+              <p className="display mt-4 whitespace-nowrap text-[2.4rem] leading-none">{formatPrice(p, zone)}{formatFullPrice(p, zone) && <s className="ml-3 text-lg font-semibold opacity-60">{formatFullPrice(p, zone)}</s>}</p>
               <Cta pack={p} className="mt-5 sm:w-auto" />
             </div>
             <div className="p-6"><Items pack={p} zone={zone} /></div>
@@ -81,6 +81,7 @@ export default function PackGrid({ zone }: { zone: Zone }) {
               <p className="mt-1 text-sm font-semibold opacity-85">{p.tagline}</p>
             </div>
             <div className="p-6">
+              {formatFullPrice(p, zone) && <p className="text-sm font-semibold text-slate"><s>{formatFullPrice(p, zone)}</s></p>}
               <p className="display whitespace-nowrap text-[2.1rem] leading-none text-night">{formatPrice(p, zone)}</p>
               <p className="mt-1 text-sm text-slate">pour {packDuration(p)} d’accès</p>
               <Cta pack={p} className="mt-5" />

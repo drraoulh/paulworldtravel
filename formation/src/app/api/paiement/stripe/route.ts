@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { supabaseConfigured } from '@/lib/supabase/config';
 import { cardPaymentFor, createCheckout, stripeConfigured } from '@/lib/stripe';
 import { SITE } from '@/lib/email-layout';
-import { packDuration, packs, zones } from '@/content/offers';
+import { packDuration, packPrice, packs, zones } from '@/content/offers';
 import { hasAcceptedTerms } from '@/lib/legal-acceptance';
 import { LEGAL_VERSION } from '@/content/legal';
 import { visitorZone } from '@/lib/zone';
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   // The price zone comes from the server (visitor's country), never from the request.
   const zone = await visitorZone();
   const currency = zones.find((z) => z.id === zone)!.currency;
-  const amount = pack.prices[zone];
+  const amount = packPrice(pack, zone);
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
-import { MONTHS, TASK_LIMITS, teamCombinaisons } from '@/lib/combinaisons';
+import { MONTHS, TASK_LIMITS } from '@/lib/combinaisons';
 import { publishedCombinaisons } from '@/lib/combinaisons-server';
 import { getEpreuve } from '@/lib/epreuves';
 import { oralMonths } from '@/content/sujets-oraux';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Combinaisons des candidats : expression écrite' };
+export const metadata: Metadata = { title: 'Combinaisons des sessions : expression écrite' };
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ annee?: string }> };
 
@@ -18,7 +18,7 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
   if (!e || (e.module.id !== 'ee' && e.module.id !== 'eo')) notFound();
   if (e.module.id === 'eo') {
     return (
-      <EpreuveShell epreuve={e} active="combinaisons" title="Sujets des candidats" intro="Les sujets des tâches 2 et 3 des sessions d’examen, mois par mois depuis 2023, avec des exemples de réponses. Entraînez-vous à voix haute, dans le temps officiel.">
+      <EpreuveShell epreuve={e} active="combinaisons" title="Sujets des sessions" intro="Les sujets des tâches 2 et 3 des sessions d’examen, mois par mois depuis 2023, avec des exemples de réponses. Entraînez-vous à voix haute, dans le temps officiel.">
         <Container>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {oralMonths.map((m) => (
@@ -46,7 +46,7 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
     <EpreuveShell
       epreuve={e}
       active="combinaisons"
-      title="Combinaisons des candidats"
+      title="Combinaisons des sessions"
       intro="Les trois tâches tombées ensemble lors d’une session, mois par mois depuis 2024, avec leurs corrigés. Entraînez-vous sur la combinaison complète, dans l’ordre, en 60 minutes."
     >
       <Container className="space-y-12">
@@ -97,27 +97,6 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
             <p className="mt-1 max-w-2xl text-blue-100">Partagez les sujets que vous avez eus, même approximativement : vous aidez les prochains candidats à se préparer.</p>
           </div>
           <Link href="/partager-mes-sujets/" className="inline-flex justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover">Partager mes sujets</Link>
-        </section>
-
-        <section>
-          <h2 className="heading text-2xl text-night">Combinaisons de l’équipe</h2>
-          <p className="mt-2 max-w-2xl text-slate">Des sujets originaux du même type que l’examen, chacun avec un corrigé dans « Sujets et corrigés ».</p>
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            {teamCombinaisons.map((c, i) => (
-              <article key={c.id} className="rounded-2xl bg-white p-6">
-                <h3 className="heading text-lg text-night">Combinaison {i + 1}</h3>
-                <ol className="mt-4 space-y-3">
-                  {c.tasks.map((t) => (
-                    <li key={t.id} className="border-t border-rule pt-3">
-                      <p className="text-sm font-bold text-night">Tâche {t.task}</p>
-                      <p className="mt-1 line-clamp-3 text-sm text-ink">{t.prompt}</p>
-                      <Link href={`/epreuve/${e.slug}/simulateur/?sujet=${t.id}`} className="mt-1 inline-block text-sm font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Rédiger cette tâche</Link>
-                    </li>
-                  ))}
-                </ol>
-              </article>
-            ))}
-          </div>
         </section>
 
         <p className="text-sm text-slate">

@@ -1,4 +1,5 @@
 import { speakingTasks } from '@/content/expression';
+import { findMockSpeakingTask } from '@/content/mock-exam';
 import { checkAccess, errorResponse } from '@/lib/ai/access';
 import { examAccess } from '@/lib/ai/exams';
 import { issueTicket } from '@/lib/ai/interaction';
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
       return Response.json({ error: 'La correction de l’oral n’est pas encore activée.' }, { status: 503 });
     }
     const body = await request.json().catch(() => ({}));
-    const task = speakingTasks.find((t) => t.id === body.taskId && t.mode === 'interaction');
+    const task = [...speakingTasks, findMockSpeakingTask(body.taskId)].find((t) => t && t.id === body.taskId && t.mode === 'interaction');
     if (!task) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });
 
     if (body.examSessionId !== undefined) {

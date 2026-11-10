@@ -14,7 +14,9 @@ function loader(mocks = {}) {
   const cache = new Map();
   function load(name, parent = root) {
     if (Object.hasOwn(mocks, name)) return mocks[name];
+    if (name === 'server-only') return {};
     if (!name.startsWith('.') && !name.startsWith('@/') && !name.startsWith('/')) return require(name);
+    if (name.endsWith('.json')) return { default: JSON.parse(readFileSync(name.startsWith('@/') ? resolve(root, name.slice(2)) : resolve(parent, name), 'utf8')) };
     const file = (name.startsWith('@/') ? resolve(root, name.slice(2)) : resolve(parent, name)).replace(/(?<!\.ts)$/, '.ts');
     if (cache.has(file)) return cache.get(file).exports;
     const module = { exports: {} };
@@ -33,7 +35,8 @@ async function account(t) {
   const load = loader({
     '@/lib/supabase/server': { createClient: async () => ({ auth: { getUser: async () => ({ data: { user: state.user } }) } }) },
     '@/lib/supabase/admin': { createAdminClient: () => state.admin },
-    '@/lib/combinaisons-server': { getCombinaison: async () => null },
+    // Licensed session sets are served from the content files; database rows are not needed here.
+    '@/lib/combinaisons-server': { getCombinaison: async (id) => JSON.parse(readFileSync(resolve(root, 'content/licence/combinaisons.json'), 'utf8')).find((c) => c.id === id) ?? null },
   });
   return { ...backend, auth: state, load, access: load('@/lib/ai/access') };
 }

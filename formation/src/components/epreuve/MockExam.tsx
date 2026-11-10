@@ -5,17 +5,16 @@ import { useEffect, useRef, useState } from 'react';
 import { wordCount, type SpeakingTask, type WritingTask } from '@/content/expression';
 import ExamCredits from '@/components/access/ExamCredits';
 import { useAccess, refreshAccess } from '@/components/access/useAccess';
-import { mockWritingTasks, mockSpeakingTasks } from '@/content/mock-exam';
 import SignInPrompt from '@/components/ai/SignInPrompt';
 import { useSignedIn } from '@/components/ai/useSignedIn';
 import MonologuePractice from '@/components/simulator/MonologuePractice';
 import InteractionPractice from '@/components/simulator/InteractionPractice';
-import { getSeries } from '@/content/series';
+import type { SeriesQuestion } from '@/content/series';
 import type { Feedback } from '@/lib/ai/prompts';
 import { nclcFor, nclcLabel } from '@/lib/nclc';
 import { readResults, saveMockResult, type MockResult } from '@/lib/results';
 import { stopSpeaking } from '@/lib/speech';
-import { mockName, MOCK_MONTHS, pickMock } from '@/lib/mock-name';
+import { mockName, pickMock } from '@/lib/mock-name';
 import SeriesRunner from './SeriesRunner';
 
 type Phase = 'intro' | 'co' | 'break-ce' | 'ce' | 'break-ee' | 'ee' | 'break-eo' | 'eo' | 'results';
@@ -42,10 +41,13 @@ function ScoreSoFar({ co, ce, tcf, done }: { co: number; ce: number; tcf: { co: 
 }
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, '0')}`;
 
-export default function MockExam({ series, monthly = [] }: { series: number[]; monthly?: { number: number; month: string }[] }) {
+/** The four tests of one mock exam, loaded from /api/examen/[numero]/ when it starts. */
+type ExamContent = { co: SeriesQuestion[]; ce: SeriesQuestion[]; writing: WritingTask[]; speaking: SpeakingTask[] };
+
+export default function MockExam({ series }: { series: number[] }) {
   const [phase, setPhase] = useState<Phase>('intro');
-  // Newest first: the monthly exams, then the others from the most recent.
-  const order = [...monthly.map((m) => m.number), ...[...series].sort((a, b) => b - a)];
+  const order = [...series].sort((a, b) => a - b);
+  const [content, setContent] = useState<ExamContent | null>(null);
   const [serie, setSerie] = useState(order[0]);
   const [taken, setTaken] = useState<Record<number, string>>({});
   const [choosing, setChoosing] = useState(false);
@@ -85,12 +87,17 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
       const response = await fetch('/api/ai/exam/', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ serie, requestId: requestId.current }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? 'L’examen n’a pas pu démarrer.');
+      // The same request id reserves the same exam: a failed download can be retried without a second credit.
+      const loaded = await fetch(`/api/examen/${serie}/`);
+      const exam = await loaded.json();
+      if (!loaded.ok) throw new Error(exam.error ?? 'L’examen n’a pas pu être chargé.');
+      setContent(exam);
       setSessionId(data.sessionId); setStartedAt(new Date().toISOString()); refreshAccess(); setPhase('co');
     } catch (e) { setStartError(e instanceof Error ? e.message : 'L’examen n’a pas pu démarrer.'); }
     finally { setStarting(false); }
   };
   const top = useRef<HTMLDivElement>(null);
-  const subjects = mockWritingTasks(serie);
+  const subjects = content?.writing ?? [];
 
   useEffect(() => { top.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [phase]);
   useEffect(() => () => stopSpeaking(), []);
@@ -102,8 +109,6 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
     return () => window.removeEventListener('beforeunload', warn);
   }, [phase]);
 
-  const coSeries = getSeries('co', serie)!;
-  const ceSeries = getSeries('ce', serie)!;
 
   return (
     <div ref={top} className="scroll-mt-24">
@@ -132,16 +137,14 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
           </div>
           <fieldset className="rounded-2xl bg-white p-6 sm:p-8">
             <legend className="sr-only">Choisir l’examen</legend>
-            <p className="text-sm font-semibold text-slate">Votre examen blanc, tiré parmi les plus récents que vous n’avez pas encore passés</p>
+            <p className="text-sm font-semibold text-slate">Votre examen blanc, tiré parmi ceux que vous n’avez pas encore passés</p>
             <div className="mt-3 rounded-2xl border-2 border-ocean bg-blue-50 p-5">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="heading text-2xl text-night">{mockName(serie)}</p>
-                {MOCK_MONTHS[serie] && serie === order[0] && <span className="rounded-full bg-container px-2.5 py-0.5 text-xs font-bold text-night">Nouveau</span>}
               </div>
               <p className="mt-1 text-slate">
-                {MOCK_MONTHS[serie] ? 'Sur les thèmes rapportés par les candidats ce mois-ci. ' : ''}
                 39 questions d’écoute, 39 de lecture, 3 textes et 3 tâches orales.
-                {taken[serie] ? ` Déjà passé le ${new Date(taken[serie]).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} : vous avez passé tous les examens récents.` : ''}
+                {taken[serie] ? ` Déjà passé le ${new Date(taken[serie]).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} : vous avez passé tous les examens.` : ''}
               </p>
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
                 {order.length > 1 && <button type="button" disabled={starting} onClick={() => { const n = pickMock(order, taken, serie); if (n) choose(n); }} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Tirer un autre examen</button>}
@@ -155,7 +158,7 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
                     <label className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 ${serie === n ? 'border-ocean bg-blue-50' : 'border-rule hover:border-ocean/50'}`}>
                       <input type="radio" name="serie" className="sr-only" checked={serie === n} disabled={starting} onChange={() => choose(n)} />
                       <span className="font-semibold text-night">{mockName(n)}</span>
-                      <span className={`text-xs font-semibold ${taken[n] ? 'text-slate' : 'text-emerald-700'}`}>{taken[n] ? 'Déjà passé' : MOCK_MONTHS[n] ? 'Du mois' : 'Jamais passé'}</span>
+                      <span className={`text-xs font-semibold ${taken[n] ? 'text-slate' : 'text-emerald-700'}`}>{taken[n] ? 'Déjà passé' : 'Jamais passé'}</span>
                     </label>
                   </li>
                 ))}
@@ -170,7 +173,7 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
       {phase === 'co' && (
         <section>
           <p className="mb-4 font-semibold text-night">Épreuve 1 sur 4 : compréhension orale</p>
-          <SeriesRunner key="co" epreuve="co" number={serie} questions={coSeries.questions} forceMode="exam" onFinish={(s, t) => { setCo(s); setTcf((x) => ({ ...x, co: t })); persist({ co: s, tcfCo: t, done: ['co'] }); setPhase('break-ce'); }} />
+          <SeriesRunner key="co" epreuve="co" number={serie} questions={content?.co ?? []} forceMode="exam" onFinish={(s, t) => { setCo(s); setTcf((x) => ({ ...x, co: t })); persist({ co: s, tcfCo: t, done: ['co'] }); setPhase('break-ce'); }} />
         </section>
       )}
 
@@ -192,7 +195,7 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
       {phase === 'ce' && (
         <section>
           <p className="mb-4 font-semibold text-night">Épreuve 2 sur 4 : compréhension écrite</p>
-          <SeriesRunner key="ce" epreuve="ce" number={serie} questions={ceSeries.questions} forceMode="exam" onFinish={(s, t) => { setCe(s); setTcf((x) => ({ ...x, ce: t })); persist({ ce: s, tcfCe: t, done: ['co', 'ce'] }); setPhase('break-ee'); }} />
+          <SeriesRunner key="ce" epreuve="ce" number={serie} questions={content?.ce ?? []} forceMode="exam" onFinish={(s, t) => { setCe(s); setTcf((x) => ({ ...x, ce: t })); persist({ ce: s, tcfCe: t, done: ['co', 'ce'] }); setPhase('break-ee'); }} />
         </section>
       )}
 
@@ -207,7 +210,7 @@ export default function MockExam({ series, monthly = [] }: { series: number[]; m
 
       {phase === 'eo' && (
         <MockSpeaking
-          tasks={mockSpeakingTasks(serie)}
+          tasks={content?.speaking ?? []}
           sessionId={sessionId}
           results={oralResults}
           onResult={(id, result) => setOralResults((previous) => ({ ...previous, [id]: result }))}

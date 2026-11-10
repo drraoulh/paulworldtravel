@@ -156,9 +156,41 @@ export const packName = (id: string) => packs.find((p) => p.id === id)?.name ?? 
 
 const nbsp = (t: string) => t.replace(/\u202f|\u00a0/g, ' ');
 
-/** Price of a pack in a zone, formatted for display. */
+/*
+ * Promotional offer. null: no offer. When set and not expired, every pack price is
+ * reduced by `percent` everywhere (pages, registration, card payment) and a banner
+ * announces it. `until` is the last day of the offer (YYYY-MM-DD, Douala time).
+ * Example: { name: 'Offre de lancement', percent: 20, until: '2026-12-31' }
+ */
+export interface Promo { name: string; percent: number; until: string }
+export const PROMO = null as Promo | null;
+
+export const activePromo = (now = new Date()): Promo | null =>
+  PROMO && PROMO.percent > 0 && PROMO.percent < 100 && now.getTime() < Date.parse(`${PROMO.until}T23:59:59+01:00`) ? PROMO : null;
+
+/** Price to pay for a pack in a zone, the current offer included (FCFA rounded to 100, dollars to the cent). */
+export function packPrice(pack: Pack, zone: Zone, now = new Date()) {
+  const full = pack.prices[zone];
+  const promo = activePromo(now);
+  if (!promo) return full;
+  const reduced = full * (1 - promo.percent / 100);
+  return zone === 'cm' ? Math.round(reduced / 100) * 100 : Math.round(reduced * 100) / 100;
+}
+
+/** « 31 décembre 2026 ». */
+export const promoEnd = (promo: { until: string }) => new Date(`${promo.until}T12:00:00Z`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+/** Price to pay for a pack in a zone (current offer included), formatted for display. */
 export function formatPrice(pack: Pack, zone: Zone) {
-  const n = pack.prices[zone];
+  return formatAmount(packPrice(pack, zone), zone);
+}
+
+/** Price without the offer, to show crossed out; null when no offer is running. */
+export function formatFullPrice(pack: Pack, zone: Zone) {
+  return activePromo() ? formatAmount(pack.prices[zone], zone) : null;
+}
+
+function formatAmount(n: number, zone: Zone) {
   if (zone === 'cm') return `${nbsp(n.toLocaleString('fr-FR'))} FCFA`;
   const amount = nbsp(n.toLocaleString('fr-FR', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }));
   return `${amount} ${zone === 'ca' ? '$ CA' : '$ US'}`;

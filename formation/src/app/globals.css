@@ -9,7 +9,7 @@
   --container: #dbeafe;   /* highlighter */
   --container-hover: #c4dbff;
   --maple: #b83a2a;       /* corrections, recording */
-  --paper: #f6f8fc;       /* exam-sheet grey */
+  --paper: #f3f6fc;       /* page background */
   --ink: #1b2436;
   --slate: #515c70;
   --rule: #e2e7ef;
@@ -29,14 +29,16 @@
   --color-rule: var(--rule);
   --font-sans: var(--font-atkinson);
   --font-serif: var(--font-literata);
-  --radius-xl: 0.625rem;
-  --radius-2xl: 0.875rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1.125rem;
+  --radius-3xl: 1.5rem;
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--paper);
+  background: radial-gradient(1200px 600px at 85% -10%, #e4edff 0%, transparent 60%), var(--paper);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-atkinson), system-ui, sans-serif;
   line-height: 1.6;
@@ -111,7 +113,7 @@ button:not(:disabled), [role="button"], summary, label[for], select { cursor: po
 
 @layer components {
 /* A card that is a link: lifted, blue on hover, with an arrow in the corner. */
-.card-link { position: relative; border: 2px solid var(--rule); background: #fff; box-shadow: 0 6px 20px rgba(20,33,61,.07); transition: transform .15s, box-shadow .15s, border-color .15s; padding-right: 3.25rem; }
+.card-link { position: relative; border: 1px solid var(--rule); background: #fff; box-shadow: 0 8px 30px rgba(20,33,61,.08); transition: transform .15s, box-shadow .15s, border-color .15s; padding-right: 3.25rem; }
 .card-link::after { content: '→'; position: absolute; top: 1.25rem; right: 1.25rem; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 9999px; background: var(--ocean); color: #fff; font-weight: 700; transition: transform .15s; }
 .card-link:hover { transform: translateY(-3px); border-color: var(--ocean); box-shadow: 0 12px 28px rgba(20,33,61,.14); }
 .card-link:hover::after { transform: translateX(3px); }
