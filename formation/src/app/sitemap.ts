@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { articles } from '@/content/blog';
 import { modules } from '@/content/parcours';
-import { seriesFor } from '@/content/series';
+import { seriesFor } from '@/content/series/catalog';
 import { epreuveConfigs } from '@/lib/epreuves';
 import { absoluteUrl } from '@/lib/site';
 

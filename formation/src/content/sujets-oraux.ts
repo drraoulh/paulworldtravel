@@ -2,9 +2,12 @@
  * Speaking topics reported by candidates, month by month (tasks 2 and 3).
  * The situations come from candidates' reports; the wording is the team's own.
  */
-export interface OralMonth { year: number; month: number; t2: string[]; t3: string[] }
+import licensed from './licence/sujets-oraux.json';
 
-export const oralMonths: OralMonth[] = [
+/** c2 and c3: sample answer of each subject, same order as t2 and t3 (licensed months only; '' when none). */
+export interface OralMonth { year: number; month: number; t2: string[]; t3: string[]; c2?: string[]; c3?: string[] }
+
+const teamMonths: OralMonth[] = [
   {
     year: 2026,
     month: 11,
@@ -1476,5 +1479,13 @@ export const oralMonths: OralMonth[] = [
     ],
   },
 ];
+
+/** Months under the TCF Canada Ltd licence (contract of 23 October 2026), 2023 to 2026, with sample answers. */
+const licensedMonths = licensed as OralMonth[];
+const covered = new Set(licensedMonths.map((m) => `${m.year}-${m.month}`));
+
+/** Newest first. A licensed month replaces the team's rewording of the same month. */
+export const oralMonths: OralMonth[] = [...licensedMonths, ...teamMonths.filter((m) => !covered.has(`${m.year}-${m.month}`))]
+  .sort((a, b) => b.year - a.year || b.month - a.month);
 
 export const getOralMonth = (year: number, month: number) => oralMonths.find((m) => m.year === year && m.month === month);

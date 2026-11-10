@@ -337,3 +337,19 @@ chargement après accord, le retrait, les URL nettoyées, le refus persistant, l
 pages et liens légaux sur deux largeurs, l’identité publiée, la case d’inscription
 et l’acceptation avant un paiement simulé. Les autres scénarios navigateur refusent
 explicitement les statistiques pour se concentrer sur leurs parcours respectifs.
+
+## Contenu sous licence (TCF Canada Ltd)
+
+Depuis le contrat de licence du 23 octobre 2026, la plateforme reprend le contenu de
+formation-tcfcanada.com : 44 séries de compréhension écrite (numéros 25 à 68), 43 séries
+de compréhension orale (11 à 53), 540 combinaisons d’expression écrite (2024 à 2026) et
+3 616 sujets d’expression orale (2023 à 2026), avec leurs corrigés.
+
+- Données : `src/content/series/licence/*.json`, `src/content/licence/*.json`.
+- `src/content/series/catalog.ts` réunit les séries de l’équipe et celles sous licence ;
+  il ne doit être importé que côté serveur (plusieurs mégaoctets).
+- Pour un mois couvert par la licence, les sujets sous licence remplacent les
+  reformulations de l’équipe dans les listes.
+- Les images et les enregistrements audio sont encore servis depuis le stockage du
+  vendeur. Après copie dans notre propre stockage (mêmes chemins `audio/…` et `images/…`),
+  renseigner `NEXT_PUBLIC_MEDIA_BASE` avec son adresse publique : voir `src/lib/media.ts`.

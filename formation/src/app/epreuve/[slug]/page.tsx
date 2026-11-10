@@ -5,7 +5,7 @@ import { ButtonLink, Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import { writingTasks, speakingTasks } from '@/content/expression';
 import { publishedModules } from '@/lib/training-content';
-import { seriesFor } from '@/content/series';
+import { seriesFor } from '@/content/series/catalog';
 import { epreuveConfigs, getEpreuve } from '@/lib/epreuves';
 
 type Props = { params: Promise<{ slug: string }> };

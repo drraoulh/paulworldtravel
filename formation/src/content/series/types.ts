@@ -12,14 +12,19 @@ export interface SeriesQuestion {
   /** image: 4 heard propositions about a picture; reponse: a heard question and 4 heard answers. */
   kind?: 'image' | 'reponse';
   image?: { src: string; alt: string };
-  /** Index of the right choice, for the kinds above (choices in heard order). */
+  /**
+   * Index of the right choice. When set, the choices keep their order on screen
+   * (heard propositions, and licensed series whose explanations name a letter).
+   */
   answer?: number;
+  /** Recorded document of a licensed series: path under MEDIA_BASE (see lib/media.ts). */
+  audio?: string;
   /** Compréhension écrite: the document to read. */
   doc?: string;
   /** Compréhension orale: the script, read aloud by the browser (two voices). */
   lines?: { voice: 'a' | 'b'; text: string }[];
   prompt: string;
-  choices: [string, string, string, string];
+  choices: string[];
   explanation: string;
 }
 

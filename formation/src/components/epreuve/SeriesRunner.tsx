@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BANDS, rightChoice, SERIES_SECONDS, type SeriesQuestion } from '@/content/series';
 import { cefrForScore, estimateTcfScore, nclcFor, nclcLabel } from '@/lib/nclc';
 import { seededOrder } from '@/lib/shuffle';
+import { mediaUrl } from '@/lib/media';
 import { saveSeriesResult, seriesKey, type SeriesResult } from '@/lib/results';
 import { playDocument, stopSpeaking, warmUpVoices } from '@/lib/speech';
 
@@ -63,7 +64,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   const [done, setDone] = useState(false);
   const top = useRef<HTMLDivElement>(null);
   const orders = useMemo(
-    () => questions.map((q, i) => (heardOnly(q) ? [0, 1, 2, 3] : seededOrder(`${epreuve}${number}-${i}-${q.prompt}`, 4))),
+    () => questions.map((q, i) => (heardOnly(q) || q.answer !== undefined ? [0, 1, 2, 3] : seededOrder(`${epreuve}${number}-${i}-${q.prompt}`, 4))),
     [questions, epreuve, number],
   );
   const q = questions[index];
@@ -109,7 +110,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
     setPlays((n) => n + 1);
     setProgress(null);
     playDocument(
-      `/audio/co/co-${number}-${i + 1}.mp3`,
+      questions[i].audio ? mediaUrl(questions[i].audio!) : `/audio/co/co-${number}-${i + 1}.mp3`,
       questions[i].lines ?? [],
       () => { setListen('heard'); setProgress((p) => (p ? { cur: p.dur, dur: p.dur } : p)); },
       (cur, dur) => setProgress({ cur, dur }),
@@ -208,7 +209,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
                       <span className="ml-2 text-xs text-slate">({qq.level})</span>
                     </summary>
                     <div className="mt-3 space-y-2 text-sm">
-                      {qq.image && <Image src={qq.image.src} alt={qq.image.alt} width={320} height={213} className="rounded-lg" />}
+                      {qq.image && <Image src={mediaUrl(qq.image.src)} unoptimized={!qq.image.src.startsWith('/')} alt={qq.image.alt} width={320} height={213} className="h-auto rounded-lg" />}
                       {qq.doc && <p className="whitespace-pre-line rounded-lg bg-paper p-3 text-ink">{qq.doc}</p>}
                       {qq.lines && <div className="rounded-lg bg-paper p-3"><Transcript q={qq} /></div>}
                       <p><strong className="text-green-800">Bonne réponse : </strong>{label(good)}</p>
@@ -318,7 +319,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
         <div className="order-1 rounded-2xl bg-white p-5 sm:p-8 lg:order-2">
           {q.image && (
             <div className="mx-auto mb-6 max-w-xl overflow-hidden rounded-xl bg-paper">
-              <Image src={q.image.src} alt={exam ? 'Image de la question' : q.image.alt} width={900} height={600} sizes="(min-width: 1024px) 36rem, 100vw" className="h-auto w-full" priority />
+              <Image src={mediaUrl(q.image.src)} unoptimized={!q.image.src.startsWith('/')} alt={exam ? 'Image de la question' : q.image.alt} width={900} height={600} sizes="(min-width: 1024px) 36rem, 100vw" className="h-auto w-full" priority />
             </div>
           )}
 
@@ -353,7 +354,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
                 </div>
               </div>
             </div>
-          ) : (
+          ) : q.doc && (
             <p className="whitespace-pre-line rounded-xl border-l-4 border-sky bg-paper p-5 text-lg leading-relaxed text-ink">{q.doc}</p>
           )}
           {exam && isCo && plays > 0 && listen !== 'playing' && <p className="mt-2 text-sm text-slate">Une seule écoute en conditions d’examen.</p>}

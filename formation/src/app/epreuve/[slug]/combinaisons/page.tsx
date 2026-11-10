@@ -18,7 +18,7 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
   if (!e || (e.module.id !== 'ee' && e.module.id !== 'eo')) notFound();
   if (e.module.id === 'eo') {
     return (
-      <EpreuveShell epreuve={e} active="combinaisons" title="Sujets des candidats" intro="Les sujets des tâches 2 et 3 rapportés par les candidats après leur examen, mois par mois, reformulés par notre équipe. Entraînez-vous à voix haute, dans le temps officiel.">
+      <EpreuveShell epreuve={e} active="combinaisons" title="Sujets des candidats" intro="Les sujets des tâches 2 et 3 des sessions d’examen, mois par mois depuis 2023, avec des exemples de réponses. Entraînez-vous à voix haute, dans le temps officiel.">
         <Container>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {oralMonths.map((m) => (
@@ -47,7 +47,7 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
       epreuve={e}
       active="combinaisons"
       title="Combinaisons des candidats"
-      intro="Les trois tâches tombées ensemble lors d’une session, rapportées par des candidats après leur examen puis reformulées par notre équipe. Entraînez-vous sur la combinaison complète, dans l’ordre, en 60 minutes."
+      intro="Les trois tâches tombées ensemble lors d’une session, mois par mois depuis 2024, avec leurs corrigés. Entraînez-vous sur la combinaison complète, dans l’ordre, en 60 minutes."
     >
       <Container className="space-y-12">
         <ol className="grid gap-3 sm:grid-cols-3">
@@ -121,7 +121,7 @@ export default async function CombinaisonsPage({ params, searchParams }: Props) 
         </section>
 
         <p className="text-sm text-slate">
-          Les sujets publiés ici sont des reformulations rédigées par notre équipe à partir des souvenirs de candidats : ce ne sont pas les sujets officiels de France Éducation international.
+          Ces sujets d’entraînement ne sont pas publiés par France Éducation international, seul organisme responsable des sujets officiels du TCF.
         </p>
       </Container>
     </EpreuveShell>

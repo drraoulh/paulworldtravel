@@ -11,7 +11,7 @@ import { lessonId } from '@/content/parcours';
 import { publishedModules } from '@/lib/training-content';
 import { EPREUVE_IMAGES } from '@/lib/epreuve-images';
 import { packs, formatPrice, packDuration, zoneForCountry, freeSeriesAreFree, freeSeriesFirst } from '@/content/offers';
-import { seriesFor } from '@/content/series';
+import { seriesFor } from '@/content/series/catalog';
 import { inPersonPlaces } from '@/content/contact';
 export default async function Home() {
   const modules = await publishedModules();

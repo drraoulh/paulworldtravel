@@ -6,7 +6,7 @@ import SeriesRunner from '@/components/epreuve/SeriesRunner';
 import PackGate from '@/components/access/PackGate';
 import AccountGate from '@/components/access/AccountGate';
 import { FREE_SERIES } from '@/content/offers';
-import { allSeries, getSeries } from '@/content/series';
+import { allSeries, getSeries } from '@/content/series/catalog';
 import { epreuveById, getEpreuve } from '@/lib/epreuves';
 
 type Props = { params: Promise<{ slug: string; numero: string }> };

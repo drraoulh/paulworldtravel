@@ -2,6 +2,7 @@ import type { Combinaison, CombiTask } from '@/lib/combinaisons';
 import { moreSessionCombinaisons } from './combinaisons-sessions-2';
 import { novemberCombinaisons } from './combinaisons-2026-11';
 import { reportedCombinaisons } from './combinaisons-reportees';
+import licensed from './licence/combinaisons.json';
 
 /*
  * Combinations of recent sessions, written by the team from the themes that
@@ -702,6 +703,17 @@ Pauline`,
 ];
 
 /** August to October (this file), then May to July (combinaisons-sessions-2.ts), newest first. */
-export const sessionCombinaisons: Combinaison[] = [...novemberCombinaisons, ...reportedCombinaisons, ...recentCombinaisons, ...moreSessionCombinaisons];
+const teamSets: Combinaison[] = [...novemberCombinaisons, ...reportedCombinaisons, ...recentCombinaisons, ...moreSessionCombinaisons];
 
-export const getSessionCombinaison = (id: string) => sessionCombinaisons.find((x) => x.id === id) ?? null;
+/** Session sets under the TCF Canada Ltd licence (contract of 23 October 2026), 2024 to 2026, newest first. */
+export const licensedCombinaisons = licensed as Combinaison[];
+const monthKey = (c: Combinaison) => `${c.content.year}-${c.content.month}`;
+const licensedMonths = new Set(licensedCombinaisons.map(monthKey));
+
+/**
+ * Listed sets: for a month covered by the licence, the licensed sets replace the
+ * team's rewordings of the same subjects (which stay reachable by their id below).
+ */
+export const sessionCombinaisons: Combinaison[] = [...licensedCombinaisons, ...teamSets.filter((c) => !licensedMonths.has(monthKey(c)))];
+
+export const getSessionCombinaison = (id: string) => licensedCombinaisons.find((x) => x.id === id) ?? teamSets.find((x) => x.id === id) ?? null;

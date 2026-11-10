@@ -6,7 +6,7 @@ import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import SeriesList from '@/components/epreuve/SeriesList';
 import TeamSeries from '@/components/epreuve/TeamSeries';
 import { freeSeriesAreFree, freeSeriesRange } from '@/content/offers';
-import { seriesFor } from '@/content/series';
+import { seriesFor } from '@/content/series/catalog';
 import { comprehensionConfigs, getEpreuve } from '@/lib/epreuves';
 
 type Props = { params: Promise<{ slug: string }> };

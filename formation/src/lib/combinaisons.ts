@@ -17,7 +17,8 @@ export interface CombinaisonContent {
   kind: 'combinaison';
   year: number;
   month: number; // 1-12, month of the exam session
-  source: 'candidats' | 'equipe';
+  /** licence: session set taken as it is under the TCF Canada Ltd licence, with its model answers. */
+  source: 'candidats' | 'equipe' | 'licence';
   reportId?: string;
   tasks: [CombiTask, CombiTask, CombiTask];
 }
