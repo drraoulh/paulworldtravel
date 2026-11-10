@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Container, PageHeader } from '@/components/ui';
 import MockExam from '@/components/epreuve/MockExam';
 import PackGate from '@/components/access/PackGate';
-import { monthlyMocks, seriesFor } from '@/content/series';
+import { mockNumbers } from '@/content/series/catalog';
 
 export const metadata: Metadata = {
   title: 'Examen blanc TCF Canada',
@@ -10,9 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function ExamenBlanc() {
-  // A mock exam needs a listening AND a reading series with the same number.
-  const ce = new Set(seriesFor('ce').map((s) => s.number));
-  const numbers = seriesFor('co').map((s) => s.number).filter((n) => ce.has(n));
   return (
     <>
       <PageHeader image={{ src: '/images/salle-examen.jpg', alt: 'Des candidats composent dans une salle d’examen sous la surveillance d’un examinateur' }}
@@ -20,7 +17,7 @@ export default function ExamenBlanc() {
         intro="Les quatre épreuves du TCF Canada enchaînées, avec les durées officielles : compréhension orale, compréhension écrite, expression écrite, puis expression orale."
       />
       <section className="bg-paper py-12 sm:py-16">
-        <Container className="max-w-6xl"><PackGate what="L’examen blanc" next="/examen-blanc/"><MockExam series={numbers} monthly={monthlyMocks()} /></PackGate></Container>
+        <Container className="max-w-6xl"><PackGate what="L’examen blanc" next="/examen-blanc/"><MockExam series={mockNumbers()} /></PackGate></Container>
       </section>
     </>
   );

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ButtonLink, Container, PageHeader } from '@/components/ui';
 import PackGrid from '@/components/packs/PackGrid';
+import PromoBanner from '@/components/packs/PromoBanner';
 import { freeSeriesRange } from '@/content/offers';
 import { visitorZone } from '@/lib/zone';
 import { contact } from '@/content/contact';
@@ -26,6 +27,12 @@ export default async function Packs() {
 
       <section className="bg-paper py-14 sm:py-20">
         <Container>
+          <div className="mb-8 empty:hidden"><PromoBanner link={false} /></div>
+          <ul className="mb-10 grid gap-3 text-center sm:grid-cols-4">
+            {[['87', 'séries de 39 questions'], ['43', 'examens blancs complets'], ['540', 'combinaisons corrigées'], ['3 600+', 'sujets d’expression orale']].map(([n, l]) => (
+              <li key={l} className="rounded-2xl bg-white p-4 shadow-[0_6px_20px_rgba(20,33,61,.06)]"><span className="display block text-3xl text-ocean">{n}</span><span className="text-sm text-slate">{l}</span></li>
+            ))}
+          </ul>
           <ForAudience pack={(
             <div className="mb-8 rounded-2xl border-2 border-green-600 bg-white p-5 sm:p-6" role="status">
               <p className="flex items-center gap-2 font-bold text-night"><span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-green-600" /><PackStatus /></p>

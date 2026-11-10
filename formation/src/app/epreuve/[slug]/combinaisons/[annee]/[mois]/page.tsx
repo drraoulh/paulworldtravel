@@ -27,11 +27,11 @@ export default async function MoisPage({ params }: Props) {
     const oral = getOralMonth(year, month);
     if (!oral) notFound();
     const groups = [
-      { id: 'tache-2', title: 'Tâche 2 : exercice en interaction', meta: '2 min de préparation, 3 min 30 d’échange', list: oral.t2 },
-      { id: 'tache-3', title: 'Tâche 3 : expression d’un point de vue', meta: 'Sans préparation, 4 min 30', list: oral.t3 },
+      { id: 'tache-2', title: 'Tâche 2 : exercice en interaction', meta: '2 min de préparation, 3 min 30 d’échange', list: oral.t2, answers: oral.c2, answerLabel: 'Voir des exemples de questions' },
+      { id: 'tache-3', title: 'Tâche 3 : expression d’un point de vue', meta: 'Sans préparation, 4 min 30', list: oral.t3, answers: oral.c3, answerLabel: 'Voir un exemple de réponse' },
     ];
     return (
-      <EpreuveShell epreuve={e} active="combinaisons" title={`${MONTHS[month - 1]} ${year}`} intro={`${oral.t2.length + oral.t3.length} sujets rapportés par les candidats ce mois-ci. Préparez-vous à voix haute, chronomètre en main.`}>
+      <EpreuveShell epreuve={e} active="combinaisons" title={`${MONTHS[month - 1]} ${year}`} intro={`${oral.t2.length + oral.t3.length} sujets de ce mois-ci. Préparez-vous à voix haute, chronomètre en main.`}>
         <Container className="space-y-6">
           <Link href={`/epreuve/${e.slug}/combinaisons/`} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Tous les mois</Link>
           <nav aria-label="Tâches" className="flex flex-wrap gap-3">
@@ -52,7 +52,20 @@ export default async function MoisPage({ params }: Props) {
                 <span aria-hidden="true" className="text-2xl transition-transform group-open:rotate-180">⌄</span>
               </summary>
               <ol className="divide-y divide-rule px-6 sm:px-8">
-                {g.list.map((t, i) => <li key={i} className="flex gap-4 py-4"><span className="font-bold text-ocean">{i + 1}</span><span className="text-ink">{t}</span></li>)}
+                {g.list.map((t, i) => (
+                  <li key={i} className="flex gap-4 py-4">
+                    <span className="font-bold text-ocean">{i + 1}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-ink">{t}</p>
+                      {g.answers?.[i] && (
+                        <details className="mt-3 rounded-xl bg-paper p-4">
+                          <summary className="cursor-pointer font-semibold text-night">{g.answerLabel}</summary>
+                          <p className="reading mt-3 whitespace-pre-line text-ink">{g.answers[i]}</p>
+                        </details>
+                      )}
+                    </div>
+                  </li>
+                ))}
               </ol>
             </details>
           ))}
@@ -112,7 +125,7 @@ export default async function MoisPage({ params }: Props) {
               </summary>
               <div className="p-6 sm:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="text-sm text-slate">{c.content.source === 'candidats' ? 'Rapportée par des candidats, reformulée par l’équipe' : 'Tâche 1 rapportée par des candidats, tâches 2 et 3 proposées par l’équipe'}</span>
+                  <span className="text-sm text-slate">{c.content.source === 'licence' ? 'Sujets de session, avec corrigés' : c.content.source === 'candidats' ? 'Rapportée par des candidats, reformulée par l’équipe' : 'Tâche 1 rapportée par des candidats, tâches 2 et 3 proposées par l’équipe'}</span>
                   <Link href={`/epreuve/${e.slug}/simulateur/?sujet=${encodeURIComponent(combiTaskId(c.id, 1))}`} className="rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-800">Commencer au simulateur</Link>
                 </div>
                 <ol className="mt-5 space-y-6">

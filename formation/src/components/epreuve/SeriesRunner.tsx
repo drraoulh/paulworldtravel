@@ -4,8 +4,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BANDS, rightChoice, SERIES_SECONDS, type SeriesQuestion } from '@/content/series';
-import { cefrForScore, estimateTcfScore, nclcFor, nclcLabel } from '@/lib/nclc';
+import { estimateTcfScore } from '@/lib/nclc';
+import ScoreReport from './ScoreReport';
 import { seededOrder } from '@/lib/shuffle';
+import { mediaUrl } from '@/lib/media';
 import { saveSeriesResult, seriesKey, type SeriesResult } from '@/lib/results';
 import { playDocument, stopSpeaking, warmUpVoices } from '@/lib/speech';
 
@@ -61,9 +63,10 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   const [deadline, setDeadline] = useState<number | null>(null);
   const [left, setLeft] = useState<number>(total);
   const [done, setDone] = useState(false);
+  const [errorsOnly, setErrorsOnly] = useState(false);
   const top = useRef<HTMLDivElement>(null);
   const orders = useMemo(
-    () => questions.map((q, i) => (heardOnly(q) ? [0, 1, 2, 3] : seededOrder(`${epreuve}${number}-${i}-${q.prompt}`, 4))),
+    () => questions.map((q, i) => (heardOnly(q) || q.answer !== undefined ? [0, 1, 2, 3] : seededOrder(`${epreuve}${number}-${i}-${q.prompt}`, 4))),
     [questions, epreuve, number],
   );
   const q = questions[index];
@@ -109,7 +112,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
     setPlays((n) => n + 1);
     setProgress(null);
     playDocument(
-      `/audio/co/co-${number}-${i + 1}.mp3`,
+      questions[i].audio ? mediaUrl(questions[i].audio!) : undefined,
       questions[i].lines ?? [],
       () => { setListen('heard'); setProgress((p) => (p ? { cur: p.dur, dur: p.dur } : p)); },
       (cur, dur) => setProgress({ cur, dur }),
@@ -160,44 +163,19 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   }
 
   if (done) {
-    const g = grade(questions, answers);
     return (
       <div ref={top} className="scroll-mt-24 space-y-6">
-        <div className="rounded-2xl bg-night p-6 text-white sm:p-8">
-          <div className="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-end sm:gap-10">
-            <div>
-              <p className="text-sm text-blue-200">Résultat, série {number}</p>
-              <p className="display mt-1 text-5xl text-container">{g.score}<span className="text-2xl text-blue-200"> / {questions.length}</span></p>
-            </div>
-            <div className="sm:border-l sm:border-white/15 sm:pl-10">
-              <p className="text-sm text-blue-200">Score TCF estimé</p>
-              <p className="display mt-1 text-5xl text-white">{g.tcf}<span className="text-2xl text-blue-200"> / 699</span></p>
-              <p className="mt-2 font-semibold">{nclcLabel(nclcFor(epreuve, g.tcf))}{cefrForScore(g.tcf) ? `, niveau ${cefrForScore(g.tcf)}` : ''} <span className="font-normal text-blue-100">(estimation)</span></p>
-            </div>
-          </div>
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            {BANDS.map((b) => {
-              const [ok, n] = g.bands[b.label] ?? [0, 0];
-              return (
-                <div key={b.label}>
-                  <p className="text-sm text-blue-100">Questions {b.label}</p>
-                  <p className="heading text-xl">{ok} / {n}</p>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/15"><div className="h-full bg-container" style={{ width: `${n ? (ok / n) * 100 : 0}%` }} /></div>
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-6 text-sm text-blue-100">
-            Estimation indicative, pas un score officiel : le TCF pondère chaque question selon sa difficulté, mais France Éducation international ne publie pas le poids de chaque question. Nous appliquons une grille par niveau (A1 3 points, A2 9, B1 15, B2 21, C1 26, C2 33) puis le barème NCLC d’IRCC.{' '}
-            <Link href="/calculateur-nclc/" className="font-semibold text-container hover:underline">Calculer mon NCLC sur les quatre épreuves</Link>
-          </p>
-        </div>
+        <ScoreReport epreuve={epreuve} title={`${isCo ? 'Compréhension orale' : 'Compréhension écrite'} · Série ${number}`} questions={questions} answers={answers} />
         <div className="rounded-2xl bg-white p-6 sm:p-8">
-          <h2 className="heading text-xl text-night">Revoir les questions</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="heading text-xl text-night">Correction détaillée</h2>
+            <label className="flex items-center gap-2 text-sm font-semibold text-night"><input type="checkbox" checked={errorsOnly} onChange={(e) => setErrorsOnly(e.target.checked)} className="h-4 w-4" />Afficher seulement mes erreurs</label>
+          </div>
           <ol className="mt-4 divide-y divide-rule">
             {questions.map((qq, i) => {
               const good = rightChoice(qq);
               const right = answers[i] === good;
+              if (errorsOnly && right) return null;
               const label = (c: number) => (heardOnly(qq) ? `${LETTERS[c]}. ` : '') + qq.choices[c];
               return (
                 <li key={i} className="py-4">
@@ -208,7 +186,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
                       <span className="ml-2 text-xs text-slate">({qq.level})</span>
                     </summary>
                     <div className="mt-3 space-y-2 text-sm">
-                      {qq.image && <Image src={qq.image.src} alt={qq.image.alt} width={320} height={213} className="rounded-lg" />}
+                      {qq.image && <Image src={mediaUrl(qq.image.src)} unoptimized={!qq.image.src.startsWith('/')} alt={qq.image.alt} width={320} height={213} className="h-auto rounded-lg" />}
                       {qq.doc && <p className="whitespace-pre-line rounded-lg bg-paper p-3 text-ink">{qq.doc}</p>}
                       {qq.lines && <div className="rounded-lg bg-paper p-3"><Transcript q={qq} /></div>}
                       <p><strong className="text-green-800">Bonne réponse : </strong>{label(good)}</p>
@@ -318,7 +296,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
         <div className="order-1 rounded-2xl bg-white p-5 sm:p-8 lg:order-2">
           {q.image && (
             <div className="mx-auto mb-6 max-w-xl overflow-hidden rounded-xl bg-paper">
-              <Image src={q.image.src} alt={exam ? 'Image de la question' : q.image.alt} width={900} height={600} sizes="(min-width: 1024px) 36rem, 100vw" className="h-auto w-full" priority />
+              <Image src={mediaUrl(q.image.src)} unoptimized={!q.image.src.startsWith('/')} alt={exam ? 'Image de la question' : q.image.alt} width={900} height={600} sizes="(min-width: 1024px) 36rem, 100vw" className="h-auto w-full" priority />
             </div>
           )}
 
@@ -353,7 +331,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
                 </div>
               </div>
             </div>
-          ) : (
+          ) : q.doc && (
             <p className="whitespace-pre-line rounded-xl border-l-4 border-sky bg-paper p-5 text-lg leading-relaxed text-ink">{q.doc}</p>
           )}
           {exam && isCo && plays > 0 && listen !== 'playing' && <p className="mt-2 text-sm text-slate">Une seule écoute en conditions d’examen.</p>}

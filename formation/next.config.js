@@ -5,14 +5,16 @@
  * this site; camera, location and payment APIs are off (Stripe opens on its own page).
  */
 const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://*.supabase.co';
+// Pictures and recordings of the licensed series (see src/lib/media.ts).
+const media = (process.env.NEXT_PUBLIC_MEDIA_BASE || 'https://losobefiezietwpurwok.supabase.co').replace(/^(https?:\/\/[^/]+).*$/, '$1');
 const dev = process.env.NODE_ENV !== 'production';
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ''} https://va.vercel-scripts.com https://vercel.live`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://vercel.live https://vercel.com",
+  `img-src 'self' data: blob: https://vercel.live https://vercel.com ${media}`,
   "font-src 'self' data: https://vercel.live",
-  "media-src 'self' blob: data:",
+  `media-src 'self' blob: data: ${media}`,
   `connect-src 'self' ${supabase} ${supabase.replace('https://', 'wss://')} https://va.vercel-scripts.com https://vercel.live wss://ws-us3.pusher.com`,
   'frame-src https://vercel.live',
   "frame-ancestors 'none'",

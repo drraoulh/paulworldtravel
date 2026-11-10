@@ -337,3 +337,35 @@ chargement après accord, le retrait, les URL nettoyées, le refus persistant, l
 pages et liens légaux sur deux largeurs, l’identité publiée, la case d’inscription
 et l’acceptation avant un paiement simulé. Les autres scénarios navigateur refusent
 explicitement les statistiques pour se concentrer sur leurs parcours respectifs.
+
+## Contenu sous licence (TCF Canada Ltd)
+
+Depuis le contrat de licence du 23 octobre 2026, tout le contenu d’entraînement vient de
+formation-tcfcanada.com ; les anciennes séries et les anciens sujets de l’équipe ont été retirés.
+
+- 44 séries de compréhension écrite et 43 de compréhension orale (39 questions chacune),
+  540 combinaisons d’expression écrite (2024 à 2026), 3 616 sujets d’expression orale
+  (2023 à 2026), avec leurs corrigés.
+- Données : `src/content/series/licence/*.json`, `src/content/licence/*.json`.
+- `src/content/series/catalog.ts` et `src/content/mock-exam.ts` ne s’importent que côté
+  serveur (plusieurs mégaoctets). Le navigateur reçoit les questions en propriétés, et
+  l’examen blanc les charge par `/api/examen/[numero]/` (pack actif requis).
+- Examen blanc n : séries d’écoute et de lecture n, n-ième combinaison écrite et n-ièmes
+  sujets oraux (43 examens).
+- Médias : 1 666 enregistrements (MP3 64 kbit/s) et 70 images redessinées sans filigrane,
+  dans le bucket public `tcf` de notre Supabase. `NEXT_PUBLIC_MEDIA_BASE` permet de les
+  déplacer (voir `src/lib/media.ts`).
+
+## Résultats
+
+`src/components/epreuve/ScoreReport.tsx` présente chaque série comme l’attestation :
+score estimé sur 699, niveau A1 à C2, NCLC, points manquants pour le niveau suivant et
+points gagnés ou perdus par niveau. Méthode : `src/lib/nclc.ts` (score de 100 à 699 pondéré
+par la difficulté, sans point négatif, selon France Éducation international ; barème NCLC
+d’IRCC). Le poids officiel de chaque question n’est pas publié : le score reste une estimation.
+
+## Offre promotionnelle
+
+`PROMO` dans `src/content/offers.ts` (nom, pourcentage, dernier jour). Tant qu’elle est
+active, le prix réduit s’applique partout (pages, inscription, paiement par carte), l’ancien
+prix est barré et un bandeau l’annonce sur l’accueil et la page des packs. `null` : aucune offre.

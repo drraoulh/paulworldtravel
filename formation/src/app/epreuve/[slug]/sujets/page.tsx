@@ -32,7 +32,7 @@ export default async function SujetsPage({ params }: Props) {
       epreuve={e}
       active="sujets"
       title="Sujets et corrigés"
-      intro="Des sujets originaux du type de l’examen. Essayez d’abord seul, puis comparez avec le corrigé commenté, ou faites corriger votre production par l’IA."
+      intro="Des sujets types de l’examen. Essayez d’abord seul, puis comparez avec le corrigé commenté, ou faites corriger votre production par l’IA."
     >
       <Container className="space-y-12">
         {([1, 2, 3] as const).map((n) => (

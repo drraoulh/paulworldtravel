@@ -4,9 +4,8 @@ import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import SeriesList from '@/components/epreuve/SeriesList';
-import TeamSeries from '@/components/epreuve/TeamSeries';
 import { freeSeriesAreFree, freeSeriesRange } from '@/content/offers';
-import { seriesFor } from '@/content/series';
+import { seriesFor } from '@/content/series/catalog';
 import { comprehensionConfigs, getEpreuve } from '@/lib/epreuves';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -35,11 +34,7 @@ export default async function SeriesPage({ params }: Props) {
     >
       <Container className="space-y-12">
         <SeriesList epreuve={id} slug={e.slug} series={series} />
-        {id === 'ce' && <TeamSeries />}
-        <p className="text-sm text-slate">
-          Questions originales créées pour cette plateforme, pas des questions officielles du TCF.
-          {id === 'co' && ' Les séries 1 à 8 sont enregistrées avec des voix québécoises de synthèse (ElevenLabs) ; les suivantes, avec des voix de synthèse libres (SIWIS, licence CC BY 4.0 ; UPMC Pierre, licence CC BY-SA 4.0). Complétez avec la radio et des podcasts francophones pour habituer votre oreille aux vrais accents.'}
-        </p>
+        <p className="text-sm text-slate">Séries d’entraînement : elles ne sont pas publiées par France Éducation international, seul organisme responsable des sujets officiels du TCF.</p>
       </Container>
     </EpreuveShell>
   );

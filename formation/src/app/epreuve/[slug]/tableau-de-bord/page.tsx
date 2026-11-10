@@ -4,7 +4,7 @@ import { Container } from '@/components/ui';
 import Dashboard from '@/components/epreuve/Dashboard';
 import EpreuveShell from '@/components/epreuve/EpreuveShell';
 import { lessonId } from '@/content/parcours';
-import { seriesFor } from '@/content/series';
+import { seriesFor } from '@/content/series/catalog';
 import { epreuveConfigs, getEpreuve } from '@/lib/epreuves';
 
 type Props = { params: Promise<{ slug: string }> };
