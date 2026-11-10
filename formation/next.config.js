@@ -6,7 +6,7 @@
  */
 const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://*.supabase.co';
 // Pictures and recordings of the licensed series (see src/lib/media.ts).
-const media = (process.env.NEXT_PUBLIC_MEDIA_BASE || 'https://qrcmv2rhibwpawwn.public.blob.vercel-storage.com').replace(/^(https?:\/\/[^/]+).*$/, '$1');
+const media = (process.env.NEXT_PUBLIC_MEDIA_BASE || 'https://losobefiezietwpurwok.supabase.co').replace(/^(https?:\/\/[^/]+).*$/, '$1');
 const dev = process.env.NODE_ENV !== 'production';
 const csp = [
   "default-src 'self'",
