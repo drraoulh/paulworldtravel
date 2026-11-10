@@ -350,7 +350,8 @@ de compréhension orale (11 à 53), 540 combinaisons d’expression écrite (202
   il ne doit être importé que côté serveur (plusieurs mégaoctets).
 - Pour un mois couvert par la licence, les sujets sous licence remplacent les
   reformulations de l’équipe dans les listes.
-- Les 1 666 enregistrements (MP3 64 kbit/s) et 119 images (WebP) sont dans notre propre
+- Les 1 666 enregistrements (MP3 64 kbit/s) et les 70 images de compréhension orale (WebP,
+  redessinées sans filigrane ; les documents de lecture en image ont été retranscrits en texte) sont dans notre propre
   stockage Supabase, bucket public `tcf` (`audio/…`, `images/…`) : plus rien n’est chargé
   depuis le site du vendeur. `NEXT_PUBLIC_MEDIA_BASE` permet de les déplacer ailleurs
   (voir `src/lib/media.ts`).
