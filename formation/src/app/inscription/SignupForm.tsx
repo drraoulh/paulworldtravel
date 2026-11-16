@@ -9,6 +9,7 @@ import { formatPrice, freeSeriesFirstTo, packDuration, packs, objectifs, type Zo
 import { getSupabase } from '@/lib/supabase/client';
 import { useSignedIn } from '@/components/ai/useSignedIn';
 import ChoosePack from './ChoosePack';
+import { PasswordInput } from '@/components/PasswordInput';
 
 const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'Je ne sais pas'];
 
@@ -188,11 +189,11 @@ export default function SignupForm({ zone }: { zone: Zone }) {
             <label className="block">
               <span className="font-semibold text-night">Mot de passe</span>
               <span className="text-slate"> (8 caractères minimum)</span>
-              <input type="password" name="password" value={form.password} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
+              <PasswordInput name="password" value={form.password} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
             </label>
             <label className="block">
               <span className="font-semibold text-night">Confirmer le mot de passe</span>
-              <input type="password" name="password2" value={form.password2} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
+              <PasswordInput name="password2" value={form.password2} onChange={set} required minLength={8} autoComplete="new-password" className={inputCls} />
             </label>
             <p className="text-sm text-slate sm:col-span-2">Ce mot de passe vous servira à vous connecter à votre espace candidat.</p>
           </>
