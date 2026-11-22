@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { writingTasks, wordCount, type WritingTask } from '@/content/expression';
 import type { Feedback } from '@/lib/ai/prompts';
 import FeedbackView from '@/components/ai/FeedbackView';
@@ -13,11 +13,13 @@ import { isCombinaison, parseCombiTaskId, toWritingTask, type Combinaison } from
 import { getSupabase } from '@/lib/supabase/client';
 import TrialBanner from '@/components/access/TrialBanner';
 import { refreshAccess } from '@/components/access/useAccess';
+import SubjectPicker, { ChangeSubject } from './SubjectPicker';
 
 const DRAFT_KEY = 'pwt-ee-draft';
 
 export default function WritingPractice() {
   const signedIn = useSignedIn();
+  const workArea = useRef<HTMLDivElement>(null);
   const [task, setTask] = useState<WritingTask>(writingTasks[0]);
   // Task from a candidates' combination, shown above the regular subjects.
   const [extra, setExtra] = useState<WritingTask | null>(null);
@@ -38,6 +40,7 @@ export default function WritingPractice() {
     const savedText = typeof saved?.text === 'string' ? saved.text : '';
     const asked = writingTasks.find((x) => x.id === new URLSearchParams(window.location.search).get('sujet'));
     const chosen = asked ?? savedTask;
+    if (asked) requestAnimationFrame(() => workArea.current?.scrollIntoView({ block: 'start' }));
     if (chosen) {
       setTask(chosen);
       setText(chosen.id === savedTask?.id ? savedText : '');
@@ -85,32 +88,26 @@ export default function WritingPractice() {
   return (
     <div className="space-y-8">
       <TrialBanner feature="writing" />
-      <fieldset>
-        <legend className="heading mb-3 text-lg text-night">Choisissez un sujet</legend>
-        {extra && (
-          <label className={`mb-5 block cursor-pointer rounded-2xl border-2 bg-white p-4 ${extra.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'}`}>
-            <input type="radio" name="task" className="sr-only" checked={extra.id === task.id} onChange={() => { setTask(extra); setFeedback(null); }} />
+      <SubjectPicker
+        subjects={writingTasks}
+        selected={task}
+        onSelect={(t) => { setTask(t); setFeedback(null); }}
+        workArea={workArea}
+        describeTask={(n) => ({ 1: 'Un message, 60 à 120 mots', 2: 'Un récit, 120 à 150 mots', 3: 'Un texte argumenté, 120 à 180 mots' })[n]}
+        extra={extra && (
+          <label className={`mb-4 block cursor-pointer rounded-2xl border-2 bg-white p-4 ${extra.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'}`}>
+            <input type="radio" name="subject" className="sr-only" checked={extra.id === task.id} onChange={() => { setTask(extra); setFeedback(null); }} />
             <span className="block text-sm font-bold text-night">Combinaison des candidats : {extra.title}</span>
             <span className="mt-1 line-clamp-2 block text-sm text-slate">{extra.prompt}</span>
           </label>
         )}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {([1, 2, 3] as const).map((n) => (
-            <div key={n} className="space-y-3">
-              <p className="text-sm font-bold text-night">Tâche {n}</p>
-              {writingTasks.filter((t) => t.task === n).map((t) => (
-                <label key={t.id} className={`block cursor-pointer rounded-2xl border-2 bg-white p-4 ${t.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'}`}>
-                  <input type="radio" name="task" className="sr-only" checked={t.id === task.id} onChange={() => { setTask(t); setFeedback(null); }} />
-                  <span className="line-clamp-3 block text-sm text-slate">{t.prompt}</span>
-                </label>
-              ))}
-            </div>
-          ))}
-        </div>
-      </fieldset>
+      />
 
-      <div className="rounded-2xl border border-rule bg-white p-6 sm:p-8">
-        <p className="text-sm font-bold text-ocean">{task.title}, {task.minWords} à {task.maxWords} mots, environ {task.minutes} min</p>
+      <div ref={workArea} className="scroll-mt-24 rounded-2xl border border-rule bg-white p-6 sm:p-8">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <p className="text-sm font-bold text-ocean">{task.title}, {task.minWords} à {task.maxWords} mots, environ {task.minutes} min</p>
+          <ChangeSubject />
+        </div>
         <p className="mt-3 text-lg text-ink">{task.prompt}</p>
         {task.documents && (
           <div className="mt-4 space-y-2">{task.documents.map((d) => <blockquote key={d} className="border-l-4 border-sky bg-paper p-4 text-sm">{d}</blockquote>)}</div>
