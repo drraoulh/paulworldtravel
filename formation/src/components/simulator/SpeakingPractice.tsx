@@ -9,6 +9,7 @@ import MonologuePractice from './MonologuePractice';
 import InteractionPractice from './InteractionPractice';
 import TrialBanner from '@/components/access/TrialBanner';
 import SubjectPicker, { ChangeSubject } from './SubjectPicker';
+import MicTest from './MicTest';
 
 const duration = (t: SpeakingTask) =>
   t.prepSeconds ? `${fmt(t.prepSeconds)} de préparation, puis ${fmt(t.seconds)} d’échange` : `${fmt(t.seconds)} de parole, sans préparation`;
@@ -50,6 +51,7 @@ export default function SpeakingPractice() {
         <p className="mt-3 text-lg text-ink">{task.prompt}</p>
         <ul className="mt-4 space-y-1 text-sm text-slate">{task.tips.map((t) => <li key={t}>• {t}</li>)}</ul>
         {signedIn === false && <div className="mt-6"><SignInPrompt next="/epreuve/expression-orale/simulateur/" /></div>}
+        {signedIn && <MicTest />}
         {signedIn && (task.mode === 'interaction'
           ? <InteractionPractice key={task.id} task={task} onBusy={setBusy} />
           : <MonologuePractice key={task.id} task={task} onBusy={setBusy} />)}

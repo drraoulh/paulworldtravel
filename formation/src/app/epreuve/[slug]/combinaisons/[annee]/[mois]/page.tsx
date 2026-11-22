@@ -126,7 +126,7 @@ export default async function MoisPage({ params }: Props) {
               <div className="p-6 sm:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className="text-sm text-slate">{c.content.source === 'licence' ? 'Sujets de session, avec corrigés' : c.content.source === 'candidats' ? 'Rapportée par des candidats, reformulée par l’équipe' : 'Tâche 1 rapportée par des candidats, tâches 2 et 3 proposées par l’équipe'}</span>
-                  <Link href={`/epreuve/${e.slug}/simulateur/?sujet=${encodeURIComponent(combiTaskId(c.id, 1))}`} className="rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-800">Commencer au simulateur</Link>
+                  <Link href={`/epreuve/${e.slug}/combinaisons/simulation/${encodeURIComponent(c.id)}/`} className="rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-800">Simuler l’examen (60 min)</Link>
                 </div>
                 <ol className="mt-5 space-y-6">
                   {c.content.tasks.map((t, k) => {
