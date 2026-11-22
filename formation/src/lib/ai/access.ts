@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { effectiveStatus } from '@/lib/enrollment';
 import { FREE_TRIAL, packs } from '@/content/offers';
+import { setUsageUser } from './usage';
 import { TranscriptionError } from './huggingface';
 
 export type Feature = 'writing' | 'speaking' | 'tutor' | 'generate';
@@ -26,6 +27,7 @@ export async function accountAccess() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new AccessError(401, 'Connectez-vous pour utiliser cette fonction.');
+  setUsageUser(user.id);
   const admin = createAdminClient();
   if (!admin) throw new AccessError(503, 'Cette fonction n’est pas encore activée.');
 

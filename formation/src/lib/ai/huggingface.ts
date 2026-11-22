@@ -2,6 +2,7 @@
 // Hugging Face (HF_TOKEN) as fallback. The OpenRouter path is kept but not used.
 
 import { chat, MODELS } from './openrouter';
+import { noteAiCall } from './usage';
 
 export const transcriptionConfigured = () => Boolean(process.env.OPENAI_API_KEY || process.env.HF_TOKEN);
 
@@ -32,6 +33,11 @@ async function viaOpenAI(audio: ArrayBuffer, contentType: string, withLanguage =
     throw new Error(`OpenAI ${res.status}: ${detail}`);
   }
   const data = await res.json();
+  const usage = data?.usage ?? {};
+  noteAiCall({
+    kind: 'transcription', model: process.env.OPENAI_MODEL_TRANSCRIPTION || 'gpt-transcribe',
+    input: usage.input_tokens ?? 0, output: usage.output_tokens ?? 0, audioSeconds: usage.seconds ?? 0,
+  });
   return String(data?.text ?? '').trim();
 }
 

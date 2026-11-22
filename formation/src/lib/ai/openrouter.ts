@@ -1,3 +1,5 @@
+import { noteAiCall } from './usage';
+
 // Server-side AI adapter. OpenAI is used when its key is set; existing OpenRouter installations remain supported.
 
 const URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -37,6 +39,7 @@ export async function chat(model: string, messages: ChatMessage[], opts: { json?
   });
   if (!res.ok) throw new Error(`${direct ? 'OpenAI' : 'OpenRouter'} request failed (${res.status})`);
   const data = await res.json();
+  noteAiCall({ kind: 'chat', model: String(data?.model ?? model), input: data?.usage?.prompt_tokens ?? 0, output: data?.usage?.completion_tokens ?? 0, audioSeconds: 0 });
   const text: string = data?.choices?.[0]?.message?.content ?? '';
   if (!text) throw new Error('AI provider returned an empty answer');
   return text;

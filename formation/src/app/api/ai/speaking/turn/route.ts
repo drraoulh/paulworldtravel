@@ -1,11 +1,12 @@
 import { speakingTasks } from '@/content/expression';
 import { findMockSpeakingTask } from '@/content/mock-exam';
-import { errorResponse } from '@/lib/ai/access';
+import { AccessError, errorResponse } from '@/lib/ai/access';
 import { MAX_TURNS, parseTurns, verifyTicket } from '@/lib/ai/interaction';
 import { runExamOperation } from '@/lib/ai/exams';
 import { transcribe } from '@/lib/ai/huggingface';
 import { chat, MODELS } from '@/lib/ai/openrouter';
 import { partnerPrompt } from '@/lib/ai/prompts';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -13,7 +14,7 @@ export const maxDuration = 60;
 const MAX_BYTES = 1.5 * 1024 * 1024;
 
 /** One turn of the interaction: transcribes the candidate, then the AI partner answers. */
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     const form = await request.formData();
     const task = [...speakingTasks, findMockSpeakingTask(form.get('taskId'))].find((t) => t && t.id === form.get('taskId') && t.mode === 'interaction');
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
     const respond = async () => {
       const transcript = (await transcribe(await audio.arrayBuffer(), audio.type.split(';')[0])).slice(0, 800);
       if (!transcript.split(/\s+/).filter(Boolean).length) {
-        throw new Error('Aucun son détecté.');
+        throw new AccessError(422, 'Nous n’avons rien entendu. Vérifiez que le bon micro est autorisé, parlez plus près de l’appareil, puis réessayez.');
       }
       if (form.get('final') === '1') return { transcript, reply: null };
 
@@ -44,3 +45,5 @@ export async function POST(request: Request) {
     return errorResponse(error);
   }
 }
+
+export const POST = (request: Request) => withUsage('dialogue', () => handle(request));

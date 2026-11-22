@@ -1,6 +1,7 @@
 import { checkAccess, errorResponse } from '@/lib/ai/access';
 import { aiConfigured, chat, MODELS, parseJson } from '@/lib/ai/openrouter';
 import { generationPrompt } from '@/lib/ai/prompts';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -9,7 +10,7 @@ type Item = { title: string; document: string; questions: { prompt: string; choi
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     if (!aiConfigured()) return Response.json({ error: 'La génération n’est pas encore activée.' }, { status: 503 });
     const body = await request.json().catch(() => ({}));
@@ -40,3 +41,5 @@ export async function POST(request: Request) {
     return errorResponse(error);
   }
 }
+
+export const POST = (request: Request) => withUsage('generate', () => handle(request));

@@ -15,6 +15,7 @@ const links: { href: string; label: string; icon: IconName }[] = [
   { href: '/admin/paiements/', label: 'Paiements', icon: 'wallet' },
   { href: '/admin/messages/', label: 'Emails groupés', icon: 'mail' },
   { href: '/admin/corrections/', label: 'Corrections', icon: 'check' },
+  { href: '/admin/ia/', label: 'Consommation IA', icon: 'sparkles' },
   { href: '/admin/generer/', label: 'Banque d’exercices', icon: 'sparkles' },
   { href: '/admin/combinaisons/', label: 'Sujets des candidats', icon: 'mic' },
   { href: '/admin/equipe/', label: 'Équipe', icon: 'shield' },

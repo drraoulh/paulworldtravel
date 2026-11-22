@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { safeRedirectPath } from '@/lib/redirect';
 import { getSupabase } from '@/lib/supabase/client';
+import { PasswordInput } from '@/components/PasswordInput';
 
 const inputCls = 'mt-1.5 w-full rounded-md border border-rule bg-white px-4 py-3 text-ink focus:border-ocean focus:outline-none';
 
@@ -75,7 +76,7 @@ export default function LoginForm({ next, inDialog = false }: { next?: string; i
       {mode === 'login' && (
         <label className="mt-5 block">
           <span className="font-semibold text-night">Mot de passe</span>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" className={inputCls} />
+          <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" className={inputCls} />
         </label>
       )}
       {message && (

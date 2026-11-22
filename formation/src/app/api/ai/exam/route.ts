@@ -3,9 +3,10 @@ import { errorResponse } from '@/lib/ai/access';
 import { aiConfigured } from '@/lib/ai/openrouter';
 import { transcriptionConfigured } from '@/lib/ai/huggingface';
 import { getSeries } from '@/content/series/catalog';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     if (!aiConfigured() || !transcriptionConfigured()) return Response.json({ error: 'Les corrections IA de l’examen blanc ne sont pas encore activées.' }, { status: 503 });
     const body = await request.json().catch(() => ({}));
@@ -15,3 +16,5 @@ export async function POST(request: Request) {
     return Response.json({ sessionId: session.id, expiresAt: session.expires_at });
   } catch (error) { return errorResponse(error); }
 }
+
+export const POST = (request: Request) => withUsage('exam', () => handle(request));
