@@ -6,13 +6,14 @@ import { transcribe, transcriptionConfigured } from '@/lib/ai/huggingface';
 import { aiConfigured, chat, MODELS, parseJson } from '@/lib/ai/openrouter';
 import { cleanFeedback, dialogueText, interactionPrompt, speakingPrompt } from '@/lib/ai/prompts';
 import { parseTurns, verifyTicket } from '@/lib/ai/interaction';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 const MAX_BYTES = 4 * 1024 * 1024;
 
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     if (!aiConfigured() || !transcriptionConfigured()) {
       return Response.json({ error: 'La correction de l’oral n’est pas encore activée.' }, { status: 503 });
@@ -85,3 +86,5 @@ async function gradeInteraction(request: Request) {
     ? await runExamOperation(access.examSessionId, 'speaking', task.id, correct)
     : await correct(access));
 }
+
+export const POST = (request: Request) => withUsage('speaking', () => handle(request));

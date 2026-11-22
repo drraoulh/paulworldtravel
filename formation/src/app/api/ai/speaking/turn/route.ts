@@ -6,6 +6,7 @@ import { runExamOperation } from '@/lib/ai/exams';
 import { transcribe } from '@/lib/ai/huggingface';
 import { chat, MODELS } from '@/lib/ai/openrouter';
 import { partnerPrompt } from '@/lib/ai/prompts';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -13,7 +14,7 @@ export const maxDuration = 60;
 const MAX_BYTES = 1.5 * 1024 * 1024;
 
 /** One turn of the interaction: transcribes the candidate, then the AI partner answers. */
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     const form = await request.formData();
     const task = [...speakingTasks, findMockSpeakingTask(form.get('taskId'))].find((t) => t && t.id === form.get('taskId') && t.mode === 'interaction');
@@ -44,3 +45,5 @@ export async function POST(request: Request) {
     return errorResponse(error);
   }
 }
+
+export const POST = (request: Request) => withUsage('dialogue', () => handle(request));

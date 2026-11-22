@@ -5,11 +5,12 @@ import { examAccess } from '@/lib/ai/exams';
 import { issueTicket } from '@/lib/ai/interaction';
 import { aiConfigured } from '@/lib/ai/openrouter';
 import { transcriptionConfigured } from '@/lib/ai/huggingface';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
 
 /** Starts an interaction (speaking task 2): charges one speaking correction. */
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     if (!aiConfigured() || !transcriptionConfigured()) {
       return Response.json({ error: 'La correction de l’oral n’est pas encore activée.' }, { status: 503 });
@@ -30,3 +31,5 @@ export async function POST(request: Request) {
     return errorResponse(error);
   }
 }
+
+export const POST = (request: Request) => withUsage('dialogue', () => handle(request));

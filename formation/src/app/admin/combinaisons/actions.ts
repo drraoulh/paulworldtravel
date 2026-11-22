@@ -6,6 +6,7 @@ import { reformulationPrompt } from '@/lib/ai/prompts';
 import type { CombiTask, CombinaisonContent, ReportContent } from '@/lib/combinaisons';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireStaff } from '@/lib/staff';
+import { withUsage } from '@/lib/ai/usage';
 
 const PATH = '/admin/combinaisons/';
 const str = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max);
@@ -26,7 +27,7 @@ export async function reformulate(form: FormData) {
   const r = report?.content as ReportContent | undefined;
   if (!r || r.kind !== 'report') return;
 
-  const answer = await chat(MODELS.grading(), reformulationPrompt(r.tasks, r.notes), { json: true, maxTokens: 3500, temperature: 0.7 });
+  const answer = await withUsage('combinaisons', () => chat(MODELS.grading(), reformulationPrompt(r.tasks, r.notes), { json: true, maxTokens: 3500, temperature: 0.7 }), user.id);
   const out = parseJson<{ theme?: string; tasks?: Partial<CombiTask>[] }>(answer);
   const tasks = [0, 1, 2].map((i) => {
     const t = out.tasks?.[i] ?? {};

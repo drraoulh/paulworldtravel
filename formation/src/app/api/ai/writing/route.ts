@@ -5,11 +5,12 @@ import { checkAccess, errorResponse } from '@/lib/ai/access';
 import { runExamOperation, type CorrectionAccess } from '@/lib/ai/exams';
 import { aiConfigured, chat, MODELS, parseJson } from '@/lib/ai/openrouter';
 import { cleanFeedback, writingPrompt } from '@/lib/ai/prompts';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     if (!aiConfigured()) return Response.json({ error: 'La correction automatique n’est pas encore activée.' }, { status: 503 });
     const body = await request.json().catch(() => ({}));
@@ -49,3 +50,5 @@ export async function POST(request: Request) {
     return errorResponse(error);
   }
 }
+
+export const POST = (request: Request) => withUsage('writing', () => handle(request));

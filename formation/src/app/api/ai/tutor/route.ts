@@ -1,11 +1,12 @@
 import { checkAccess, errorResponse } from '@/lib/ai/access';
 import { aiConfigured, chat, MODELS, type ChatMessage } from '@/lib/ai/openrouter';
 import { TUTOR_SYSTEM } from '@/lib/ai/prompts';
+import { withUsage } from '@/lib/ai/usage';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-export async function POST(request: Request) {
+async function handle(request: Request) {
   try {
     if (!aiConfigured()) return Response.json({ error: 'Le tuteur n’est pas encore activé.' }, { status: 503 });
     const body = await request.json().catch(() => ({}));
@@ -25,3 +26,5 @@ export async function POST(request: Request) {
     return errorResponse(error);
   }
 }
+
+export const POST = (request: Request) => withUsage('tutor', () => handle(request));
