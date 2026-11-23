@@ -21,11 +21,17 @@ export default function MonologuePractice({ task, onBusy, examSessionId, initial
   const [result, setResult] = useState<{ transcript: string; feedback: Feedback } | null>(initialResult ?? null);
   const [quota, setQuota] = useState<{ remaining: number | null; plan: string | null }>({ remaining: null, plan: null });
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  // A second click right after a start or stop (double click) is ignored.
+  const lastToggle = useRef(0);
+  const tooSoon = () => { const now = Date.now(); if (now - lastToggle.current < 1200) return true; lastToggle.current = now; return false; };
+  const sending = useRef(false);
 
   useEffect(() => { onBusy(phase === 'recording' || phase === 'sending'); }, [phase, onBusy]);
   useEffect(() => () => { if (timer.current) clearInterval(timer.current); }, []);
 
-  const stop = async () => {
+  const stop = async (auto = false) => {
+    if (!auto && tooSoon()) return;
+    lastToggle.current = Date.now();
     if (timer.current) clearInterval(timer.current);
     const recording = await rec.stop();
     if (!recording) return;
@@ -34,6 +40,9 @@ export default function MonologuePractice({ task, onBusy, examSessionId, initial
   };
 
   const start = async () => {
+    if (tooSoon()) return;
+    // Never lose a recording by accident.
+    if (audio && !confirm(`Effacer votre enregistrement de ${fmt(audio.seconds)} et recommencer ?`)) return;
     setError('');
     setResult(null);
     if (audio) URL.revokeObjectURL(audio.url);
@@ -49,12 +58,13 @@ export default function MonologuePractice({ task, onBusy, examSessionId, initial
     timer.current = setInterval(() => {
       const s = rec.elapsed();
       setElapsed(s);
-      if (s >= task.seconds) stop();
+      if (s >= task.seconds) stop(true);
     }, 250);
   };
 
   const send = async () => {
-    if (!audio) return;
+    if (!audio || sending.current) return;
+    sending.current = true;
     setPhase('sending');
     setError('');
     try {
@@ -78,6 +88,7 @@ export default function MonologuePractice({ task, onBusy, examSessionId, initial
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La correction a échoué.');
     }
+    sending.current = false;
     setPhase('recorded');
   };
 
@@ -85,13 +96,13 @@ export default function MonologuePractice({ task, onBusy, examSessionId, initial
     <>
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-4">
-          {phase !== 'recording' ? (
-            <button onClick={start} disabled={phase === 'sending' || Boolean(examSessionId && result)} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
-              <span className="h-3 w-3 rounded-full bg-white" aria-hidden="true" /> {audio ? 'Recommencer l’enregistrement' : 'Commencer l’enregistrement'}
-            </button>
-          ) : (
-            <button onClick={stop} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
+          {phase === 'recording' ? (
+            <button onClick={() => stop()} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
               <span className="h-3 w-3 bg-white" aria-hidden="true" /> Arrêter
+            </button>
+          ) : !audio && (
+            <button onClick={start} disabled={phase === 'sending' || Boolean(examSessionId && result)} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
+              <span className="h-3 w-3 rounded-full bg-white" aria-hidden="true" /> Commencer l’enregistrement
             </button>
           )}
           <span className="font-mono text-lg text-night" aria-live="polite">{fmt(phase === 'recording' ? elapsed : audio?.seconds ?? 0)} / {fmt(task.seconds)}</span>
@@ -104,11 +115,14 @@ export default function MonologuePractice({ task, onBusy, examSessionId, initial
           <>
             <audio controls src={audio.url} className="w-full max-w-md" />
             <div className="flex flex-wrap items-center gap-4">
-              <button onClick={send} disabled={phase === 'sending' || Boolean(examSessionId && result)} className="inline-flex items-center justify-center rounded-full bg-container px-6 py-3.5 font-bold text-night hover:bg-container-hover disabled:opacity-50">
+              <button onClick={send} disabled={phase === 'sending' || Boolean(examSessionId && result)} className="inline-flex items-center justify-center rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean disabled:opacity-50">
                 {phase === 'sending' ? 'Transcription et correction (1 min environ)…' : 'Faire corriger mon oral'}
               </button>
               <Quota remaining={quota.remaining} plan={quota.plan} unit="correction" />
             </div>
+            <button onClick={start} disabled={phase === 'sending' || Boolean(examSessionId && result)} className="self-start text-sm font-semibold text-slate underline underline-offset-4 hover:text-maple disabled:opacity-50">
+              Effacer et recommencer l’enregistrement
+            </button>
           </>
         )}
       </div>

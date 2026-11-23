@@ -153,7 +153,11 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
     else { phaseRef.current = 'prep'; startDialog(); }
   };
 
+  // A double click on « Parler » must not send an empty reply at once.
+  const talkedAt = useRef(0);
   const talk = async () => {
+    if (Date.now() - talkedAt.current < 1200) return;
+    talkedAt.current = Date.now();
     setError('');
     hush();
     try {
@@ -265,7 +269,7 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
                   <span className="h-3 w-3 rounded-full bg-white" aria-hidden="true" /> Parler
                 </button>
               ) : (
-                <button onClick={() => sendTurn(false)} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
+                <button onClick={() => { if (Date.now() - talkedAt.current >= 1200) sendTurn(false); }} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
                   <span className="h-3 w-3 bg-white" aria-hidden="true" /> Envoyer ma réplique
                 </button>
               )}

@@ -1,5 +1,6 @@
 import { speakingTasks } from '@/content/expression';
 import { findMockSpeakingTask } from '@/content/mock-exam';
+import { findSessionSpeakingTask } from '@/content/sujets-oraux';
 import { checkAccess, errorResponse, AccessError } from '@/lib/ai/access';
 import { runExamOperation, type CorrectionAccess } from '@/lib/ai/exams';
 import { transcribe, transcriptionConfigured } from '@/lib/ai/huggingface';
@@ -20,7 +21,7 @@ async function handle(request: Request) {
     }
     if (request.headers.get('content-type')?.includes('application/json')) return await gradeInteraction(request);
     const form = await request.formData();
-    const task = [...speakingTasks, findMockSpeakingTask(form.get('taskId'))].find((t) => t && t.id === form.get('taskId') && t.mode === 'monologue');
+    const task = [...speakingTasks, findMockSpeakingTask(form.get('taskId')), findSessionSpeakingTask(form.get('taskId'))].find((t) => t && t.id === form.get('taskId') && t.mode === 'monologue');
     const audio = form.get('audio');
     const seconds = Math.max(0, Math.min(600, Math.round(Number(form.get('seconds')) || 0)));
     if (!task) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });
@@ -59,7 +60,7 @@ async function handle(request: Request) {
 /** Grades a finished interaction (task 2). Already charged when it started. */
 async function gradeInteraction(request: Request) {
   const body = await request.json().catch(() => ({}));
-  const task = [...speakingTasks, findMockSpeakingTask(body.taskId)].find((t) => t && t.id === body.taskId && t.mode === 'interaction');
+  const task = [...speakingTasks, findMockSpeakingTask(body.taskId), findSessionSpeakingTask(body.taskId)].find((t) => t && t.id === body.taskId && t.mode === 'interaction');
   if (!task) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });
   const access = await verifyTicket(body.ticket, task.id);
   const turns = parseTurns(body.turns);
