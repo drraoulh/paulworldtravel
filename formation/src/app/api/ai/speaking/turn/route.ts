@@ -1,5 +1,6 @@
 import { speakingTasks } from '@/content/expression';
 import { findMockSpeakingTask } from '@/content/mock-exam';
+import { findSessionSpeakingTask } from '@/content/sujets-oraux';
 import { AccessError, errorResponse } from '@/lib/ai/access';
 import { MAX_TURNS, parseTurns, verifyTicket } from '@/lib/ai/interaction';
 import { runExamOperation } from '@/lib/ai/exams';
@@ -17,7 +18,7 @@ const MAX_BYTES = 1.5 * 1024 * 1024;
 async function handle(request: Request) {
   try {
     const form = await request.formData();
-    const task = [...speakingTasks, findMockSpeakingTask(form.get('taskId'))].find((t) => t && t.id === form.get('taskId') && t.mode === 'interaction');
+    const task = [...speakingTasks, findMockSpeakingTask(form.get('taskId')), findSessionSpeakingTask(form.get('taskId'))].find((t) => t && t.id === form.get('taskId') && t.mode === 'interaction');
     if (!task?.partner) return Response.json({ error: 'Sujet inconnu.' }, { status: 422 });
     const access = await verifyTicket(form.get('ticket'), task.id);
 

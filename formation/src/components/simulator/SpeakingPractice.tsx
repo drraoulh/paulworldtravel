@@ -14,21 +14,22 @@ import MicTest from './MicTest';
 const duration = (t: SpeakingTask) =>
   t.prepSeconds ? `${fmt(t.prepSeconds)} de préparation, puis ${fmt(t.seconds)} d’échange` : `${fmt(t.seconds)} de parole, sans préparation`;
 
-export default function SpeakingPractice() {
+export default function SpeakingPractice({ sessionTask }: { sessionTask?: SpeakingTask }) {
   const signedIn = useSignedIn();
   const workArea = useRef<HTMLDivElement>(null);
-  const [task, setTask] = useState<SpeakingTask>(speakingTasks[0]);
+  const [task, setTask] = useState<SpeakingTask>(sessionTask ?? speakingTasks[0]);
   const [busy, setBusy] = useState(false);
 
   // A subject chosen from the "Sujets et corrigés" page.
   useEffect(() => {
-    const asked = speakingTasks.find((t) => t.id === new URLSearchParams(window.location.search).get('sujet'));
+    const id = new URLSearchParams(window.location.search).get('sujet');
+    const asked = sessionTask?.id === id ? sessionTask : speakingTasks.find((t) => t.id === id);
     if (asked) {
       setTask(asked);
       // Coming from a subject page: open straight on the work area.
       requestAnimationFrame(() => workArea.current?.scrollIntoView({ block: 'start' }));
     }
-  }, []);
+  }, [sessionTask]);
 
   return (
     <div className="space-y-8">
@@ -41,6 +42,13 @@ export default function SpeakingPractice() {
         disabled={busy}
         describeTask={(n) => ({ 1: 'Entretien dirigé, 2 min', 2: 'Obtenir des informations, avec l’IA', 3: 'Exprimer un point de vue' })[n]}
         meta={duration}
+        extra={sessionTask && (
+          <label className={`mb-4 block cursor-pointer rounded-2xl border-2 bg-white p-4 ${sessionTask.id === task.id ? 'border-ocean' : 'border-rule hover:border-ocean/50'}`}>
+            <input type="radio" name="subject" className="sr-only" checked={sessionTask.id === task.id} disabled={busy} onChange={() => setTask(sessionTask)} />
+            <span className="block text-sm font-bold text-night">Sujet de session : {sessionTask.title}</span>
+            <span className="mt-1 line-clamp-2 block text-sm text-slate">{sessionTask.prompt}</span>
+          </label>
+        )}
       />
 
       <div ref={workArea} className="scroll-mt-24 rounded-2xl border border-rule bg-white p-6 sm:p-8">
