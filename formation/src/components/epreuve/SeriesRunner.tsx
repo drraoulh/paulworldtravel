@@ -133,6 +133,39 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
   const pick = (choice: number) => setAnswers((a) => a.map((v, i) => (i === index ? choice : v)));
   const check = () => setChecked((c) => c.map((v, i) => (i === index ? true : v)));
 
+  // Keyboard: Enter does what the main button does (Vérifier, Suivant, Voir mon résultat),
+  // once an answer is chosen. Refreshed on every render so it always sees the current question.
+  const onEnter = useRef<() => void>(() => {});
+  onEnter.current = () => {
+    if (!mode || done || answers[index] === null) return;
+    const isExam = mode === 'exam';
+    if (!isExam && !checked[index]) return check();
+    if (index === questions.length - 1) return finish();
+    if (isExam && isCo && listen === 'playing') return;
+    go(index + 1);
+  };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' || e.repeat || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.isComposing) return;
+      const t = e.target as HTMLElement | null;
+      // Leave Enter alone where it already means something: buttons, links, text fields, the tutor.
+      if (t?.closest('button, a, textarea, select, [contenteditable="true"], dialog[open]')) return;
+      if (t instanceof HTMLInputElement && t.type !== 'radio') return;
+      e.preventDefault();
+      onEnter.current();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // While the questions are on screen, the floating « Besoin d’aide ? » button stays out of the
+  // way of « Suivant » (globals.css, html[data-series-running]).
+  useEffect(() => {
+    if (!mode || done) return;
+    document.documentElement.dataset.seriesRunning = '';
+    return () => { delete document.documentElement.dataset.seriesRunning; };
+  }, [mode, done]);
+
   if (!mode) {
     return (
       <div>
@@ -373,15 +406,15 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
             </span>
             <span className="ml-auto flex gap-3">
               {!exam && !isChecked && (
-                <button onClick={check} disabled={chosen === null} className="rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean disabled:opacity-50">Vérifier</button>
+                <button onClick={check} disabled={chosen === null} className="rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean disabled:opacity-50">Vérifier<kbd className="ml-2 hidden rounded border border-white/40 px-1.5 py-0.5 text-xs font-semibold lg:inline">Entrée</kbd></button>
               )}
               {(exam || isChecked) && !last && (
                 <button onClick={() => go(index + 1)} disabled={exam && isCo && listen === 'playing'} className="rounded-full bg-ocean px-6 py-3 font-bold text-white hover:bg-night disabled:opacity-50">
-                  Suivant
+                  Suivant<kbd className="ml-2 hidden rounded border border-white/40 px-1.5 py-0.5 text-xs font-semibold lg:inline">Entrée</kbd>
                 </button>
               )}
               {last && (exam || isChecked) && (
-                <button onClick={finish} className="rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">Voir mon résultat</button>
+                <button onClick={finish} className="rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">Voir mon résultat<kbd className="ml-2 hidden rounded border border-night/30 px-1.5 py-0.5 text-xs font-semibold lg:inline">Entrée</kbd></button>
               )}
             </span>
           </div>
