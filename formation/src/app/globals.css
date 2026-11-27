@@ -37,8 +37,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: radial-gradient(1200px 600px at 85% -10%, #e4edff 0%, transparent 60%), var(--paper);
-  background-attachment: fixed;
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-atkinson), system-ui, sans-serif;
   line-height: 1.6;
@@ -49,14 +48,14 @@ body {
 .display {
   font-family: var(--font-atkinson), system-ui, sans-serif;
   font-optical-sizing: auto;
-  font-weight: 750;
-  letter-spacing: -0.018em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   line-height: 1.08;
 }
 .heading {
   font-family: var(--font-atkinson), system-ui, sans-serif;
   font-optical-sizing: auto;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.22;
 }
@@ -68,9 +67,9 @@ body {
   line-height: 1.75;
 }
 
-/* A pale accent marks the current topic without competing with primary actions. */
+/* Signature: the examiner's highlighter, under the one figure that matters (the NCLC reached). */
 .marked {
-  background-image: linear-gradient(transparent 58%, var(--container) 58%, var(--container) 92%, transparent 92%);
+  background-image: linear-gradient(transparent 58%, #ffd84a 58%, #ffd84a 92%, transparent 92%);
 }
 
 :focus-visible { outline: 3px solid var(--ocean); outline-offset: 2px; border-radius: 4px; }

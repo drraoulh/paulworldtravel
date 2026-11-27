@@ -23,11 +23,11 @@ export default function SeriesList({ epreuve, slug, series }: { epreuve: 'ce' | 
       {series.map((s) => {
         const r = results[seriesKey(epreuve, s.number)];
         return (
-          <Link key={s.number} href={`/epreuve/${slug}/series/${s.number}/`} className={`group flex flex-col rounded-3xl p-6 shadow-[0_8px_30px_rgba(20,33,61,.08)] ring-1 transition hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(20,33,61,.14)] hover:ring-ocean ${locked(s.number) ? 'bg-white/70 ring-rule' : 'bg-white ring-rule'}`}>
+          <Link key={s.number} href={`/epreuve/${slug}/series/${s.number}/`} className={`group flex flex-col rounded-2xl border p-5 transition-colors hover:border-ocean/50 ${locked(s.number) ? 'border-rule bg-white/60' : 'border-rule bg-white'}`}>
             <span className="flex items-center justify-between gap-3">
               <span className="flex items-center gap-3">
-                <span className={`display flex h-12 w-12 items-center justify-center rounded-2xl text-xl ${r ? 'bg-gradient-to-br from-ocean to-night text-white' : 'bg-blue-50 text-ocean'}`}>{s.number}</span>
-                <span className="heading text-xl text-night group-hover:text-ocean">Série {s.number}</span>
+                <span className={`display flex h-10 w-10 items-center justify-center rounded-lg text-lg ${r ? 'bg-ocean text-white' : 'bg-paper text-night'}`}>{s.number}</span>
+                <span className="heading text-lg text-night group-hover:text-ocean">Série {s.number}</span>
               </span>
               {s.number <= FREE_SERIES
                 ? !unlocked && <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-800">Gratuit</span>
@@ -38,14 +38,14 @@ export default function SeriesList({ epreuve, slug, series }: { epreuve: 'ce' | 
               {r
                 ? <>
                   <span className="flex flex-wrap items-center gap-2">
-                    {r.last.tcf && <span className="rounded-full bg-ocean px-3 py-1 font-bold text-white">{r.last.tcf} / 699</span>}
-                    {r.last.tcf && <span className="rounded-full bg-container px-3 py-1 font-bold text-night">{nclcLabel(nclcFor(epreuve, r.last.tcf))}</span>}
+                    {r.last.tcf && <span className="font-semibold tabular-nums text-night">{r.last.tcf} / 699</span>}
+                    {r.last.tcf && <span className="marked font-semibold text-night">{nclcLabel(nclcFor(epreuve, r.last.tcf))}</span>}
                   </span>
                   <span className="mt-2 block text-slate">Meilleur : {r.best} / {r.last.total} · {r.attempts} tentative{r.attempts > 1 ? 's' : ''} · {new Date(r.last.date).toLocaleDateString('fr-CA')}</span>
                 </>
-                : <span className="text-slate">Pas encore commencée</span>}
+                : null}
             </span>
-            <span className={`mt-5 inline-flex items-center justify-center gap-2 self-start rounded-xl px-4 py-2.5 text-sm font-bold transition ${locked(s.number) ? 'border-2 border-ocean bg-white text-ocean group-hover:bg-ocean group-hover:text-white' : 'bg-ocean text-white group-hover:bg-night'}`}>{locked(s.number) ? 'Débloquer avec un pack' : r ? 'Refaire la série' : s.number <= FREE_SERIES && !unlocked ? 'Commencer gratuitement' : 'Commencer'}</span>
+            <span className={`mt-4 inline-flex items-center gap-1 self-start text-sm font-semibold ${locked(s.number) ? 'text-slate' : 'text-ocean'}`}>{locked(s.number) ? 'Débloquer avec un pack' : r ? 'Refaire la série' : s.number <= FREE_SERIES && !unlocked ? 'Commencer gratuitement' : 'Commencer'}</span>
           </Link>
         );
       })}
