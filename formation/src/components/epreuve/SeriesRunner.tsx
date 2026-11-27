@@ -406,15 +406,15 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
             </span>
             <span className="ml-auto flex gap-3">
               {!exam && !isChecked && (
-                <button onClick={check} disabled={chosen === null} className="rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean disabled:opacity-50">Vérifier<kbd className="ml-2 hidden rounded border border-white/40 px-1.5 py-0.5 text-xs font-semibold lg:inline">Entrée</kbd></button>
+                <button onClick={check} disabled={chosen === null} className="rounded-full bg-night px-6 py-3 font-bold text-white hover:bg-ocean disabled:opacity-50">Vérifier</button>
               )}
               {(exam || isChecked) && !last && (
                 <button onClick={() => go(index + 1)} disabled={exam && isCo && listen === 'playing'} className="rounded-full bg-ocean px-6 py-3 font-bold text-white hover:bg-night disabled:opacity-50">
-                  Suivant<kbd className="ml-2 hidden rounded border border-white/40 px-1.5 py-0.5 text-xs font-semibold lg:inline">Entrée</kbd>
+                  Suivant
                 </button>
               )}
               {last && (exam || isChecked) && (
-                <button onClick={finish} className="rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">Voir mon résultat<kbd className="ml-2 hidden rounded border border-night/30 px-1.5 py-0.5 text-xs font-semibold lg:inline">Entrée</kbd></button>
+                <button onClick={finish} className="rounded-full bg-container px-6 py-3 font-bold text-night hover:bg-container-hover">Voir mon résultat</button>
               )}
             </span>
           </div>
