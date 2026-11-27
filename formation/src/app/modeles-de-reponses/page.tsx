@@ -32,7 +32,7 @@ function Groups({ groups, columns = 'sm:grid-cols-2 lg:grid-cols-3' }: { groups:
     <div className={`grid gap-4 ${columns}`}>
       {groups.map((g) => (
         <div key={g.title} className="rounded-xl border border-rule bg-paper p-4 print:break-inside-avoid print:border-slate/40 print:bg-white">
-          <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">{g.title}</h4>
+          <h4 className="text-sm font-bold text-ocean">{g.title}</h4>
           <ul className="mt-2 space-y-1 text-[0.95rem] text-ink">
             {g.items.map((item) => <li key={item}>{item}</li>)}
           </ul>

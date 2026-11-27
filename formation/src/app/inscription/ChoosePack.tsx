@@ -48,14 +48,14 @@ export default function ChoosePack({ initialPack, zone }: { initialPack: string;
           {packs.map((p) => {
             const on = pack === p.id;
             return (
-              <label key={p.id} className={`group relative cursor-pointer overflow-hidden rounded-xl border-2 bg-white transition hover:-translate-y-0.5 hover:shadow-md ${on ? 'border-ocean shadow-md' : 'border-rule'}`}>
+              <label key={p.id} className={`group relative cursor-pointer overflow-hidden rounded-xl border-2 bg-white transition hover:shadow-md ${on ? 'border-ocean shadow-md' : 'border-rule'}`}>
                 <input type="radio" name="pack" className="sr-only" checked={on} onChange={() => setPack(p.id)} />
                 <span className={`flex items-center justify-between px-4 py-2.5 text-sm font-bold ${tier[p.id].band} ${tier[p.id].text}`}>
                   {p.name}
                   {p.featured && <span className="rounded-full bg-night px-2 py-0.5 text-[10px] text-[#ffd84a]">Recommandé</span>}
                 </span>
                 <span className="block px-4 py-3">
-                  <span className="block text-xl font-extrabold text-night">{formatPrice(p, zone)}</span>
+                  <span className="block text-xl font-semibold text-night">{formatPrice(p, zone)}</span>
                   <span className="block text-sm text-slate">{packDuration(p)} d’accès</span>
                 </span>
                 <span aria-hidden="true" className={`absolute bottom-3 right-3 grid h-6 w-6 place-items-center rounded-full border-2 text-xs font-bold ${on ? 'border-ocean bg-ocean text-white' : 'border-rule text-transparent'}`}>✓</span>

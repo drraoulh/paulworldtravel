@@ -33,11 +33,11 @@ export default async function MoisPage({ params }: Props) {
           <Link href={`/epreuve/${e.slug}/combinaisons/`} className="font-bold text-ocean underline decoration-ocean/30 decoration-2 underline-offset-4 hover:decoration-ocean">Tous les mois</Link>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { href: `/epreuve/${e.slug}/methodologie/`, label: 'Méthodologie', cls: 'bg-container text-night hover:bg-container-hover' },
-              { href: '/parcours/', label: 'Formation', cls: 'bg-ocean text-white hover:bg-night' },
-              { href: `/epreuve/${e.slug}/simulateur/`, label: 'Simulateur', cls: 'bg-emerald-700 text-white hover:bg-emerald-800' },
-              { href: `/epreuve/${e.slug}/sujets/`, label: 'Modèles de réponses', cls: 'bg-maple text-white hover:bg-red-800' },
-            ].map((b) => <Link key={b.label} href={b.href} className={`flex min-h-14 items-center justify-center rounded-2xl px-4 py-3 text-center font-bold ${b.cls}`}>{b.label}</Link>)}
+              { href: `/epreuve/${e.slug}/methodologie/`, label: 'Méthodologie', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
+              { href: '/parcours/', label: 'Formation', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
+              { href: `/epreuve/${e.slug}/simulateur/`, label: 'Simulateur', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
+              { href: `/epreuve/${e.slug}/sujets/`, label: 'Modèles de réponses', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
+            ].map((b) => <Link key={b.label} href={b.href} className={`flex min-h-12 items-center justify-center rounded-xl px-4 py-3 text-center font-semibold transition-colors ${b.cls}`}>{b.label}</Link>)}
           </div>
           <OralMonthBrowser
             slug={e.slug}
@@ -79,19 +79,19 @@ export default async function MoisPage({ params }: Props) {
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            { href: `/epreuve/${e.slug}/methodologie/`, label: 'Méthodologie', cls: 'bg-container text-night hover:bg-container-hover' },
-            { href: '/parcours/', label: 'Formation', cls: 'bg-ocean text-white hover:bg-night' },
-            { href: `/epreuve/${e.slug}/simulateur/`, label: 'Simulateur', cls: 'bg-emerald-700 text-white hover:bg-emerald-800' },
-            { href: '/modeles-de-reponses/', label: 'Modèles de réponses', cls: 'bg-maple text-white hover:bg-red-800' },
+            { href: `/epreuve/${e.slug}/methodologie/`, label: 'Méthodologie', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
+            { href: '/parcours/', label: 'Formation', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
+            { href: `/epreuve/${e.slug}/simulateur/`, label: 'Simulateur', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
+            { href: '/modeles-de-reponses/', label: 'Modèles de réponses', cls: 'border border-rule bg-white text-night hover:border-ocean hover:text-ocean' },
           ].map((b) => (
-            <Link key={b.label} href={b.href} className={`flex min-h-14 items-center justify-center rounded-2xl px-4 py-3 text-center font-bold ${b.cls}`}>{b.label}</Link>
+            <Link key={b.label} href={b.href} className={`flex min-h-12 items-center justify-center rounded-xl px-4 py-3 text-center font-semibold transition-colors ${b.cls}`}>{b.label}</Link>
           ))}
         </div>
 
         <div className="space-y-4">
           {list.map((c, i) => (
             <details key={c.id} id={`combinaison-${i + 1}`} open={i === 0} className="group scroll-mt-28 overflow-hidden rounded-2xl bg-white">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-gradient-to-r from-night to-ocean px-6 py-5 text-white [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-night px-6 py-5 text-white [&::-webkit-details-marker]:hidden">
                 <span>
                   <span className="heading block text-xl">Combinaison {i + 1}</span>
                   {c.theme && <span className="block text-sm text-blue-50">Tâche 3 : {c.theme}</span>}

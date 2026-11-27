@@ -65,7 +65,7 @@ function PartCard({ slug, part, open }: { slug: string; part: Part; open: boolea
   const list = tab === 2 ? part.t2 : part.t3;
   return (
     <details id={`partie-${part.n}`} open={open} className="group scroll-mt-32 overflow-hidden rounded-2xl bg-white">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-gradient-to-r from-night to-ocean px-6 py-5 text-white [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-night px-6 py-5 text-white [&::-webkit-details-marker]:hidden">
         <span className="heading text-xl">Partie {part.n}</span>
         <span className="flex items-center gap-3">
           <span className="rounded-full bg-white/15 px-3 py-1 text-sm">{part.t2.length + part.t3.length} sujets</span>

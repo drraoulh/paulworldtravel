@@ -19,6 +19,28 @@ export const sessionSpeakingId = (year: number, month: number, task: 2 | 3, inde
   `eo:${year}-${String(month).padStart(2, '0')}:${task}:${index}`;
 
 /**
+ * How the partner of a task 2 speaks, read from the subject. Session subjects start with
+ * « Je suis votre ami(e)… » or « Je travaille dans… »: the partner is that person, and a
+ * friend, a relative or a flatmate says « tu ».
+ */
+export function partnerFor(prompt: string): NonNullable<SpeakingTask['partner']> {
+  const who = /\b(?:je (?:suis|travaille|vis|viens|organise|propose|connais|loue|habite|tiens|gère|dirige|vends|reviens|pars)|vous êtes mon|nous sommes)\b[^.?!]*/i.exec(prompt)?.[0].trim();
+  const close = /\b(?:amis?|amies?|ami\(e\)s?|copains?|copines?|cousins?|cousines?|frères?|sœurs?|soeurs?|colocataires?|camarades?)\b/i.test(who ?? '');
+  return {
+    role: who ? `la personne qui dit : « ${who.charAt(0).toUpperCase() + who.slice(1)} »` : 'la personne à qui le candidat s’adresse dans cette situation',
+    opening: close ? 'Salut ! Ça va ? Tu voulais me demander quelque chose ?' : 'Bonjour ! Que puis-je faire pour vous ?',
+    facts: `${close ? 'Relation proche : tutoie le candidat. ' : ''}Aucune fiche n’est fournie pour ce sujet : invente des informations précises et réalistes, cohérentes avec la situation (prix, horaires, lieux, conditions), et garde-les identiques pendant tout l’échange.`,
+  };
+}
+
+/** Tips of a task 2 session subject (no « appel »: most situations are face to face). */
+export const INTERACTION_TIPS = [
+  'Pendant les 2 minutes de préparation, notez les questions à poser.',
+  'Saluez et expliquez votre situation en une phrase.',
+  'Variez les formes de questions et réagissez aux réponses.',
+];
+
+/**
  * A session subject as a simulator task. Task 2 has no partner sheet in the sessions:
  * the AI partner invents consistent, realistic answers from the situation.
  */
@@ -33,16 +55,8 @@ export function findSessionSpeakingTask(id: unknown): SpeakingTask | undefined {
   return task === 2
     ? {
       id: id as string, task: 2, title: `Tâche 2 : obtenir des informations (${when})`, prompt, mode: 'interaction', seconds: 210, prepSeconds: 120,
-      tips: [
-        'Pendant les 2 minutes de préparation, notez les questions à poser.',
-        'Saluez, présentez-vous et expliquez la raison de votre appel.',
-        'Variez les formes de questions et réagissez aux réponses.',
-      ],
-      partner: {
-        role: 'la personne à qui le candidat s’adresse dans cette situation',
-        opening: 'Bonjour, je vous écoute.',
-        facts: 'Aucune fiche n’est fournie pour ce sujet : invente des informations précises et réalistes, cohérentes avec la situation (prix, horaires, lieux, conditions), et garde-les identiques pendant tout l’échange.',
-      },
+      tips: INTERACTION_TIPS,
+      partner: partnerFor(prompt),
     }
     : {
       id: id as string, task: 3, title: `Tâche 3 : exprimer un point de vue (${when})`, prompt, mode: 'monologue', seconds: 270,

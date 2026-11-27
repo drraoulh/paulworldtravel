@@ -93,7 +93,7 @@ export default function CourseHome({ course, totalMinutes, quizCount }: { course
       <section className="border-b border-rule bg-white">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 sm:py-14 xl:grid-cols-[minmax(0,1fr)_22rem] lg:items-end lg:px-8">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[.15em] text-ocean">Mon apprentissage · TCF Canada</p>
+            <p className="text-xs font-medium tracking-[.15em] text-ocean">Mon apprentissage · TCF Canada</p>
             <h1 className="display mt-3 max-w-2xl text-3xl text-night sm:text-4xl">Chaque séance est un pas de plus.</h1>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate">{course.length} modules, {items.length} activités, environ {Math.round(totalMinutes / 60)} heures. Retrouvez vos cours, entraînez-vous et validez vos acquis à votre rythme.</p>
             <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold text-slate"><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="book" className="h-4 w-4 text-ocean" />{items.filter((it) => it.kind === 'lecon' && it.id !== 'guide').length} leçons{withPack ? '' : ' gratuites'}</span><span className="flex items-center gap-2 rounded-lg bg-paper px-3 py-2"><Icon name="check" className="h-4 w-4 text-ocean" />{quizCount} questions de quiz</span></div>
@@ -153,7 +153,7 @@ export default function CourseHome({ course, totalMinutes, quizCount }: { course
                         const current = it.id === resume?.id;
                         return (
                           <li key={it.id} className="py-1">
-                            <Link href={it.href} className={`group flex items-center gap-3 rounded-xl border-2 px-3 py-3 transition hover:-translate-y-0.5 hover:border-ocean hover:shadow-md ${current ? 'border-ocean bg-blue-50' : 'border-rule bg-white'}`}>
+                            <Link href={it.href} className={`group flex items-center gap-3 rounded-xl border-2 px-3 py-3 transition hover:border-ocean hover:shadow-md ${current ? 'border-ocean bg-blue-50' : 'border-rule bg-white'}`}>
                               <StatusMark done={ok} current={current} />
                               <span className="hidden text-slate sm:block"><KindIcon kind={it.kind} /></span>
                               <span className="min-w-0 flex-1">

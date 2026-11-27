@@ -45,7 +45,7 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
           case 'example':
             return (
               <figure key={i} className="rounded-xl border border-rule bg-white p-5 font-sans text-base">
-                {b.title && <figcaption className="mb-2 text-sm font-bold uppercase tracking-wide text-ocean">{b.title}</figcaption>}
+                {b.title && <figcaption className="mb-2 text-sm font-bold text-ocean">{b.title}</figcaption>}
                 <p className="whitespace-pre-line leading-relaxed">{b.text}</p>
               </figure>
             );

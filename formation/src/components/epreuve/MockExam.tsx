@@ -184,7 +184,7 @@ export default function MockExam({ series }: { series: number[] }) {
             <p className="text-slate">Épreuve terminée et enregistrée dans <strong>Mes résultats</strong>. Prenez quelques minutes de pause si vous le souhaitez.</p>
             <p className="heading mt-4 text-2xl text-night">Prochaine épreuve : {phase === 'break-ce' ? 'compréhension écrite, 60 minutes' : phase === 'break-ee' ? 'expression écrite, 60 minutes' : 'expression orale, environ 12 minutes'}</p>
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <button onClick={() => setPhase(phase === 'break-ce' ? 'ce' : phase === 'break-ee' ? 'ee' : 'eo')} className="inline-flex items-center justify-center rounded-lg bg-ocean px-6 py-3.5 font-bold text-white shadow-[0_4px_14px_rgba(36,66,199,.35)] transition hover:-translate-y-0.5 hover:bg-night">Commencer l’épreuve suivante</button>
+              <button onClick={() => setPhase(phase === 'break-ce' ? 'ce' : phase === 'break-ee' ? 'ee' : 'eo')} className="inline-flex items-center justify-center rounded-lg bg-ocean px-6 py-3.5 font-bold text-white transition hover:bg-night">Commencer l’épreuve suivante</button>
               <button onClick={() => setPhase('results')} className="inline-flex items-center justify-center rounded-lg border-2 border-ocean bg-white px-6 py-3.5 font-bold text-ocean transition hover:bg-ocean hover:text-white">Arrêter ici et voir mon bilan</button>
             </div>
             <p className="mt-3 text-sm text-slate">Vous pourrez repasser un examen blanc complet plus tard avec un nouveau crédit.</p>
@@ -398,7 +398,7 @@ function MockResults({ sessionId, oralResults, serie, co, ce, tcf, subjects, tex
       )}
 
       <div className="flex flex-wrap gap-3">
-        <Link href="/espace/" className="inline-flex items-center rounded-lg bg-ocean px-6 py-3.5 font-bold text-white shadow-[0_4px_14px_rgba(36,66,199,.35)] hover:bg-night">Voir Mes résultats</Link>
+        <Link href="/espace/" className="inline-flex items-center rounded-lg bg-ocean px-6 py-3.5 font-bold text-white hover:bg-night">Voir Mes résultats</Link>
         <Link href="/examen-blanc/" onClick={() => window.location.reload()} className="rounded-full border border-rule px-6 py-3.5 font-semibold text-night hover:border-ocean">Passer un autre examen blanc</Link>
       </div>
     </div>
