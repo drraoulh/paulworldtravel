@@ -6,7 +6,7 @@
 import 'server-only';
 import type { SpeakingTask, WritingTask } from './expression';
 import { sessionCombinaisons } from './combinaisons-sessions';
-import { oralMonths } from './sujets-oraux';
+import { INTERACTION_TIPS, oralMonths, partnerFor } from './sujets-oraux';
 import { toWritingTask } from '@/lib/combinaisons';
 
 const at = <T,>(list: T[], serie: number) => list[(Math.max(1, serie) - 1) % list.length];
@@ -36,15 +36,11 @@ export const mockSpeakingTasks = (serie: number): SpeakingTask[] => {
       task: 2,
       title: 'Tâche 2 : exercice en interaction',
       prompt: interaction,
-      tips: ['Pendant les 2 minutes de préparation, notez les questions à poser.', 'Saluez, expliquez votre situation, puis posez vos questions.', 'Réagissez aux réponses et demandez des précisions.'],
+      tips: INTERACTION_TIPS,
       seconds: 210,
       mode: 'interaction',
       prepSeconds: 120,
-      partner: {
-        role: 'la personne décrite dans le sujet (celle qui dit « je »)',
-        opening: 'Bonjour ! Je vous écoute.',
-        facts: `Situation de l’examen : « ${interaction} » Répondez aux questions du candidat avec des informations réalistes et cohérentes avec cette situation ; inventez les détails nécessaires (prix, horaires, lieux) et gardez-les identiques jusqu’à la fin.`,
-      },
+      partner: partnerFor(interaction),
     },
     {
       id: `examen:${serie}:3`,

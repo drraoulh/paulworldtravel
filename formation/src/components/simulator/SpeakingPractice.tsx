@@ -57,7 +57,7 @@ export default function SpeakingPractice({ sessionTask }: { sessionTask?: Speaki
           <ChangeSubject />
         </div>
         <p className="mt-3 text-lg text-ink">{task.prompt}</p>
-        <ul className="mt-4 space-y-1 text-sm text-slate">{task.tips.map((t) => <li key={t}>• {t}</li>)}</ul>
+        <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate">{task.tips.map((t) => <li key={t}>{t}</li>)}</ul>
         {signedIn === false && <div className="mt-6"><SignInPrompt next="/epreuve/expression-orale/simulateur/" /></div>}
         {signedIn && <MicTest />}
         {signedIn && (task.mode === 'interaction'

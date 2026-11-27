@@ -16,15 +16,23 @@ type Sub = 'ready' | 'recording' | 'waiting';
 /** Longest single reply, in seconds. */
 const MAX_REPLY = 60;
 
+/** Reads the text aloud; resolves when the voice has finished (or after an estimate, if the browser never says). */
 function speak(text: string) {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'fr-FR';
-  const voices = window.speechSynthesis.getVoices();
-  utter.voice = voices.find((v) => v.lang === 'fr-CA') ?? voices.find((v) => v.lang.startsWith('fr')) ?? null;
-  utter.rate = 0.95;
-  window.speechSynthesis.speak(utter);
+  return new Promise<void>((resolve) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return resolve();
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'fr-FR';
+    const voices = window.speechSynthesis.getVoices();
+    utter.voice = voices.find((v) => v.lang === 'fr-CA') ?? voices.find((v) => v.lang.startsWith('fr')) ?? null;
+    utter.rate = 0.95;
+    let over = false;
+    const end = () => { if (!over) { over = true; clearTimeout(fallback); resolve(); } };
+    const fallback = setTimeout(end, 1500 + text.length * 90);
+    utter.onend = end;
+    utter.onerror = end;
+    window.speechSynthesis.speak(utter);
+  });
 }
 const hush = () => { if (typeof window !== 'undefined') window.speechSynthesis?.cancel(); };
 
@@ -39,6 +47,9 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
   const [elapsed, setElapsed] = useState(0);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [voice, setVoice] = useState(true);
+  // Hands-free: the microphone opens after each answer and the reply leaves after a short silence.
+  const [auto, setAuto] = useState(true);
+  const autoRef = useRef(true);
   const [error, setError] = useState('');
   const [quota, setQuota] = useState<{ remaining: number | null; plan: string | null }>({ remaining: null, plan: null });
   const [result, setResult] = useState<{ feedback: Feedback } | null>(initialResult ?? null);
@@ -56,7 +67,14 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
   const setSubState = (s: Sub) => { subRef.current = s; setSub(s); };
   const setPhaseState = (p: Phase) => { phaseRef.current = p; setPhase(p); };
   const setTurnList = (list: Turn[]) => { turnsRef.current = list; setTurns(list); };
-  const say = (text: string) => { if (voiceRef.current) speak(text); };
+  const say = (text: string) => (voiceRef.current ? speak(text) : Promise.resolve());
+  // After the partner has spoken, the candidate's turn starts on its own.
+  const thenListen = (spoken: Promise<void>) => {
+    void spoken.then(() => {
+      if (autoRef.current && phaseRef.current === 'dialog' && subRef.current === 'ready') void talkRef.current(true);
+    });
+  };
+  const talkRef = useRef<(hands?: boolean) => Promise<void>>(async () => {});
 
   useEffect(() => { onBusy(phase !== 'intro' && phase !== 'done'); }, [phase, onBusy]);
   useEffect(() => () => hush(), []);
@@ -82,9 +100,9 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
       const next: Turn[] = [...turnsRef.current, { who: 'candidate', text: data.transcript }];
       if (data.reply && phaseRef.current === 'dialog') {
         next.push({ who: 'partner', text: data.reply });
-        say(data.reply);
       }
       setTurnList(next);
+      if (data.reply && phaseRef.current === 'dialog') { sending.current = false; setSubState('ready'); thenListen(say(data.reply)); }
       if (examSessionId && next.filter((t) => t.who === 'candidate').length >= 12) { setPhaseState('ended'); hush(); }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La réplique n’a pas pu être envoyée.');
@@ -136,7 +154,7 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
       setElapsed(0);
       setTurnList([{ who: 'partner', text: partner.opening }]);
       setPhaseState('dialog');
-      say(partner.opening);
+      thenListen(say(partner.opening));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'L’échange n’a pas pu démarrer.');
       setPhaseState('intro');
@@ -155,18 +173,20 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
 
   // A double click on « Parler » must not send an empty reply at once.
   const talkedAt = useRef(0);
-  const talk = async () => {
-    if (Date.now() - talkedAt.current < 1200) return;
+  const talk = async (hands = false) => {
+    if (subRef.current !== 'ready' || (!hands && Date.now() - talkedAt.current < 1200)) return;
     talkedAt.current = Date.now();
     setError('');
     hush();
     try {
-      await rec.start();
       setSubState('recording');
+      await rec.start(autoRef.current ? { onEnd: () => { if (subRef.current === 'recording') void sendTurn(false); } } : undefined);
     } catch {
+      setSubState('ready');
       setError(MIC_ERROR);
     }
   };
+  talkRef.current = talk;
 
   const finish = async () => {
     if (subRef.current === 'recording') await sendTurn(true);
@@ -205,7 +225,10 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
         <div className="space-y-4">
           <p className="text-slate">
             Comme à l’examen, vous avez {fmt(prepTotal)} pour préparer vos questions, puis {fmt(task.seconds)} d’échange avec {partner.role}, joué par une IA.
-            Vous parlez à tour de rôle : appuyez sur « Parler », posez votre question, puis sur « Envoyer ». Le chronomètre s’arrête pendant que l’interlocuteur répond.
+            {auto
+              ? 'Vous parlez à tour de rôle, comme dans une vraie conversation : le micro s’ouvre quand l’interlocuteur a fini, et votre réplique part dès que vous vous taisez un instant.'
+              : 'Vous parlez à tour de rôle : appuyez sur « Parler », posez votre question, puis sur « Envoyer ».'}{' '}
+            Le chronomètre s’arrête pendant que l’interlocuteur répond.
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <button onClick={startPrep} disabled={Boolean(examSessionId && result)} className="inline-flex items-center rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800">
@@ -214,6 +237,10 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
             <label className="flex items-center gap-2 text-sm text-ink">
               <input type="checkbox" checked={voice} onChange={(e) => { setVoice(e.target.checked); voiceRef.current = e.target.checked; }} className="h-4 w-4" />
               Entendre les réponses à voix haute
+            </label>
+            <label className="flex items-center gap-2 text-sm text-ink">
+              <input type="checkbox" checked={auto} onChange={(e) => { setAuto(e.target.checked); autoRef.current = e.target.checked; }} className="h-4 w-4" />
+              Échange automatique, sans bouton
             </label>
           </div>
           <p className="text-sm text-slate">{examSessionId ? 'Échange inclus dans votre examen blanc, sans utiliser de correction d’entraînement. Jusqu’à 12 répliques. Une fois corrigé, son résultat est conservé.' : 'L’échange compte pour une correction d’oral, décomptée au début du dialogue.'}</p>
@@ -243,7 +270,7 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
               <div className="flex flex-wrap items-center gap-4">
                 <span className="font-mono text-lg text-night" aria-live="off">{fmt(elapsed)} / {fmt(task.seconds)}</span>
                 {sub === 'waiting' && <span className="text-sm font-semibold text-ocean">L’interlocuteur répond, chronomètre en pause…</span>}
-                {sub === 'recording' && <span className="text-sm font-semibold text-maple">Vous parlez…</span>}
+                {sub === 'recording' && <span className="text-sm font-semibold text-maple">{auto ? 'À vous : parlez, votre réplique part quand vous vous taisez' : 'Vous parlez…'}</span>}
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-paper" aria-hidden="true"><div className="h-full bg-maple transition-all" style={{ width: `${Math.min(100, (elapsed / task.seconds) * 100)}%` }} /></div>
             </>
@@ -265,12 +292,12 @@ export default function InteractionPractice({ task, onBusy, examSessionId, initi
           {phase === 'dialog' && (
             <div className="flex flex-wrap items-center gap-3">
               {sub !== 'recording' ? (
-                <button onClick={talk} disabled={sub === 'waiting'} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
+                <button onClick={() => void talk()} disabled={sub === 'waiting'} className="inline-flex items-center gap-2 rounded-full bg-maple px-6 py-3.5 font-bold text-white hover:bg-red-800 disabled:opacity-50">
                   <span className="h-3 w-3 rounded-full bg-white" aria-hidden="true" /> Parler
                 </button>
               ) : (
                 <button onClick={() => { if (Date.now() - talkedAt.current >= 1200) sendTurn(false); }} className="inline-flex items-center gap-2 rounded-full bg-night px-6 py-3.5 font-bold text-white hover:bg-ocean">
-                  <span className="h-3 w-3 bg-white" aria-hidden="true" /> Envoyer ma réplique
+                  <span className="h-3 w-3 bg-white" aria-hidden="true" /> {auto ? 'Envoyer maintenant' : 'Envoyer ma réplique'}
                 </button>
               )}
               <button onClick={finish} disabled={sub === 'waiting'} className="rounded-full border border-rule px-5 py-3 font-semibold text-night hover:border-ocean disabled:opacity-50">

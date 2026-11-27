@@ -171,7 +171,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
       <div>
         <p className="mb-3 font-bold text-night">Choisissez comment faire la série :</p>
         <div className="grid gap-4 md:grid-cols-2">
-          <button onClick={() => start('exam')} className="group flex flex-col rounded-2xl border-2 border-rule bg-white p-6 text-left transition-colors hover:-translate-y-1 hover:border-ocean hover:shadow-lg">
+          <button onClick={() => start('exam')} className="group flex flex-col rounded-2xl border-2 border-rule bg-white p-6 text-left transition-colors hover:border-ocean hover:shadow-lg">
             <span className="heading block text-xl text-night">Conditions d’examen</span>
             <span className="mt-2 block flex-1 text-slate">
               {questions.length} questions en {total / 60} minutes, chronomètre visible.
@@ -182,7 +182,7 @@ export default function SeriesRunner({ epreuve, number, questions, forceMode, on
               <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 10h12m-5-5 5 5-5 5" /></svg>
             </span>
           </button>
-          <button onClick={() => start('training')} className="group flex flex-col rounded-2xl border-2 border-rule bg-white p-6 text-left transition-colors hover:-translate-y-1 hover:border-ocean hover:shadow-lg">
+          <button onClick={() => start('training')} className="group flex flex-col rounded-2xl border-2 border-rule bg-white p-6 text-left transition-colors hover:border-ocean hover:shadow-lg">
             <span className="heading block text-xl text-night">Mode entraînement</span>
             <span className="mt-2 block flex-1 text-slate">Sans chronomètre. Correction et explication après chaque question{isCo ? ', réécoute et transcription' : ''}.</span>
             <span className="mt-5 inline-flex items-center justify-center gap-2 self-start rounded-lg border-2 border-ocean bg-white px-5 py-3 font-bold text-ocean transition group-hover:bg-ocean group-hover:text-white">

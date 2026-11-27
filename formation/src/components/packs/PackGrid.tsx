@@ -11,9 +11,9 @@ import { formatPrice, formatFullPrice, packDuration, packIncludes, packs, type P
 export const tier: Record<PackId, { band: string; text: string; ring: string; button: string }> = {
   express: { band: 'bg-[#ffd84a]', text: 'text-night', ring: 'ring-[#e0b300]', button: 'bg-night text-white hover:bg-ocean' },
   essentiel: { band: 'bg-ocean', text: 'text-white', ring: 'ring-ocean', button: 'bg-ocean text-white hover:bg-night' },
-  silver: { band: 'bg-gradient-to-br from-[#e3e8ef] to-[#9aa6b6]', text: 'text-night', ring: 'ring-[#8a96a8]', button: 'bg-[#4a5568] text-white hover:bg-night' },
-  gold: { band: 'bg-gradient-to-br from-[#f7dc7a] to-[#c9971f]', text: 'text-night', ring: 'ring-[#c9971f]', button: 'bg-[#a87b0f] text-white hover:bg-night' },
-  platinum: { band: 'bg-gradient-to-br from-night to-[#2442c7]', text: 'text-white', ring: 'ring-night', button: 'bg-night text-white hover:bg-ocean' },
+  silver: { band: 'bg-[#d3d9e1]', text: 'text-night', ring: 'ring-[#8a96a8]', button: 'bg-[#4a5568] text-white hover:bg-night' },
+  gold: { band: 'bg-[#efcb5c]', text: 'text-night', ring: 'ring-[#c9971f]', button: 'bg-[#a87b0f] text-white hover:bg-night' },
+  platinum: { band: 'bg-night', text: 'text-white', ring: 'ring-night', button: 'bg-night text-white hover:bg-ocean' },
 };
 
 const KEY_ITEMS = 4;
@@ -22,7 +22,7 @@ function Cta({ pack, className = '' }: { pack: Pack; className?: string }) {
   return (
     <Link
       href={`/inscription/?formule=${pack.id}`}
-      className={`inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3.5 font-bold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${tier[pack.id].button} ${className}`}
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3.5 font-bold shadow-sm transition hover:shadow-md ${tier[pack.id].button} ${className}`}
     >
       Choisir {pack.name}
       <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 10h12m-5-5 5 5-5 5" /></svg>
