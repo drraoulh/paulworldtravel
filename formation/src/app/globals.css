@@ -98,6 +98,8 @@ input[type='radio'], input[type='checkbox'] { accent-color: var(--night); }
 .academy-dialog { margin: auto; }
 .academy-dialog[open] { animation: drawer-fade .15s ease-out; }
 .tutor-panel:not([open]) { display: none; }
+/* During a series, the help button would cover « Suivant »: hidden until the results. */
+html[data-series-running] .tutor-trigger, html[data-series-running] .tutor-panel { display: none; }
 .tutor-panel[open] { display: block; animation: drawer-fade .2s ease-out; }
 @media print {
   @page { margin: 1.5cm; }
