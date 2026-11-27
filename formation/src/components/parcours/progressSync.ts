@@ -7,8 +7,10 @@ import { compactProgress, mergeProgress, normalizeProgress, type Progress } from
 import { PROGRESS_EVENT } from './useCourse';
 
 /*
- * Keeps the course progress of a signed-in student in their account (auth user metadata),
+ * Keeps the course progress of a signed-in student in their account (table learner_progress),
  * so it follows them across devices. Signed out, nothing happens: progress stays in this browser.
+ * Never in the auth user metadata: it is copied into the session token and cookie, which grew
+ * with every series until the site refused the request (494 REQUEST_HEADER_TOO_LARGE).
  */
 const DONE = 'pwt-parcours-done';
 const META = 'pwt-parcours-meta';
@@ -55,6 +57,7 @@ export default function ProgressSync() {
     let timer: ReturnType<typeof setTimeout> | undefined;
     let cancelled = false;
     let generation = 0;
+    let legacyInSession = false;
 
     const push = async (p: Progress) => {
       const json = JSON.stringify(p);
@@ -63,10 +66,14 @@ export default function ProgressSync() {
       const previous = lastPushed;
       lastPushed = json;
       try {
-        const { error } = await supabase.auth.updateUser({ data: { [REMOTE_KEY]: p } });
+        const { error } = await supabase.from('learner_progress').upsert({ user_id: ownerId, snapshot: p }, { onConflict: 'user_id' });
         if (cancelled || userId !== ownerId) return;
-        const { error: snapshotError } = await supabase.from('learner_progress').upsert({ user_id: ownerId, snapshot: p }, { onConflict: 'user_id' });
-        if (error || snapshotError) lastPushed = previous; // retried on the next change
+        if (error) { lastPushed = previous; return; } // retried on the next change
+        // Older versions also kept the progress in the account metadata: removed once it is saved in the table.
+        if (legacyInSession) {
+          const { error: cleanError } = await supabase.auth.updateUser({ data: { [REMOTE_KEY]: null } });
+          if (!cleanError) legacyInSession = false;
+        }
       } catch { if (userId === ownerId) lastPushed = previous; }
     };
 
@@ -82,7 +89,8 @@ export default function ProgressSync() {
       if (cancelled || startedAt !== generation || !user || user.id === userId) return;
       const { data: saved } = await supabase.from('learner_progress').select('snapshot').eq('user_id', user.id).maybeSingle();
       if (cancelled || startedAt !== generation || user.id === userId) return;
-      const metadata = user.user_metadata?.[REMOTE_KEY] ? normalizeProgress(user.user_metadata[REMOTE_KEY]) : normalizeProgress(null);
+      legacyInSession = Boolean(user.user_metadata?.[REMOTE_KEY]);
+      const metadata = legacyInSession ? normalizeProgress(user.user_metadata[REMOTE_KEY]) : normalizeProgress(null);
       const remote = mergeProgress(metadata, saved?.snapshot ? normalizeProgress(saved.snapshot) : null);
       const owner = readOwner();
       // Local progress left by another account is replaced, not merged.
