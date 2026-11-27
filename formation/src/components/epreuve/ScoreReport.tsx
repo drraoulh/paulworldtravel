@@ -37,9 +37,9 @@ export default function ScoreReport({ epreuve, title, questions, answers }: {
   const ring = 2 * Math.PI * 54;
 
   return (
-    <section aria-label="Votre résultat" className="overflow-hidden rounded-3xl bg-white shadow-[0_10px_40px_rgba(20,33,61,.10)]">
-      <div className="bg-gradient-to-br from-night-deep via-night to-ocean p-6 text-white sm:p-10">
-        <p className="text-sm font-semibold uppercase tracking-wider text-blue-200">{title}</p>
+    <section aria-label="Votre résultat" className="overflow-hidden rounded-2xl border border-rule bg-white">
+      <div className="bg-night p-6 text-white sm:p-10">
+        <p className="text-sm text-blue-200">{title}</p>
         <div className="mt-6 grid items-center gap-8 md:grid-cols-[auto_1fr]">
           <div className="relative mx-auto h-44 w-44">
             <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90" aria-hidden="true">
@@ -53,8 +53,8 @@ export default function ScoreReport({ epreuve, title, questions, answers }: {
           </div>
           <div>
             <div className="flex flex-wrap gap-3">
-              <span className="rounded-full bg-white px-4 py-2 text-lg font-bold text-night">{nclcLabel(nclc)}</span>
-              {cefr && <span className="rounded-full bg-white/15 px-4 py-2 text-lg font-bold">Niveau {cefr}</span>}
+              <span className="rounded-lg bg-white px-4 py-2 text-lg font-semibold text-night"><span className="marked">{nclcLabel(nclc)}</span></span>
+              {cefr && <span className="rounded-lg bg-white/10 px-4 py-2 text-lg font-medium">Niveau {cefr}</span>}
             </div>
             <dl className="mt-6 grid grid-cols-3 gap-4 text-center sm:max-w-md sm:text-left">
               <div><dt className="text-sm text-blue-200">Bonnes réponses</dt><dd className="heading text-2xl">{right} / {questions.length}</dd></div>
